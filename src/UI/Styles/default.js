@@ -24,13 +24,20 @@ global.styles = {
   ],
   colorFondo: 'rgba(230,230,230,1)',
   colorFondo_0: 'rgba(230,230,230,0)',
-
+  //Loading
+  login_colorFondo: 'rgba(230,230,230,1)',
+  //Toolbar
+  colorToolbar: 'white',
+  colorTextoToolbar:'black',
+  toolbarDark: false
 };
 
 export default StyleSheet.create({
   toolbar: {
-    backgroundColor: global.styles.colorPrimary,
-    elevation: 8
+    backgroundColor: global.styles.colorToolbar,
+    elevation: 0,
+    borderBottomColor: global.styles.colorAccent,
+    borderBottomWidth: 2
   },
   fab: {
     margin:16

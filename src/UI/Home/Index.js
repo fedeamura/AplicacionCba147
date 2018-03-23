@@ -46,7 +46,10 @@ const Screen = {
   height: Dimensions.get('window').height
 }
 
-const H_Panel = Screen.height - ExtraDimensions.get('STATUS_BAR_HEIGHT') - 48;
+const PANEL_DETALLE_REQUERIMIENTO_HEADER_H = 48;
+const PANEL_DETALLE_REQUERIMIENTO_MARGIN_TOP = 32;
+
+const PANEL_DETALLE_REQUERIMIENTO_H = Screen.height - ExtraDimensions.get('STATUS_BAR_HEIGHT') - PANEL_DETALLE_REQUERIMIENTO_HEADER_H - PANEL_DETALLE_REQUERIMIENTO_MARGIN_TOP;
 
 export default class Inicio extends React.Component {
   static navigationOptions = {
@@ -92,31 +95,6 @@ export default class Inicio extends React.Component {
   }
 
   actualizar() {
-    App.animar(() => {
-      Rules_Requerimiento.get(
-        data => {
-
-          App.animar();
-          this.setState({
-            listado: {
-              ...this.state.listado,
-              loading: false,
-              data: data
-            }
-          });
-        },
-        error => {
-          App.animar();
-          this.setState({
-            listado: {
-              ...this.state.listado,
-              loading: false,
-              error: error
-            }
-          });
-        }
-      );
-    })
     this.setState(
       {
         listado: {
@@ -124,6 +102,27 @@ export default class Inicio extends React.Component {
           error: undefined,
           loading: true
         }
+      }, () => {
+        Rules_Requerimiento.get(
+          data => {
+            this.setState({
+              listado: {
+                ...this.state.listado,
+                loading: false,
+                data: data
+              }
+            });
+          },
+          error => {
+            this.setState({
+              listado: {
+                ...this.state.listado,
+                loading: false,
+                error: error
+              }
+            });
+          }
+        );
       });
   }
 
@@ -157,6 +156,9 @@ export default class Inicio extends React.Component {
     return (
       <View
         style={styles.contenedor}
+        onLayout={() => {
+          this.refs['animNuevo'].snapTo({ index: 1 });
+        }}
         pointerEvents={this.state.animando ? "none" : "auto"}
       >
         <MiToolbar
@@ -219,11 +221,10 @@ export default class Inicio extends React.Component {
           )}
         </View>
 
-        <View style={styles.contenedor_Panel} pointerEvents={'box-none'}>
+        <View style={styles.contenedor_Panel_DetalleRequerimiento} pointerEvents={'box-none'}>
           <Animated.View
             pointerEvents={'box-none'}
-            style={[styles.sombra_Panel, {
-              backgroundColor: 'black',
+            style={[styles.contenedor_Panel_DetalleRequerimiento_Sombra, {
               opacity: this._deltaY.interpolate({
                 inputRange: [0, Screen.height],
                 outputRange: [0.5, 0],
@@ -239,13 +240,13 @@ export default class Inicio extends React.Component {
             onSnap={(e) => this.onPanelDetalleSnap(e)}
             animatedValueY={this._deltaY}
           >
-            <View style={styles.contenido_Panel}>
-              <View style={styles.panelHeader}>
-                <View style={styles.panelHandle} />
+            <View style={styles.contenedor_Panel_DetalleRequerimiento_Contenido}>
+              <View style={styles.contenedor_Panel_DetalleRequerimiento_Contenido_Header}>
+                <View style={styles.contenedor_Panel_DetalleRequerimiento_Contenido_Header_Handle} />
               </View>
-              <View style={styles.contenedor_Scroll}>
-                <ScrollView style={styles.nuevo_Scroll}>
-                  <View style={styles.nuevo_ScrollContenido}>
+              <View style={styles.contenedor_Panel_DetalleRequerimiento_Contenido_ContenedorScroll}>
+                <ScrollView style={styles.contenedor_Panel_DetalleRequerimiento_Contenido_ContenedorScroll_Scroll}>
+                  <View style={styles.contenedor_Panel_DetalleRequerimiento_Contenido_ContenedorScroll_Scroll_Contenido}>
                     <Text style={styles.panelTitle}>San Francisco Airport</Text>
                     <Text style={styles.panelSubtitle}>International Airport - 40 miles away</Text>
                     <Text>Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola Hola </Text>
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%'
   },
-  listado:{
+  listado: {
     backgroundColor: global.styles.colorFondo
   },
   indicadorCargando: {
@@ -291,7 +292,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  contenedor_Panel: {
+  contenedor_Panel_DetalleRequerimiento: {
     position: 'absolute',
     top: 0,
     bottom: 0,
@@ -299,16 +300,17 @@ const styles = StyleSheet.create({
     right: 0,
     elevation: 16
   },
-  sombra_Panel: {
+  contenedor_Panel_DetalleRequerimiento_Sombra: {
     position: 'absolute',
+    backgroundColor: 'black',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0
   },
-  contenido_Panel: {
+  contenedor_Panel_DetalleRequerimiento_Contenido: {
+    marginTop: PANEL_DETALLE_REQUERIMIENTO_MARGIN_TOP,
     height: Screen.height + Screen.height,
-    // backgroundColor: '#f7f5eee8',
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -318,21 +320,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     zIndex: 10
   },
-  contenedor_Scroll: {
-    height: H_Panel
+  contenedor_Panel_DetalleRequerimiento_Contenido_ContenedorScroll: {
+    height: PANEL_DETALLE_REQUERIMIENTO_H
   },
-  nuevo_Scroll: {
+  contenedor_Panel_DetalleRequerimiento_Contenido_ContenedorScroll_Scroll: {
+
   },
-  nuevo_ScrollContenido: {
+  contenedor_Panel_DetalleRequerimiento_Contenido_ContenedorScroll_Scroll_Contenido: {
     margin: 16
   },
-  panelHeader: {
+  contenedor_Panel_DetalleRequerimiento_Contenido_Header: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 48,
+    height: PANEL_DETALLE_REQUERIMIENTO_HEADER_H,
   },
-  panelHandle: {
-    width: 40,
+  contenedor_Panel_DetalleRequerimiento_Contenido_Header_Handle: {
+    width: 48,
     height: 8,
     borderRadius: 4,
     backgroundColor: '#00000040'

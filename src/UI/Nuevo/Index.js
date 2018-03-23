@@ -444,6 +444,7 @@ export default class Home extends React.Component {
 
 const styles = StyleSheet.create({
   contenedor: {
+    overflow: 'hidden',
     display: "flex",
     flexDirection: "column",
     height: "100%",

@@ -27,14 +27,12 @@ export default class MiFAB extends React.Component {
   }
 
   mostrar() {
-    console.log('mostrar');
     Animated.spring(this.anim, {
       toValue: 1
     }).start();
   }
 
   ocultar() {
-    console.log('ocultar');
     Animated.spring(this.anim, {
       toValue: 0
     }).start();
