@@ -1,0 +1,33 @@
+{
+  "name": "Cordoba",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "native-base": "^2.3.10",
+    "react": "^16.3.0-alpha.1",
+    "react-native": "0.54.2",
+    "react-native-code-push": "^5.3.2",
+    "react-native-extra-dimensions-android": "^0.21.0",
+    "react-native-interactable": "^0.1.10",
+    "react-native-linear-gradient": "^2.4.0",
+    "react-native-paper": "^1.2.4",
+    "react-native-sensitive-info": "^5.1.0",
+    "react-native-textinput-effects": "^0.4.2",
+    "react-native-vector-icons": "^4.5.0",
+    "react-native-web-image": "0.0.6",
+    "react-navigation": "^1.5.8"
+  },
+  "devDependencies": {
+    "babel-jest": "22.4.3",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "22.4.3",
+    "react-test-renderer": "^16.3.0-alpha.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
