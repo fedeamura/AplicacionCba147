@@ -31,7 +31,7 @@ export default class MiToolbar extends React.Component {
 
     let center = <ToolbarContent />;
 
-    let right = <View />;
+    let right = undefined;
     if (this.props.right != undefined && this.props.right.lenght != 0) {
       right = this.props.right.map((item, index) => {
         return (

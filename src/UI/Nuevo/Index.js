@@ -11,7 +11,8 @@ import {
   UIManager,
   Keyboard,
   ScrollView,
-  NativeModules
+  NativeModules,
+  KeyboardAvoidingView
 } from "react-native";
 const { StatusBarManager } = NativeModules;
 import {
@@ -288,140 +289,146 @@ export default class Home extends React.Component {
     }
 
     return (
-      <View
-        style={[styles.contenedor]}>
-        <MiToolbar
-          style={styles.contenedorToolbar}
-          left={{
-            icon: "arrow-back",
-            onClick: () => {
-              App.goBack();
-            }
-          }}
-        >
-          <ToolbarContent title="Nuevo requerimiento" />
-        </MiToolbar>
-
-        <View style={styles.content}>
-          <Animated.View
-            style={[
-              styles.contenedorPasos,
-              {
-                width: anchoContenedor,
-                transform: [
-                  {
-                    translateX: this.state.anim.interpolate({
-                      inputRange: [0, cantidad],
-                      outputRange: [0, -anchoContenedor]
-                    })
-                  }
-                ]
+      <KeyboardAvoidingView
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.contenedor}
+        scrollEnabled={true}
+        behavior='padding'
+      >
+        <View
+          style={[styles.contenedor]}>
+          <MiToolbar
+            style={styles.contenedorToolbar}
+            left={{
+              icon: "arrow-back",
+              onClick: () => {
+                App.goBack();
               }
-            ]}
+            }}
           >
-            {this.state.mostrarPasos ? view_pasos : <View />}
-          </Animated.View>
+            <ToolbarContent title="Nuevo requerimiento" />
+          </MiToolbar>
 
-          <LinearGradient colors={[global.styles.colorFondo, global.styles.colorFondo, global.styles.colorFondo_0]} style={styles.fondoIndicadores} pointerEvents="none" />
-          <View style={styles.contenedorIndicadores}>{view_indicadores}</View>
-
-          {/* Pasos */}
-          <LinearGradient colors={[global.styles.colorFondo_0, global.styles.colorFondo, global.styles.colorFondo]} style={styles.fondoBotonesPasos} pointerEvents="none" />
-
-          <View style={styles.contenedorBotonesPasos}>
-
-            <Animated.View style={{
-              width: '100%',
-              maxWidth: this.state.anim_BtnAnterior.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 150],
-                extrapolateLeft: 'clamp'
-              }),
-              opacity: this.state.anim_BtnAnterior.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 1]
-              })
-            }}>
-
-              <Button
-                raised
-                style={{ width: '100%' }}
-                pointerEvents="auto"
-                style={styles.btnAnterior}
-                onPress={() => {
-                  var pos = this.state.paso - 1;
-                  if (pos < 0) pos = 0;
-                  this.mover(pos);
-                }}
-              >
-                Volver
-              </Button>
-            </Animated.View>
-
-
-            <Animated.View style={{
-              width: '100%',
-              maxWidth: this.state.anim_BtnSiguiente.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 150],
-                extrapolateLeft: 'clamp'
-              }),
-              opacity: this.state.anim_BtnSiguiente.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 1]
-              })
-
-            }}>
-
-              <Button
-                raised
-                primary
-                style={{ width: '100%' }}
-                pointerEvents="auto"
-                style={styles.btnSiguiente}
-                disabled={!this.state.pasoCompletado[this.state.paso]}
-                onPress={() => {
-                  var pos = this.state.paso + 1;
-                  if (pos >= cantidad) pos = cantidad - 1;
-                  this.mover(pos);
-                }}
-              >
-                Siguiente
-            </Button>
-            </Animated.View>
-
+          <View style={styles.content}>
             <Animated.View
-              style={{
+              style={[
+                styles.contenedorPasos,
+                {
+                  width: anchoContenedor,
+                  transform: [
+                    {
+                      translateX: this.state.anim.interpolate({
+                        inputRange: [0, cantidad],
+                        outputRange: [0, -anchoContenedor]
+                      })
+                    }
+                  ]
+                }
+              ]}
+            >
+              {this.state.mostrarPasos ? view_pasos : <View />}
+            </Animated.View>
+
+            <LinearGradient colors={[global.styles.colorFondo, global.styles.colorFondo, global.styles.colorFondo_0]} style={styles.fondoIndicadores} pointerEvents="none" />
+            <View style={styles.contenedorIndicadores}>{view_indicadores}</View>
+
+            {/* Pasos */}
+            <LinearGradient colors={[global.styles.colorFondo_0, global.styles.colorFondo, global.styles.colorFondo]} style={styles.fondoBotonesPasos} pointerEvents="none" />
+
+            <View style={styles.contenedorBotonesPasos}>
+
+              <Animated.View style={{
                 width: '100%',
-                maxWidth: this.state.anim_BtnRegistrar.interpolate({
+                maxWidth: this.state.anim_BtnAnterior.interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 150],
                   extrapolateLeft: 'clamp'
                 }),
-                opacity: this.state.anim_BtnRegistrar.interpolate({
+                opacity: this.state.anim_BtnAnterior.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 1]
+                })
+              }}>
+
+                <Button
+                  raised
+                  style={{ width: '100%' }}
+                  pointerEvents="auto"
+                  style={styles.btnAnterior}
+                  onPress={() => {
+                    var pos = this.state.paso - 1;
+                    if (pos < 0) pos = 0;
+                    this.mover(pos);
+                  }}
+                >
+                  Volver
+              </Button>
+              </Animated.View>
+
+
+              <Animated.View style={{
+                width: '100%',
+                maxWidth: this.state.anim_BtnSiguiente.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 150],
+                  extrapolateLeft: 'clamp'
+                }),
+                opacity: this.state.anim_BtnSiguiente.interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 1]
                 })
 
               }}>
 
-              <Button
-                raised
-                primary
-                style={[{ width: '100%' }]}
-                pointerEvents="auto"
-                style={styles.btnSiguiente}
-                disabled={!this.state.completado}
-                onPress={() => {
-
-                }}
-              >
-                Registrar
+                <Button
+                  raised
+                  primary
+                  style={{ width: '100%' }}
+                  pointerEvents="auto"
+                  style={styles.btnSiguiente}
+                  disabled={!this.state.pasoCompletado[this.state.paso]}
+                  onPress={() => {
+                    var pos = this.state.paso + 1;
+                    if (pos >= cantidad) pos = cantidad - 1;
+                    this.mover(pos);
+                  }}
+                >
+                  Siguiente
             </Button>
-            </Animated.View>
+              </Animated.View>
+
+              <Animated.View
+                style={{
+                  width: '100%',
+                  maxWidth: this.state.anim_BtnRegistrar.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 150],
+                    extrapolateLeft: 'clamp'
+                  }),
+                  opacity: this.state.anim_BtnRegistrar.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1]
+                  })
+
+                }}>
+
+                <Button
+                  raised
+                  primary
+                  style={[{ width: '100%' }]}
+                  pointerEvents="auto"
+                  style={styles.btnSiguiente}
+                  disabled={!this.state.completado}
+                  onPress={() => {
+
+                  }}
+                >
+                  Registrar
+            </Button>
+              </Animated.View>
 
 
-            {/* <Animated.View
+              {/* <Animated.View
               style={{ maxWidth: 0, overflow: 'hidden' }}
             >
 
@@ -435,9 +442,10 @@ export default class Home extends React.Component {
             </Button>
             </Animated.View> */}
 
+            </View>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

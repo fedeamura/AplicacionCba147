@@ -7,7 +7,9 @@ import {
   UIManager,
   Alert,
   Animated,
-  StatusBar
+  StatusBar,
+  ScrollView,
+  KeyboardAvoidingView
 } from "react-native";
 import {
   Container,
@@ -28,7 +30,6 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 //Mis componentes
 import App from "Cordoba/src/UI/App";
 import AppStyles from "Cordoba/src/UI/Styles/default";
-import IndicadorCargando from "Cordoba/src/UI/Utils/IndicadorCargando";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -46,8 +47,7 @@ export default class Login extends React.Component {
       escribioUsuario: false,
       usuario: "amura_f",
       escribioPassword: false,
-      password: "federico",
-      cargando: false
+      password: "federico"
     };
 
     this.anim_Logo = new Animated.Value(0);
@@ -63,33 +63,47 @@ export default class Login extends React.Component {
   }
 
   consultarLogin() {
-    Rules_Usuario.isLogin(login => {
-      if (login) {
-        this.entrar();
-        return;
-      }
+    Rules_Usuario.isLogin()
+      .then((login) => {
+        if (login) {
+          this.entrar();
+          return;
+        }
 
-      Animated.spring(this.anim_Form, {
-        toValue: 1
-      }).start();
-    });
+        Animated.spring(this.anim_Form, {
+          toValue: 1
+        }).start();
+      })
+      .catch((error) => {
+        //Muestro el error
+        Alert.alert(
+          "Error iniciando sesión",
+          error == undefined ? "" : error,
+          [
+            {
+              text: "Aceptar",
+              onPress: () => { }
+            }
+          ],
+          { cancelable: true }
+        );
+      });
   }
 
   mostrarFormulario() {
-    this.setState({
-      cargandoLogin: false
-    }, () => {
-      Animated.timing(this.anim_Form, {
-        duration: 500,
-        toValue: 1
-      }).start();
-    });
+    Animated.timing(this.anim_Form, {
+      duration: 500,
+      toValue: 1
+    }).start();
   }
 
   login() {
     if (this.state.usuario == "") {
       App.animar();
-      this.setState({ escribioUsuario: true, escribioPassword: true }, () => {
+      this.setState({
+        escribioUsuario: true,
+        escribioPassword: true
+      }, () => {
         this.refs.inputUsuario.focus();
       });
       return;
@@ -97,39 +111,60 @@ export default class Login extends React.Component {
 
     if (this.state.password == "") {
       App.animar();
-      this.setState({ escribioUsuario: true, escribioPassword: true }, () => {
+      this.setState({
+        escribioUsuario: true,
+        escribioPassword: true
+      }, () => {
         this.refs.inputPassword.focus();
       });
 
       return;
     }
 
-    this.setState({
-      cargando: true
-    }, () => {
-      Rules_Usuario.login(
-        this.state.usuario,
-        this.state.password,
-        () => {
-          this.entrar();
-        },
-        error => {
-          this.setState({
-            cargando: false
-          });
-          Alert.alert(
-            "Error iniciando sesión",
-            error == undefined ? "" : error,
-            [
-              {
-                text: "Aceptar",
-                onPress: () => { }
-              }
-            ],
-            { cancelable: true }
-          );
-        }
-      );
+    //Oculto el formulario mientras cargo
+    Animated.spring(this.anim_Form, {
+      toValue: 0
+    }).start();
+
+    //Logeo
+    Rules_Usuario.login(
+      this.state.usuario,
+      this.state.password
+    )
+      .then(() => {
+        this.entrar();
+      })
+      .catch((error) => {
+        //Muestro el formulario de nuevo
+        Animated.spring(this.anim_Form, {
+          toValue: 1
+        }).start();
+
+        //Muestro el error
+        Alert.alert(
+          "Error iniciando sesión",
+          error == undefined ? "" : error,
+          [
+            {
+              text: "Aceptar",
+              onPress: () => { }
+            }
+          ],
+          { cancelable: true }
+        );
+      });
+  }
+
+  entrar() {
+    Animated.sequence([
+      Animated.spring(this.anim_Form, {
+        toValue: 0
+      }),
+      Animated.spring(this.anim_Logo, {
+        toValue: 0
+      })
+    ]).start(() => {
+      App.replace('Home');
     });
   }
 
@@ -144,156 +179,163 @@ export default class Login extends React.Component {
   }
 
   render() {
-    const imageUri = 'https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw'
 
     var errorUsuarioVisible =
       this.state.usuario == "" && this.state.escribioUsuario;
     var errorPasswordVisible =
       this.state.password == "" && this.state.escribioPassword;
 
+    const imageUri = 'https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw'
+
     return (
-      <View
-        style={styles.contenedor}
-        onLayout={() => {
-          this.animarLogo();
-        }}>
-        <Container style={styles.contenedorLogin}>
+      <KeyboardAvoidingView
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.contenedor}
+        scrollEnabled={true}
+      >
 
-          <Animated.View
-            style={{
-              transform: [{
-                scale:
-                  this.anim_Logo.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1]
-                  })
-              }],
-              opacity:
-                this.anim_Logo.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1],
-                  extrapolateRight: 'clamp'
-                })
-            }}>
-            <WebImage
-              style={styles.img}
-              source={{ uri: imageUri }} />
+        <View
+          style={styles.contenedor}
+          onLayout={() => {
+            this.animarLogo();
+          }}>
 
-          </Animated.View>
+          <View style={styles.contenedorLogin}>
 
-
-          <Animated.View style={
-            [
-              styles.contenedorFormulario
-              ,
-              {
-                maxHeight: this.anim_Form.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 350]
-                }),
+            <Animated.View
+              style={{
                 transform: [{
-                  translateY:
-                    this.anim_Form.interpolate({
+                  scale:
+                    this.anim_Logo.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [200, 0]
+                      outputRange: [0, 1]
                     })
                 }],
                 opacity:
-                  this.anim_Form.interpolate({
+                  this.anim_Logo.interpolate({
                     inputRange: [0, 1],
                     outputRange: [0, 1],
                     extrapolateRight: 'clamp'
                   })
-              }
-            ]}>
-            <View style={styles.contenedorInput}>
-              <Kohana
-                ref="inputUsuario"
-                onChangeText={val => { this.onUsuarioChange(val); }}
-                value={this.state.usuario}
-                style={styles.input}
-                label={"Usuario"}
-                iconClass={MaterialsIcon}
-                iconName={"person"}
-                iconColor={"black"}
-                labelStyle={{ color: "black" }}
-                inputStyle={{ color: "black", paddingLeft: 0 }}
-                useNativeDriver
-              />
+              }}>
+              <WebImage
+                style={styles.img}
+                source={{ uri: imageUri }} />
 
-              <Text
-                style={{
-                  maxHeight: errorUsuarioVisible ? 20 : 0,
-                  color: "red",
-                  marginLeft: 16,
-                  marginTop: 4
-                }}
-              >
-                * Dato requerido
+            </Animated.View>
+
+
+            <Animated.View style={
+              [
+                styles.contenedorFormulario
+                ,
+                {
+                  maxHeight: this.anim_Form.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 350]
+                  }),
+                  transform: [{
+                    translateY:
+                      this.anim_Form.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [200, 0]
+                      })
+                  }],
+                  opacity:
+                    this.anim_Form.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 1],
+                      extrapolateRight: 'clamp'
+                    })
+                }
+              ]}>
+              <View style={styles.contenedorInput}>
+                <Kohana
+                  ref="inputUsuario"
+                  onChangeText={val => { this.onUsuarioChange(val); }}
+                  value={this.state.usuario}
+                  style={styles.input}
+                  label={"Usuario"}
+                  iconClass={MaterialsIcon}
+                  iconName={"person"}
+                  iconColor={"black"}
+                  labelStyle={{ color: "black" }}
+                  inputStyle={{ color: "black", paddingLeft: 0 }}
+                  useNativeDriver
+                />
+
+                <Text
+                  style={{
+                    maxHeight: errorUsuarioVisible ? 20 : 0,
+                    color: "red",
+                    marginLeft: 16,
+                    marginTop: 4
+                  }}
+                >
+                  * Dato requerido
               </Text>
-            </View>
+              </View>
 
-            <View style={styles.contenedorInput}>
-              <Kohana
-                ref="inputPassword"
-                secureTextEntry={true}
-                value={this.state.password}
-                onChangeText={val => { this.onPasswordChange(val); }}
-                style={styles.input}
-                label={"Contraseña"}
-                iconClass={MaterialsIcon}
-                iconName={"vpn-key"}
-                iconColor={"black"}
-                labelStyle={{ color: "black" }}
-                inputStyle={{ color: "black", paddingLeft: 0 }}
-                useNativeDriver
-              />
+              <View style={styles.contenedorInput}>
+                <Kohana
+                  ref="inputPassword"
+                  secureTextEntry={true}
+                  value={this.state.password}
+                  onChangeText={val => { this.onPasswordChange(val); }}
+                  style={styles.input}
+                  label={"Contraseña"}
+                  iconClass={MaterialsIcon}
+                  iconName={"vpn-key"}
+                  iconColor={"black"}
+                  labelStyle={{ color: "black" }}
+                  inputStyle={{ color: "black", paddingLeft: 0 }}
+                  useNativeDriver
+                />
 
-              <Text
-                style={{
-                  height: errorPasswordVisible ? 20 : 0,
-                  color: "red",
-                  marginLeft: 16,
-                  marginTop: 4
-                }}
-              >
-                * Dato requerido
+                <Text
+                  style={{
+                    height: errorPasswordVisible ? 20 : 0,
+                    color: "red",
+                    marginLeft: 16,
+                    marginTop: 4
+                  }}
+                >
+                  * Dato requerido
               </Text>
-            </View>
+              </View>
 
-            <View style={styles.contenedorBotones}>
-              <Button
-                rounded
-                style={styles.btnAcceder}
-                onPress={() => this.login()}
-              >
-                <Text>Acceder</Text>
-              </Button>
-              <Button
-                transparent
-                color="black"
-                style={styles.btnRecuperarCuenta}
-              >
-                <Text style={{ color: 'black' }}>¿Olvidaste tu contraseña?</Text>
-              </Button>
-
-
-              <Button
-                rounded
-                style={styles.btnNuevoUsuario}
-              >
-                <Text>Crear nuevo usuario</Text>
-              </Button>
+              <View style={styles.contenedorBotones}>
+                <Button
+                  rounded
+                  style={styles.btnAcceder}
+                  onPress={() => this.login()}
+                >
+                  <Text>Acceder</Text>
+                </Button>
+                <Button
+                  transparent
+                  color="black"
+                  style={styles.btnRecuperarCuenta}
+                >
+                  <Text style={{ color: 'black' }}>¿Olvidaste tu contraseña?</Text>
+                </Button>
 
 
-            </View>
+                <Button
+                  rounded
+                  style={styles.btnNuevoUsuario}
+                >
+                  <Text>Crear nuevo usuario</Text>
+                </Button>
 
-          </Animated.View>
 
-          <IndicadorCargando visible={this.state.cargando} />
+              </View>
 
-        </Container>
-      </View>
+            </Animated.View>
+          </View>
+        </View>
+
+      </KeyboardAvoidingView>
     );
   }
 }

@@ -51,6 +51,8 @@ const PANEL_DETALLE_REQUERIMIENTO_MARGIN_TOP = 32;
 
 const PANEL_DETALLE_REQUERIMIENTO_H = Screen.height - ExtraDimensions.get('STATUS_BAR_HEIGHT') - PANEL_DETALLE_REQUERIMIENTO_HEADER_H - PANEL_DETALLE_REQUERIMIENTO_MARGIN_TOP;
 
+const refListado = "listado";
+
 export default class Inicio extends React.Component {
   static navigationOptions = {
     title: "Mis requerimientos",
@@ -103,17 +105,26 @@ export default class Inicio extends React.Component {
           loading: true
         }
       }, () => {
-        Rules_Requerimiento.get(
-          data => {
+
+        Rules_Requerimiento.get()
+          .then((data) => {
+            if (this.listado != undefined) {
+              this.listado.scrollToOffset({ y: 0, animated: false });
+            }
+
+            let items = data.sort(function(a,b){
+              return b.Id  - a.Id;
+             })
+
             this.setState({
               listado: {
                 ...this.state.listado,
                 loading: false,
-                data: data
+                data: items
               }
             });
-          },
-          error => {
+          })
+          .catch((error) => {
             this.setState({
               listado: {
                 ...this.state.listado,
@@ -121,8 +132,7 @@ export default class Inicio extends React.Component {
                 error: error
               }
             });
-          }
-        );
+          });
       });
   }
 
@@ -165,10 +175,19 @@ export default class Inicio extends React.Component {
           left={{
             icon: "menu",
             onClick: () => {
-              this.cerrarSesion();
+              App.navegar('Ajustes');
             }
           }}
           right={[
+            {
+              icon: "sort",
+              onClick: () => {
+                // Alert.alert('Ordenar listado', "",  [
+                //   {text: 'Fecha Creacion', onPress: () => console.log('Ask me later pressed')},
+                //   {text: 'Numero', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                // ]);
+              }
+            },
             {
               icon: "refresh",
               onClick: () => {
@@ -184,6 +203,9 @@ export default class Inicio extends React.Component {
 
           <View style={styles.contentListado}>
             <MiListado
+              refListado={(ref) => {
+                this.listado = ref;
+              }}
               style={[styles.listado]}
               data={this.state.listado.data}
               cargando={this.state.listado.loading}

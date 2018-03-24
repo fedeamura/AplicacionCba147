@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   listado: {
+    flex:1,
     backgroundColor: global.styles.colorFondo
   }
 });

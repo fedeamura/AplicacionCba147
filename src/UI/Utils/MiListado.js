@@ -46,10 +46,14 @@ export default class MiListado extends React.Component {
 
   render() {
     return (
-      <View style={styles.contenedor}>
+      <View style={[styles.contenedor, this.props.style]}>
 
         {/* Listado */}
         <FlatList
+          ref={(ref) => {
+            if(this.props.refListado==undefined)return;
+            this.props.refListado(ref);
+          }}
           style={[styles.listado, this.props.style]}
           data={this.props.data}
           keyExtractor={this.props.keyExtractor}
