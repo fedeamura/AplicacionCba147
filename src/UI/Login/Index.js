@@ -3,13 +3,13 @@ import {
   Platform,
   StyleSheet,
   View,
-  LayoutAnimation,
   UIManager,
   Alert,
   Animated,
   StatusBar,
   ScrollView,
-  KeyboardAvoidingView
+  Keyboard,
+  Dimensions
 } from "react-native";
 import {
   Container,
@@ -18,8 +18,10 @@ import {
   Input,
   Item,
   Icon,
-  Spinner
+  Spinner,
+  Content
 } from "native-base";
+import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
 import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
 import { Kohana } from "react-native-textinput-effects";
@@ -29,10 +31,11 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
-import AppStyles from "Cordoba/src/UI/Styles/default";
+import { AppTheme } from "@UI/AppTheme";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
+import Rules_Init from "../../Rules/Rules_Init";
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -45,13 +48,45 @@ export default class Login extends React.Component {
 
     this.state = {
       escribioUsuario: false,
-      usuario: "amura_f",
+      usuario: "",
       escribioPassword: false,
-      password: "federico"
+      password: "",
+      cargandoLogin: false
     };
 
     this.anim_Logo = new Animated.Value(0);
     this.anim_Form = new Animated.Value(0);
+    this.keyboardHeight = new Animated.Value(0);
+  }
+
+  componentWillMount() {
+    this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
+    this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
+  }
+
+  componentWillUnmount() {
+    this.keyboardWillShowSub.remove();
+    this.keyboardWillHideSub.remove();
+  }
+
+
+  keyboardWillShow = (event) => {
+    this.teclado = true;
+
+    Animated.timing(this.keyboardHeight, {
+      duration: event.duration,
+      toValue: event.endCoordinates.height,
+    }).start();
+  }
+
+  keyboardWillHide = (event) => {
+    this.teclado = false;
+
+
+    Animated.timing(this.keyboardHeight, {
+      duration: event.duration,
+      toValue: 0,
+    }).start();
   }
 
   animarLogo() {
@@ -63,31 +98,26 @@ export default class Login extends React.Component {
   }
 
   consultarLogin() {
-    Rules_Usuario.isLogin()
-      .then((login) => {
-        if (login) {
-          this.entrar();
-          return;
-        }
+    this.setState({
+      error: undefined
+    }, () => {
+      Rules_Usuario.isLogin()
+        .then((login) => {
+          if (login) {
+            this.entrar();
+            return;
+          }
 
-        Animated.spring(this.anim_Form, {
-          toValue: 1
-        }).start();
-      })
-      .catch((error) => {
-        //Muestro el error
-        Alert.alert(
-          "Error iniciando sesión",
-          error == undefined ? "" : error,
-          [
-            {
-              text: "Aceptar",
-              onPress: () => { }
-            }
-          ],
-          { cancelable: true }
-        );
-      });
+          Animated.spring(this.anim_Form, {
+            toValue: 1
+          }).start();
+        })
+        .catch((error) => {
+          this.setState({
+            error: 'Oops... algo salió mal al intentar iniciar sesión'
+          });
+        });
+    });
   }
 
   mostrarFormulario() {
@@ -98,12 +128,17 @@ export default class Login extends React.Component {
   }
 
   login() {
+    this.setState({
+      error: undefined
+    });
+
     if (this.state.usuario == "") {
       App.animar();
       this.setState({
         escribioUsuario: true,
         escribioPassword: true
       }, () => {
+        // this.refs.inputUsuario.bounce(800);
         this.refs.inputUsuario.focus();
       });
       return;
@@ -121,38 +156,41 @@ export default class Login extends React.Component {
       return;
     }
 
-    //Oculto el formulario mientras cargo
-    Animated.spring(this.anim_Form, {
-      toValue: 0
-    }).start();
 
     //Logeo
-    Rules_Usuario.login(
-      this.state.usuario,
-      this.state.password
-    )
-      .then(() => {
-        this.entrar();
-      })
-      .catch((error) => {
-        //Muestro el formulario de nuevo
-        Animated.spring(this.anim_Form, {
-          toValue: 1
-        }).start();
+    App.animar();
+    this.setState({
+      cargandoLogin: true
+    }, () => {
+      Rules_Usuario.login(
+        this.state.usuario,
+        this.state.password
+      )
+        .then(() => {
+          this.entrar();
+        })
+        .catch((error) => {
 
-        //Muestro el error
-        Alert.alert(
-          "Error iniciando sesión",
-          error == undefined ? "" : error,
-          [
-            {
-              text: "Aceptar",
-              onPress: () => { }
-            }
-          ],
-          { cancelable: true }
-        );
-      });
+          App.animar();
+          this.setState({
+            cargandoLogin: false
+          });
+
+          //Muestro el error
+          Alert.alert(
+            global.InitData.IniciarSesion.Texto_TituloErrorIniciandoSesion,
+            error == undefined ? global.InitData.General.Texto_ErrorGenerico : error,
+            [
+              {
+                text: "Aceptar",
+                onPress: () => { }
+              }
+            ],
+            { cancelable: true }
+          );
+        });
+    });
+
   }
 
   entrar() {
@@ -168,6 +206,10 @@ export default class Login extends React.Component {
     });
   }
 
+  nuevoUsuario() {
+    App.navegar('UsuarioNuevo');
+  }
+
   onUsuarioChange(text) {
     App.animar();
     this.setState({ usuario: text, escribioUsuario: true });
@@ -180,28 +222,30 @@ export default class Login extends React.Component {
 
   render() {
 
-    var errorUsuarioVisible =
-      this.state.usuario == "" && this.state.escribioUsuario;
-    var errorPasswordVisible =
-      this.state.password == "" && this.state.escribioPassword;
-
-    const imageUri = 'https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw'
+    var errorUsuarioVisible = this.state.usuario == "" && this.state.escribioUsuario;
+    var errorPasswordVisible = this.state.password == "" && this.state.escribioPassword;
 
     return (
-      <KeyboardAvoidingView
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        contentContainerStyle={styles.contenedor}
-        scrollEnabled={true}
-      >
+      <View
+        style={styles.contenedor}
+        onLayout={() => {
+          this.animarLogo();
+        }}>
 
-        <View
-          style={styles.contenedor}
-          onLayout={() => {
-            this.animarLogo();
-          }}>
+        <WebImage
+          resizeMode="cover"
+          style={styles.imagenFondo}
+          source={{ uri: global.InitData.IniciarSesion.Url_ImagenFondo }}
+        />
 
-          <View style={styles.contenedorLogin}>
+        <View style={styles.imageFondo_Dim}></View>
 
+        <ScrollView
+          style={styles.scrollView}
+          keyboardShouldPersistTaps={true}
+          contentContainerStyle={styles.contentScrollView}
+        >
+          <View style={styles.contenidoScroll}>
             <Animated.View
               style={{
                 transform: [{
@@ -220,19 +264,19 @@ export default class Login extends React.Component {
               }}>
               <WebImage
                 style={styles.img}
-                source={{ uri: imageUri }} />
+                source={{ uri: global.InitData.IniciarSesion.Url_ImagenLogo }}
+              />
+
 
             </Animated.View>
 
-
             <Animated.View style={
               [
-                styles.contenedorFormulario
-                ,
+                styles.contenedorFormulario,
                 {
                   maxHeight: this.anim_Form.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, 350]
+                    outputRange: [0, 370]
                   }),
                   transform: [{
                     translateY:
@@ -252,6 +296,7 @@ export default class Login extends React.Component {
               <View style={styles.contenedorInput}>
                 <Kohana
                   ref="inputUsuario"
+                  editable={!this.state.cargandoLogin}
                   onChangeText={val => { this.onUsuarioChange(val); }}
                   value={this.state.usuario}
                   style={styles.input}
@@ -269,16 +314,15 @@ export default class Login extends React.Component {
                     maxHeight: errorUsuarioVisible ? 20 : 0,
                     color: "red",
                     marginLeft: 16,
+                    backgroundColor: 'transparent',
                     marginTop: 4
-                  }}
-                >
-                  * Dato requerido
-              </Text>
+                  }}>{global.InitData.General.Texto_DatoRequerido}</Text>
               </View>
 
               <View style={styles.contenedorInput}>
                 <Kohana
                   ref="inputPassword"
+                  editable={!this.state.cargandoLogin}
                   secureTextEntry={true}
                   value={this.state.password}
                   onChangeText={val => { this.onPasswordChange(val); }}
@@ -297,35 +341,47 @@ export default class Login extends React.Component {
                     height: errorPasswordVisible ? 20 : 0,
                     color: "red",
                     marginLeft: 16,
+                    backgroundColor: 'transparent',
                     marginTop: 4
-                  }}
-                >
-                  * Dato requerido
-              </Text>
+                  }}>{global.InitData.General.Texto_DatoRequerido}</Text>
               </View>
 
               <View style={styles.contenedorBotones}>
+
+                <View style={{ height: 16 }} />
+
                 <Button
+                  full
                   rounded
+                  disabled={this.state.cargandoLogin}
                   style={styles.btnAcceder}
                   onPress={() => this.login()}
                 >
-                  <Text>Acceder</Text>
+                  {this.state.cargandoLogin && (
+                    <Spinner color="white" />
+                  )}
+
+                  <Text>{this.state.cargandoLogin ? global.InitData.IniciarSesion.Texto_BotonIniciarSesionCargando : global.InitData.IniciarSesion.Texto_BotonIniciarSesion}</Text>
                 </Button>
+
                 <Button
                   transparent
+                  disabled={this.state.cargandoLogin}
                   color="black"
                   style={styles.btnRecuperarCuenta}
                 >
-                  <Text style={{ color: 'black' }}>¿Olvidaste tu contraseña?</Text>
+                  <Text style={{ color: 'white' }}>{global.InitData.IniciarSesion.Texto_BotonRecuperarContraseña}</Text>
                 </Button>
 
 
+                <View style={{ height: 32 }} />
                 <Button
                   rounded
+                  disabled={this.state.cargandoLogin}
                   style={styles.btnNuevoUsuario}
+                  onPress={() => this.nuevoUsuario()}
                 >
-                  <Text>Crear nuevo usuario</Text>
+                  <Text>{global.InitData.IniciarSesion.Texto_BotonNuevoUsuario}</Text>
                 </Button>
 
 
@@ -333,14 +389,28 @@ export default class Login extends React.Component {
 
             </Animated.View>
           </View>
-        </View>
+        </ScrollView>
 
-      </KeyboardAvoidingView>
+        <Animated.View style={[styles.contenedorKeyboard, { maxHeight: this.keyboardHeight }]}></Animated.View>
+
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  imagenFondo: {
+    position: "absolute",
+    width: '100%',
+    height: '100%'
+  },
+  imageFondo_Dim: {
+    position: "absolute",
+    width: '100%',
+    height: '100%',
+    opacity: 0.5,
+    backgroundColor: '#000000'
+  },
   contenedor: {
     width: '100%',
     height: '100%',
@@ -349,26 +419,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: global.styles.login_colorFondo,
   },
-  contenedorLogin: {
-    maxWidth: 300,
+  scrollView: {
+    width: '100%'
+  },
+  contentScrollView: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    minHeight: Dimensions.get('window').height - ExtraDimensions.get('STATUS_BAR_HEIGHT') - ExtraDimensions.get('SOFT_MENU_BAR_HEIGHT')
+  },
+  contenidoScroll: {
     width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 32,
+    paddingBottom: 32
+  },
+  contenedorInterior: {
     flexDirection: "column",
-    justifyContent: "center",
     alignItems: "center"
   },
   contenedorFormulario: {
-    maxWidth: 300,
+    height: '100%',
     width: '100%',
+    maxWidth: 300,
     flexDirection: "column",
-    justifyContent: "center",
     alignItems: "center"
   },
+
   contenedorInput: {
-    shadowOpacity: 0.12,
-    marginBottom: 16,
-    shadowRadius: 2,
-    shadowColor: "#000",
-    shadowOffset: { height: 2, width: 0 }
+    marginBottom: 16
   },
   input: {
     width: "100%",
@@ -386,22 +465,19 @@ const styles = StyleSheet.create({
   contenedorBotones: {
     display: 'flex',
     width: '100%',
+    minWidth: '100%',
     flexDirection: 'column'
   },
   btnAcceder: {
-    marginTop: 16,
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignSelf: 'center',
+    minHeight: 48,
     backgroundColor: global.styles.colorAccent
   },
   btnRecuperarCuenta: {
     alignSelf: 'center'
   },
   btnNuevoUsuario: {
-    alignSelf: 'center',
-    marginTop: 32
+    minHeight: 48,
+    alignSelf: 'center'
   },
   textoError: {
     height: 24,
@@ -422,5 +498,22 @@ const styles = StyleSheet.create({
     width: 104,
     height: 104,
     marginBottom: 32
+  },
+  contenedorKeyboard: {
+    height: '100%'
+  },
+  contenedorError: {
+    display: 'flex',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  textoMensajeError: {
+    textAlign: 'center'
+  },
+  btnReintentar: {
+    marginTop: 16,
+    alignSelf: 'center',
+    backgroundColor: global.styles.colorAccent
   }
 });

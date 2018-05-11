@@ -11,9 +11,10 @@ import {
 import { Toolbar, ToolbarContent, ToolbarAction } from "react-native-paper";
 
 //Mis compontenes
-import AppStyles from "Cordoba/src/UI/Styles/default";
-import MiToolbar from "Cordoba/src/UI/Utils/MiToolbar";
-import MiListado from "Cordoba/src/UI/Utils/MiListado";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
+import MiToolbar from "@Utils/MiToolbar";
+import MiListado from "@Utils/MiListado";
 
 export default class MiPicker extends React.Component {
   constructor(props) {

@@ -10,11 +10,8 @@ import {
   Dimensions,
   UIManager,
   Keyboard,
-  ScrollView,
-  NativeModules,
-  KeyboardAvoidingView
+  ScrollView
 } from "react-native";
-const { StatusBarManager } = NativeModules;
 import {
   ToolbarContent,
   Button
@@ -22,10 +19,10 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 
 //Mios
-import App from "Cordoba/src/UI/App";
-import AppStyles from "Cordoba/src/UI/Styles/default";
-import IndicadorCargando from "Cordoba/src/UI/Utils/IndicadorCargando";
-import MiToolbar from "Cordoba/src/UI/Utils/MiToolbar";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
+import IndicadorCargando from "@Utils/IndicadorCargando";
+import MiToolbar from "@Utils/MiToolbar";
 import Paso1 from "Cordoba/src/UI/Nuevo/Paso1";
 import Paso2 from "Cordoba/src/UI/Nuevo/Paso2";
 
@@ -57,36 +54,46 @@ export default class Home extends React.Component {
       anim_BtnSiguiente: new Animated.Value(1),
       anim_BtnRegistrar: new Animated.Value(0)
     };
+
+    this.keyboardHeight = new Animated.Value(0);
   }
 
-  componentDidMount() {
-    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
-    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+  componentWillMount() {
+    this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
+    this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
 
-    if (Platform.OS != 'android') {
-      setTimeout(() => {
-        this.setState({
-          mostrarPasos: true
-        });
-      }, 100);
-    } else {
+    let t = Platform.OS != 'android' ? 100 : 0;
+    setTimeout(() => {
       this.setState({
         mostrarPasos: true
       });
-    }
+    }, t);
   }
 
   componentWillUnmount() {
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
+    this.keyboardWillShowSub.remove();
+    this.keyboardWillHideSub.remove();
   }
 
-  _keyboardDidShow() {
+  keyboardWillShow = (event) => {
     this.teclado = true;
+
+    console.log('show');
+    Animated.timing(this.keyboardHeight, {
+      duration: event.duration,
+      toValue: event.endCoordinates.height,
+    }).start();
   }
 
-  _keyboardDidHide() {
+  keyboardWillHide = (event) => {
     this.teclado = false;
+
+    console.log('hide');
+
+    Animated.timing(this.keyboardHeight, {
+      duration: event.duration,
+      toValue: 0,
+    }).start();
   }
 
   mover(paso) {
@@ -289,163 +296,142 @@ export default class Home extends React.Component {
     }
 
     return (
-      <KeyboardAvoidingView
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        contentContainerStyle={styles.contenedor}
-        scrollEnabled={true}
-        behavior='padding'
-      >
-        <View
-          style={[styles.contenedor]}>
-          <MiToolbar
-            style={styles.contenedorToolbar}
-            left={{
-              icon: "arrow-back",
-              onClick: () => {
-                App.goBack();
-              }
-            }}
-          >
-            <ToolbarContent title="Nuevo requerimiento" />
-          </MiToolbar>
+      <View
+        style={[styles.contenedor]}>
+        <MiToolbar
+          style={styles.contenedorToolbar}
+          left={{
+            icon: "arrow-back",
+            onClick: () => {
+              App.goBack();
+            }
+          }}
+        >
+          <ToolbarContent title="Nuevo requerimiento" />
+        </MiToolbar>
 
-          <View style={styles.content}>
-            <Animated.View
-              style={[
-                styles.contenedorPasos,
-                {
-                  width: anchoContenedor,
-                  transform: [
-                    {
-                      translateX: this.state.anim.interpolate({
-                        inputRange: [0, cantidad],
-                        outputRange: [0, -anchoContenedor]
-                      })
-                    }
-                  ]
-                }
-              ]}
-            >
-              {this.state.mostrarPasos ? view_pasos : <View />}
+        <View style={styles.content}>
+          <Animated.View
+            style={[
+              styles.contenedorPasos,
+              {
+                width: anchoContenedor,
+                transform: [
+                  {
+                    translateX: this.state.anim.interpolate({
+                      inputRange: [0, cantidad],
+                      outputRange: [0, -anchoContenedor]
+                    })
+                  }
+                ]
+              }
+            ]}
+          >
+            {this.state.mostrarPasos ? view_pasos : <View />}
+          </Animated.View>
+
+          <LinearGradient colors={[global.styles.colorFondo, global.styles.colorFondo, global.styles.colorFondo_0]} style={styles.fondoIndicadores} pointerEvents="none" />
+          <View style={styles.contenedorIndicadores}>{view_indicadores}</View>
+
+          {/* Pasos */}
+          <LinearGradient colors={[global.styles.colorFondo_0, global.styles.colorFondo, global.styles.colorFondo]} style={styles.fondoBotonesPasos} pointerEvents="none" />
+
+          <View style={styles.contenedorBotonesPasos}>
+
+            <Animated.View style={{
+              width: '100%',
+              maxWidth: this.state.anim_BtnAnterior.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 150],
+                extrapolateLeft: 'clamp'
+              }),
+              opacity: this.state.anim_BtnAnterior.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 1]
+              })
+            }}>
+
+              <Button
+                raised
+                style={{ width: '100%' }}
+                pointerEvents="auto"
+                style={styles.btnAnterior}
+                onPress={() => {
+                  var pos = this.state.paso - 1;
+                  if (pos < 0) pos = 0;
+                  this.mover(pos);
+                }}
+              >
+                Volver
+              </Button>
             </Animated.View>
 
-            <LinearGradient colors={[global.styles.colorFondo, global.styles.colorFondo, global.styles.colorFondo_0]} style={styles.fondoIndicadores} pointerEvents="none" />
-            <View style={styles.contenedorIndicadores}>{view_indicadores}</View>
-
-            {/* Pasos */}
-            <LinearGradient colors={[global.styles.colorFondo_0, global.styles.colorFondo, global.styles.colorFondo]} style={styles.fondoBotonesPasos} pointerEvents="none" />
-
-            <View style={styles.contenedorBotonesPasos}>
-
-              <Animated.View style={{
-                width: '100%',
-                maxWidth: this.state.anim_BtnAnterior.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 150],
-                  extrapolateLeft: 'clamp'
-                }),
-                opacity: this.state.anim_BtnAnterior.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1]
-                })
-              }}>
-
-                <Button
-                  raised
-                  style={{ width: '100%' }}
-                  pointerEvents="auto"
-                  style={styles.btnAnterior}
-                  onPress={() => {
-                    var pos = this.state.paso - 1;
-                    if (pos < 0) pos = 0;
-                    this.mover(pos);
-                  }}
-                >
-                  Volver
-              </Button>
-              </Animated.View>
-
-
-              <Animated.View style={{
-                width: '100%',
-                maxWidth: this.state.anim_BtnSiguiente.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 150],
-                  extrapolateLeft: 'clamp'
-                }),
-                opacity: this.state.anim_BtnSiguiente.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1]
-                })
-
-              }}>
-
-                <Button
-                  raised
-                  primary
-                  style={{ width: '100%' }}
-                  pointerEvents="auto"
-                  style={styles.btnSiguiente}
-                  disabled={!this.state.pasoCompletado[this.state.paso]}
-                  onPress={() => {
-                    var pos = this.state.paso + 1;
-                    if (pos >= cantidad) pos = cantidad - 1;
-                    this.mover(pos);
-                  }}
-                >
-                  Siguiente
-            </Button>
-              </Animated.View>
-
-              <Animated.View
-                style={{
-                  width: '100%',
-                  maxWidth: this.state.anim_BtnRegistrar.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 150],
-                    extrapolateLeft: 'clamp'
-                  }),
-                  opacity: this.state.anim_BtnRegistrar.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1]
-                  })
-
-                }}>
-
-                <Button
-                  raised
-                  primary
-                  style={[{ width: '100%' }]}
-                  pointerEvents="auto"
-                  style={styles.btnSiguiente}
-                  disabled={!this.state.completado}
-                  onPress={() => {
-
-                  }}
-                >
-                  Registrar
-            </Button>
-              </Animated.View>
-
-
-              {/* <Animated.View
-              style={{ maxWidth: 0, overflow: 'hidden' }}
-            >
+            <Animated.View style={{
+              width: '100%',
+              maxWidth: this.state.anim_BtnSiguiente.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 150],
+                extrapolateLeft: 'clamp'
+              }),
+              opacity: this.state.anim_BtnSiguiente.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 1]
+              })
+            }}>
 
               <Button
                 raised
                 primary
+                style={{ width: '100%' }}
                 pointerEvents="auto"
-                style={styles.btnRegistrar}
-                onPress={() => { }}>
+                style={styles.btnSiguiente}
+                disabled={!this.state.pasoCompletado[this.state.paso]}
+                onPress={() => {
+                  var pos = this.state.paso + 1;
+                  if (pos >= cantidad) pos = cantidad - 1;
+                  this.mover(pos);
+                }}
+              >
+                Siguiente
+            </Button>
+            </Animated.View>
+
+            <Animated.View
+              style={{
+                width: '100%',
+                maxWidth: this.state.anim_BtnRegistrar.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 150],
+                  extrapolateLeft: 'clamp'
+                }),
+                opacity: this.state.anim_BtnRegistrar.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 1]
+                })
+
+              }}>
+
+              <Button
+                raised
+                primary
+                style={[{ width: '100%' }]}
+                pointerEvents="auto"
+                style={styles.btnSiguiente}
+                disabled={!this.state.completado}
+                onPress={() => {
+
+                }}
+              >
                 Registrar
             </Button>
-            </Animated.View> */}
+            </Animated.View>
 
-            </View>
           </View>
         </View>
-      </KeyboardAvoidingView>
+
+        <Animated.View style={[styles.contenedorKeyboard, { maxHeight: this.keyboardHeight }]}></Animated.View>
+
+      </View>
     );
   }
 }
@@ -533,5 +519,8 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: global.styles.colorAccent,
     elevation: 20
+  },
+  contenedorKeyboard: {
+    height: '100%'
   }
 });

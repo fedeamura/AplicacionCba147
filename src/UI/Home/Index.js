@@ -26,14 +26,14 @@ import Interactable from 'react-native-interactable';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 
 //Mios
-import App from "Cordoba/src/UI/App";
-import AppStyles from "Cordoba/src/UI/Styles/default";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
 import ListadoItem from "Cordoba/src/UI/Home/ListadoItem";
 import ListadoItemSeparator from "Cordoba/src/UI/Home/ListadoItemSeparator";
-import IndicadorCargando from "Cordoba/src/UI/Utils/IndicadorCargando";
-import MiToolbar from "Cordoba/src/UI/Utils/MiToolbar";
-import MiListado from "Cordoba/src/UI/Utils/MiListado";
-import MiFAB from "Cordoba/src/UI/Utils/MiFAB";
+import IndicadorCargando from "@Utils/IndicadorCargando";
+import MiToolbar from "@Utils/MiToolbar";
+import MiListado from "@Utils/MiListado";
+import MiFAB from "@Utils/MiFAB";
 
 //Rules
 import Rules_Requerimiento from "Cordoba/src/Rules/Rules_Requerimiento";
@@ -112,9 +112,9 @@ export default class Inicio extends React.Component {
               this.listado.scrollToOffset({ y: 0, animated: false });
             }
 
-            let items = data.sort(function(a,b){
-              return b.Id  - a.Id;
-             })
+            let items = data.sort(function (a, b) {
+              return b.Id - a.Id;
+            })
 
             this.setState({
               listado: {

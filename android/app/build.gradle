@@ -150,6 +150,7 @@ android {
 
 dependencies {
     compile project(':react-native-web-image')
+    compile project(':react-native-maps')
     compile project(':react-native-vector-icons')
     compile project(':react-native-sensitive-info')
     compile project(':react-native-linear-gradient')

@@ -17,38 +17,36 @@ import {
 } from "react-navigation";
 import color from "color";
 import {
-  DefaultTheme,
   Provider as PaperProvider,
   Button
 } from "react-native-paper";
 
 //Mis Componentes
-import AppStyles from "Cordoba/src/UI/Styles/default";
+import AppTheme from "@UI/AppTheme";
 import Login from "Cordoba/src/UI/Login/Index";
+import UsuarioNuevo from "Cordoba/src/UI/UsuarioNuevo/Index";
 import Home from "Cordoba/src/UI/Home/Index";
 import Nuevo from "Cordoba/src/UI/Nuevo/Index";
 import Ajustes from "Cordoba/src/UI/Ajustes/Index";
 import Detalle from "Cordoba/src/UI/Detalle/Index";
-import MiPicker from "Cordoba/src/UI/Utils/MiPicker";
-import MiPickerUbicacion from "Cordoba/src/UI/Utils/MiPickerUbicacion";
+import MiPicker from "@Utils/MiPicker";
+import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
+import Rules_Init from "../Rules/Rules_Init";
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: global.styles.colorPrimary,
-    primaryDark: global.styles.colorPrimaryDark,
-    accent: global.styles.colorAccent
-  }
-};
+
+
+
 
 const RootStack = StackNavigator(
   {
     Login: {
       screen: Login
+    },
+    UsuarioNuevo: {
+      screen: UsuarioNuevo
     },
     Home: {
       screen: Home
@@ -78,17 +76,25 @@ const RootStack = StackNavigator(
   }
 );
 
+global.InitData = undefined;
+
 export default class App extends React.Component {
   static Variables = {
     Debug: true,
     TodoCompletadoEnNuevo: false,
     Token: undefined,
+    DatosUsuario: undefined,
     KeyGoogleMaps: "AIzaSyDNZ3qqO-CJVnLrC8YJcNF6iOXFooAiW3M"
   };
 
   constructor(props) {
     super(props);
     console.disableYellowBox = true;
+
+    this.state = {
+      InitData: undefined
+    };
+
   }
 
   static Navigation;
@@ -132,16 +138,23 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-
+    Rules_Init.getInitData().then((initData) => {
+      global.InitData = initData;
+      AppTheme.crear(initData);
+      this.setState({
+        InitData: initData
+      });
+    });
   }
 
   render() {
+    if (this.state.InitData == undefined) return null;
     return (
-      <PaperProvider theme={theme}>
+      <PaperProvider theme={AppTheme.Styles.Theme}>
         <View
-          //keyboardShouldPersistTaps={'always'}
+          keyboardShouldPersistTaps='always'
           style={{ height: '100%', width: '100%' }}>
-          <StatusBar backgroundColor={global.styles.colorPrimaryDark} barStyle="dark-content" />
+          <StatusBar backgroundColor={global.styles.colorStatusBar} barStyle="dark-content" />
           <RootStack ref={(ref) => { global.Navigator = ref; }} />
         </View>
       </PaperProvider>

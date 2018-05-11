@@ -89,14 +89,23 @@ export default class Rules_Usuario extends React.Component {
           })
             .then(response => response.json())
             .then(responseJson => {
+
+              if(responseJson==undefined || responseJson.d==undefined){
+                console.log('Sin datos');
+                App.Variables.Token = undefined;
+                resolve(false);
+                return;
+              }
+
               var data = responseJson.d;
+
 
               if (!data.Ok) {
                 console.log('Error');
                 console.log(data.Error);
 
                 App.Variables.Token = undefined;
-                reject(data.Error);
+                resolve(false);
                 return;
               }
 
@@ -116,7 +125,7 @@ export default class Rules_Usuario extends React.Component {
               console.log(error);
 
               App.Variables.Token = undefined;
-              reject('Error procesando la solicitud');
+              resolve(false);
             });
 
         }).catch((error) => {
@@ -124,7 +133,7 @@ export default class Rules_Usuario extends React.Component {
           console.log(error);
 
           App.Variables.Token = undefined;
-          reject('Error procesando la solicitud');
+          resolve(false);
         });
     });
   }
@@ -163,6 +172,12 @@ export default class Rules_Usuario extends React.Component {
       })
         .then(response => response.json())
         .then(responseJson => {
+          if(responseJson==undefined || responseJson.d==undefined){
+            console.log('Sin datos');
+            reject('Error procesando la solicitud');
+            return;
+          }
+
           var data = responseJson.d;
 
           console.log(data);

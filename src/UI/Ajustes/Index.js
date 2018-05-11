@@ -30,10 +30,10 @@ UIManager.setLayoutAnimationEnabledExperimental &&
   UIManager.setLayoutAnimationEnabledExperimental(true);
 
 //Mis Compontentes
-import App from "Cordoba/src/UI/App";
-import AppStyles from "Cordoba/src/UI/Styles/default";
-import IndicadorCargando from "Cordoba/src/UI/Utils/IndicadorCargando";
-import MiToolbar from "Cordoba/src/UI/Utils/MiToolbar";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
+import IndicadorCargando from "@Utils/IndicadorCargando";
+import MiToolbar from "@Utils/MiToolbar";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -53,21 +53,29 @@ export default class Home extends React.Component {
   }
 
   componentWillMount() {
-    setTimeout(() => {
-      App.animar();
-      this.setState({
-        CargandoUsuario: true
-      }, () => {
-        Rules_Usuario.getDatosUsuario()
-          .then((result) => {
-
-            this.setState({
-              CargandoUsuario: false,
-              Usuario: result
+    if(App.Variables.DatosUsuario==undefined){
+      setTimeout(() => {
+        App.animar();
+        this.setState({
+          CargandoUsuario: true
+        }, () => {
+          Rules_Usuario.getDatosUsuario()
+            .then((result) => {
+  
+              App.Variables.DatosUsuario = result;
+              this.setState({
+                CargandoUsuario: false,
+                Usuario: result
+              });
             });
-          });
+        });
+      }, 500);  
+    }else{
+      this.setState({
+        CargandoUsuario:false,
+        Usuario: App.Variables.DatosUsuario
       });
-    }, 500);
+    }
   }
 
   render() {

@@ -3,7 +3,6 @@ import {
   View,
   Platform,
   StyleSheet,
-  Animated,
   TouchableWithoutFeedback
 } from "react-native";
 import { Text } from "native-base";
@@ -13,9 +12,12 @@ import {
   Card,
   CardContent
 } from "react-native-paper";
+import LinearGradient from 'react-native-linear-gradient';
+import color from "color";
 
 //Mis compontentes
-import AppStyles from "Cordoba/src/UI/Styles/default";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
 
 export default class ListadoItem extends React.Component {
   constructor(props) {
@@ -43,56 +45,65 @@ export default class ListadoItem extends React.Component {
   }
 
   render() {
+    const colorBase = "#" + this.props.data.Estado.Estado.Color;
+    const colorBaseOscuro = color(colorBase)
+      .darken(0.4)
+      .rgb()
+      .string();
+
     return (
-      <Animated.View style={this.props.animStyle}>
-
-        <View ref={ref => (this.view = ref)} style={[styles.item, {
-          paddingBottom: (this.props.conFab && this.props.index == this.props.count - 1) ? (72 + 16) : 0
-        }]}>
-          <Card
-            style={
-              [
-                styles.card,
-                {
-                  borderColor: "#" + this.props.data.Estado.Estado.Color,
-                  borderLeftWidth: 8
-                },
-                {
-                  marginTop: this.props.index == 0 ? 16 : 8
-                }
-              ]
-            }
-            onPress={() => {
-              if (this.props.onClick != undefined) {
-                this.saveLayout(dimen => {
-                  this.props.onClick(this.props.data, dimen, this.props.index);
-                });
+      <View ref={ref => (this.view = ref)} style={
+        [
+          styles.item,
+          {
+            paddingBottom: (this.props.conFab && this.props.index == this.props.count - 1) ? (72 + 16) : 0
+          }
+        ]
+      }>
+        <Card
+          style={
+            [
+              styles.card,
+              {
+                marginTop: this.props.index == 0 ? 16 : 8
               }
-            }}
-          >
-            <CardContent>
-              <View style={styles.contenedorEncabezado}>
-                <Text style={styles.textoNumero}>
-                  {this.props.data.Numero}/{this.props.data.Año}
-                </Text>
-              </View>
-              <Text>Servicio: {this.props.data.ServicioNombre}</Text>
-              <Text>Motivo: {this.props.data.MotivoNombre}</Text>
+            ]
+          }
+          onPress={() => {
+            if (this.props.onClick != undefined) {
+              this.saveLayout(dimen => {
+                this.props.onClick(this.props.data, dimen, this.props.index);
+              });
+            }
+          }}
+        >
+          <LinearGradient colors={[colorBase, colorBaseOscuro]}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 16 }}></LinearGradient>
+          <CardContent style={styles.cardContent}>
 
-              {/*
+
+            <View style={styles.contenedorEncabezado}>
+              <Text style={styles.textoNumero}>
+                {this.props.data.Numero}/{this.props.data.Año}
+              </Text>
+            </View>
+            <Text style={styles.texto}>Servicio: {this.props.data.ServicioNombre}</Text>
+            <Text style={styles.texto}>Motivo: {this.props.data.MotivoNombre}</Text>
+
+            {/*
             <View style={styles.contenedorEstado}>
               <View style={[styles.indicadorEstado, {backgroundColor: '#' + this.props.data.Estado.Estado.Color}]} />
               <Text>{this.props.data.Estado.Estado.Nombre}</Text>
             </View>
             */}
 
-              <Text style={styles.textoFecha}>
-                {this.props.data.FechaAltaString}
-              </Text>
-            </CardContent>
-          </Card>
-        </View>
-      </Animated.View>
+            <Text style={styles.textoFecha}>
+              {this.props.data.FechaAltaString}
+            </Text>
+          </CardContent>
+
+        </Card>
+      </View>
     );
   }
 }
@@ -100,13 +111,24 @@ export default class ListadoItem extends React.Component {
 const styles = StyleSheet.create({
   card: {
     margin: 16,
-    marginTop: 8
+    marginTop: 8,
+    borderRadius: 16,
+  },
+  cardContent: {
+    margin: 0
   },
   textoNumero: {
     fontSize: 24,
-    flex: 1
+    flex: 1,
+    color: 'white',
+    backgroundColor: 'transparent'
   },
-  textoFecha: { marginTop: 8, fontSize: 14 },
+  textoFecha: {
+    marginTop: 8,
+    fontSize: 14,
+    color: 'white',
+    backgroundColor: 'transparent'
+  },
   contenedorEstado: {
     marginTop: 4,
     display: "flex",
@@ -119,5 +141,12 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 50,
     backgroundColor: "red"
+  },
+  texto: {
+    color: 'white',
+    backgroundColor: 'transparent'
+  },
+  contenedorEncabezado: {
+    marginTop: 16
   }
 });

@@ -23,8 +23,8 @@ import {
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 //Mios
-import App from "Cordoba/src/UI/App";
-import AppStyles from "Cordoba/src/UI/Styles/default";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
 
 //Rules
 import Rules_Servicio from "Cordoba/src/Rules/Rules_Servicio";
@@ -206,19 +206,23 @@ export default class Paso2 extends React.Component {
                           />
 
                           {this.state.domicilio != undefined && (
-                            <View style={styles.contenedorUbicacion}>
+                            <View>
 
-                              <View style={styles.contenedorTextosUbicacion}>
-                                <View style={styles.contenedorBarrio}>
-                                  <Text style={styles.textoSubtitulo}>Barrio</Text>
-                                  <Text>{this.state.domicilio.Barrio.Nombre}</Text>
-                                </View>
-                                <View style={styles.contenedorCpc}>
-                                  <Text style={styles.textoSubtitulo}>CPC</Text>
-                                  <Text>Nº {this.state.domicilio.Cpc.Numero} - {this.state.domicilio.Cpc.Nombre}</Text>
+                              <View style={styles.contenedorUbicacion}>
+
+                                <View style={styles.contenedorTextosUbicacion}>
+                                  <View style={styles.contenedorBarrio}>
+                                    <Text style={styles.textoSubtitulo}>Barrio</Text>
+                                    <Text>{this.state.domicilio.Barrio.Nombre}</Text>
+                                  </View>
+                                  <View style={styles.contenedorCpc}>
+                                    <Text style={styles.textoSubtitulo}>CPC</Text>
+                                    <Text>Nº {this.state.domicilio.Cpc.Numero} - {this.state.domicilio.Cpc.Nombre}</Text>
+                                  </View>
                                 </View>
                               </View>
-                              <Button raised style={styles.btnCancelar} icon="clear" color="red" onPress={() => { this.cancelarDomicilio() }}>Cancelar</Button>
+
+                              <Button raised style={styles.btnCancelar} icon="clear" onPress={() => { this.cancelarDomicilio() }}>Cancelar domicilio</Button>
                             </View>
 
                           )}
@@ -263,9 +267,8 @@ const styles = StyleSheet.create({
     flex: 1
   },
   btnCancelar: {
-    margin: 8,
-    marginRight: 0,
-    alignSelf: 'flex-start'
+    marginTop: 32,
+    alignSelf: 'center'
   },
   textoSubtitulo: {
     marginTop: 8,

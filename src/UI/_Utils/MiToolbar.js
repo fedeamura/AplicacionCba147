@@ -7,7 +7,8 @@ import { Text } from "native-base";
 import { TextInput, Toolbar, ToolbarBackAction, ToolbarContent, ToolbarAction } from "react-native-paper";
 
 //Mis componentes
-import AppStyles from "Cordoba/src/UI/Styles/default";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
 
 export default class MiToolbar extends React.Component {
   constructor(props) {
@@ -50,7 +51,7 @@ export default class MiToolbar extends React.Component {
     return (
       <Toolbar
         dark={global.styles.toolbarDark ? true : this.props.dark}
-        style={[AppStyles.toolbar, this.props.style]}>
+        style={[AppTheme.Styles.Toolbar, this.props.style]}>
         {left}
         {this.props.children != undefined ? this.props.children : center}
         {right}

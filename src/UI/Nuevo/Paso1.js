@@ -21,10 +21,10 @@ import {
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 //Mios
-import App from "Cordoba/src/UI/App";
-import AppStyles from "Cordoba/src/UI/Styles/default";
-import IndicadorCargando from "Cordoba/src/UI/Utils/IndicadorCargando";
-import MiPicker from "Cordoba/src/UI/Utils/MiPicker";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
+import IndicadorCargando from "@Utils/IndicadorCargando";
+import MiPicker from "@Utils/MiPicker";
 
 //Rules
 import Rules_Servicio from "Cordoba/src/Rules/Rules_Servicio";
@@ -51,11 +51,17 @@ export default class Paso1 extends React.Component {
   }
 
   componentDidMount() {
-    this.buscarServicios();
+    setTimeout(() => {
+      this.buscarServicios();
+    }, 500);
   }
 
   isCompletado() {
-    return this.state.idServicio !== -1 && this.state.idMotivo !== -1 && this.state.descripcion != undefined && this.state.descripcion.trim() != "";
+    let tieneServicio = this.state.idServicio !== -1;
+    let tieneMotivo = this.state.idMotivo !== -1;
+    let tieneDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim() != "";
+    let completado = tieneServicio && tieneMotivo && tieneDescripcion;
+    return completado;
   }
 
   handleCompletado() {
@@ -171,14 +177,15 @@ export default class Paso1 extends React.Component {
         return item.Nombre;
       },
       onPress: item => {
-        App.animar(() => {
-          this.buscarMotivos();
-        });
+        App.animar();
         this.setState({
           idServicio: item.Id,
           cargandoMotivos: false,
           motivos: [],
           idMotivo: -1
+        }, () => {
+          this.buscarMotivos();
+          this.handleCompletado();
         });
       }
     });
@@ -218,11 +225,11 @@ export default class Paso1 extends React.Component {
         return item.Nombre;
       },
       onPress: item => {
-        App.animar(() => {
-          this.handleCompletado();
-        });
+        App.animar();
         this.setState({
           idMotivo: item.Id
+        }, () => {
+          this.handleCompletado();
         });
       }
     });
@@ -275,9 +282,15 @@ export default class Paso1 extends React.Component {
       itemsMotivos = itemsMotivos.concat(items);
     }
 
-    let servicio;
+    let textoServicio;
     if (this.state.idServicio !== -1) {
-      servicio = _.find(this.state.servicios, { Id: this.state.idServicio });
+      textoServicio = _.find(this.state.servicios, { Id: this.state.idServicio });
+    } else {
+      if (this.state.errorConsultandoServicios) {
+        textoServicio = 'Error obteniendo los servisos. Click para reintentar';
+      } else {
+        textoServicio = 'Click para seleccionar';
+      }
     }
 
     let motivo;
@@ -311,7 +324,7 @@ export default class Paso1 extends React.Component {
               <View style={styles.contenidoCard}>
                 <Title>Servicio</Title>
                 <Text>
-                  {servicio !== undefined ? servicio.Nombre : "Click para seleccionar"}
+                  {textoServicio}
                 </Text>
               </View>
               {this.state.cargandoServicios && (

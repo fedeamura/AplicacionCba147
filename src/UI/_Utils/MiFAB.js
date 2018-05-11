@@ -7,7 +7,8 @@ import {
 import { FAB } from "react-native-paper";
 
 //Mis compontentes
-import AppStyles from "Cordoba/src/UI/Styles/default";
+import App from "@UI/App";
+import AppTheme from "@UI/AppTheme";
 
 var i = 0;
 export default class MiFAB extends React.Component {
