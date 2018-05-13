@@ -43,17 +43,21 @@ export default class AppTheme extends React.Component {
 
   static Styles = {};
 
+  static ColorAccent = 'red';
+  static ColorPrimary = 'red';
+  static ColorPrimaryDark = 'red';
+
   static crear(initData) {
 
-    const colorAccent = initData.General.Style.ColorAccent;
-    const colorPrimary = initData.General.Style.ColorPrimary;
-    const colorPrimaryDark = initData.General.Style.ColorPrimaryDark;
+    this.ColorAccent = initData.General.Style.ColorAccent;
+    this.ColorPrimary = initData.General.Style.ColorPrimary;
+    this.ColorPrimaryDark = initData.General.Style.ColorPrimaryDark;
 
     this.Styles.Toolbar = {
       backgroundColor: initData.General.Style.Toolbar_BackgroundColor,
       elevation: 0,
       width: '100%',
-      borderBottomColor: colorAccent,
+      borderBottomColor: this.ColorAccent,
       borderBottomWidth: initData.General.Style.Toolbar_BorderWidth
     }
 
@@ -61,9 +65,9 @@ export default class AppTheme extends React.Component {
       ...DefaultTheme,
       colors: {
         ...DefaultTheme.colors,
-        accent: colorAccent,
-        primary: colorPrimary,
-        primaryDark: colorPrimaryDark,
+        accent: this.ColorAccent,
+        primary: this.ColorPrimary,
+        primaryDark: this.ColorPrimaryDark,
       }
     };
   }

@@ -28,6 +28,8 @@ import ExtraDimensions from 'react-native-extra-dimensions-android';
 import MiToolbar from "@Utils/MiToolbar";
 import MiListado from "@Utils/MiListado";
 import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
+import { Kohana, Hideo } from "react-native-textinput-effects";
+
 // import * as Animatable from 'react-native-animatable';
 
 //Anims
@@ -35,6 +37,7 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
+import AppTheme from "@UI/AppTheme";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -107,6 +110,41 @@ export default class Login extends React.Component {
           contentContainerStyle={styles.contentScrollView}
         >
           <View style={styles.contenidoScroll}>
+            <Hideo
+              iconClass={MaterialsIcon}
+              iconName={"person"}
+              onChangeText={val => { this.setState({ nombre: val }) }}
+              value={this.state.nombre}
+              iconColor={"white"}
+              placeholder="Nombre"
+              style={styles.input}
+              iconBackgroundColor={AppTheme.ColorAccent}
+              inputStyle={{ color: '#464949' }}
+            />
+
+            <Hideo
+              iconClass={MaterialsIcon}
+              iconName={"person"}
+              onChangeText={val => { this.setState({ apellido: val }) }}
+              value={this.state.apellido}
+              iconColor={"white"}
+              placeholder="Apellido"
+              style={styles.input}
+              iconBackgroundColor={AppTheme.ColorAccent}
+              inputStyle={{ color: '#464949' }}
+            />
+
+            <Hideo
+              iconClass={MaterialsIcon}
+              iconName={"person"}
+              onChangeText={val => { this.setState({ sexo: val }) }}
+              value={this.state.sexo}
+              iconColor={"white"}
+              placeholder="Sexo"
+              style={styles.input}
+              iconBackgroundColor={AppTheme.ColorAccent}
+              inputStyle={{ color: '#464949' }}
+            />
           </View>
         </ScrollView>
 
@@ -126,18 +164,16 @@ const styles = StyleSheet.create({
     backgroundColor: global.styles.login_colorFondo,
   },
   scrollView: {
-    flex:1,
+    flex: 1,
     width: '100%'
   },
   contentScrollView: {
-    flexGrow: 1,
-    justifyContent: 'center'
+    flexGrow: 1
   },
   contenidoScroll: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 32,
-    paddingBottom: 32
+    width: '100%'
   },
+  input: {
+    margin: 8
+  }
 });

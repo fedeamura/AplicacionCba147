@@ -9,6 +9,8 @@ export default class Rules_Init extends React.Component {
 
   static getInitData() {
     return new Promise((resolve, reject) => {
+      let t = 0;
+
       setTimeout(() => {
         resolve(
           {
@@ -34,7 +36,7 @@ export default class Rules_Init extends React.Component {
               Url_ImagenFondo: 'https://servicios2.cordoba.gov.ar/CBA147/Resources/Imagenes/fondo_login_oscura.jpg'
             }
           })
-      }, 500);
+      }, t);
 
     });
   }
