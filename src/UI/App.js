@@ -24,7 +24,7 @@ import {
 //Mis Componentes
 import AppTheme from "@UI/AppTheme";
 import Login from "Cordoba/src/UI/Login/Index";
-import UsuarioNuevo from "Cordoba/src/UI/UsuarioNuevo/IndexTest";
+import UsuarioNuevo from "Cordoba/src/UI/UsuarioNuevo/Index";
 import Home from "Cordoba/src/UI/Home/Index";
 import Nuevo from "Cordoba/src/UI/Nuevo/Index";
 import Ajustes from "Cordoba/src/UI/Ajustes/Index";

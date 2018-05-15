@@ -27,6 +27,8 @@ import {
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import MiToolbar from "@Utils/MiToolbar";
 import MiListado from "@Utils/MiListado";
+import MiToolbarMenu from "@Utils/MiToolbarMenu";
+
 import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
 import { Kohana, Hideo } from "react-native-textinput-effects";
 
@@ -52,6 +54,30 @@ export default class Login extends React.Component {
     super(props);
 
     this.state = {
+      expandido:false,
+      opciones: [
+        {
+          text: 'Requerimientos',
+          icon: 'insert-drive-file',
+          value: 0,
+          color: '#388E3C',
+          content: (<View style={{ width: '100%', height: '100%' }}><Text>Requerimientos</Text></View>)
+        },
+        {
+          text: 'Mi perfil',
+          icon: 'account-circle',
+          value: 1,
+          color: 'rgb(255, 96, 95)',
+          content: (<View style={{ backgroundColor: 'rgb(255, 96, 95)', width: '100%', height: '100%' }}><Text>Perfil</Text></View>)
+        },
+        {
+          text: 'Ajustes',
+          icon: 'settings',
+          value: 2,
+          color: 'rgb(0, 168, 255)',
+          content: (<View style={{ backgroundColor: 'rgb(0, 168, 255)', width: '100%', height: '100%' }}><Text>Ajustes</Text></View>)
+        }
+      ]
     };
 
     this.keyboardHeight = new Animated.Value(0);
@@ -79,7 +105,6 @@ export default class Login extends React.Component {
   keyboardWillHide = (event) => {
     this.teclado = false;
 
-
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
       toValue: 0,
@@ -90,66 +115,72 @@ export default class Login extends React.Component {
   render() {
 
     return (
-      <View
-        style={styles.contenedor}>
+      <MiToolbarMenu
+        expandido={this.state.expandido}
+        opciones={this.state.opciones}
+        leftIcon="menu"
+        leftIconOnClick={() => { this.setState({ expandido: true }) }}
+      />
+      // <View
+      //   style={styles.contenedor}>
 
-        <MiToolbar
-          left={{
-            icon: "arrow-back",
-            onClick: () => {
-              App.goBack();
-            }
-          }}
-        >
-          <ToolbarContent title="Nuevo usuario" />
-        </MiToolbar>
+      //   <MiToolbar
+      //     left={{
+      //       icon: "arrow-back",
+      //       onClick: () => {
+      //         App.goBack();
+      //       }
+      //     }}
+      //   >
+      //     <ToolbarContent title="Nuevo usuario" />
+      //   </MiToolbar>
 
-        <ScrollView
-          style={styles.scrollView}
-          keyboardShouldPersistTaps={true}
-          contentContainerStyle={styles.contentScrollView}
-        >
-          <View style={styles.contenidoScroll}>
-            <Hideo
-              iconClass={MaterialsIcon}
-              iconName={"person"}
-              onChangeText={val => { this.setState({ nombre: val }) }}
-              value={this.state.nombre}
-              iconColor={"white"}
-              placeholder="Nombre"
-              style={styles.input}
-              iconBackgroundColor={AppTheme.ColorAccent}
-              inputStyle={{ color: '#464949' }}
-            />
+      //   <ScrollView
+      //     style={styles.scrollView}
+      //     keyboardShouldPersistTaps={true}
+      //     contentContainerStyle={styles.contentScrollView}
+      //   >
+      //     <View style={styles.contenidoScroll}>
+      //       <Hideo
+      //         iconClass={MaterialsIcon}
+      //         iconName={"person"}
+      //         onChangeText={val => { this.setState({ nombre: val }) }}
+      //         value={this.state.nombre}
+      //         iconColor={"white"}
+      //         placeholder="Nombre"
+      //         style={styles.input}
+      //         iconBackgroundColor={AppTheme.ColorAccent}
+      //         inputStyle={{ color: '#464949' }}
+      //       />
 
-            <Hideo
-              iconClass={MaterialsIcon}
-              iconName={"person"}
-              onChangeText={val => { this.setState({ apellido: val }) }}
-              value={this.state.apellido}
-              iconColor={"white"}
-              placeholder="Apellido"
-              style={styles.input}
-              iconBackgroundColor={AppTheme.ColorAccent}
-              inputStyle={{ color: '#464949' }}
-            />
+      //       <Hideo
+      //         iconClass={MaterialsIcon}
+      //         iconName={"person"}
+      //         onChangeText={val => { this.setState({ apellido: val }) }}
+      //         value={this.state.apellido}
+      //         iconColor={"white"}
+      //         placeholder="Apellido"
+      //         style={styles.input}
+      //         iconBackgroundColor={AppTheme.ColorAccent}
+      //         inputStyle={{ color: '#464949' }}
+      //       />
 
-            <Hideo
-              iconClass={MaterialsIcon}
-              iconName={"person"}
-              onChangeText={val => { this.setState({ sexo: val }) }}
-              value={this.state.sexo}
-              iconColor={"white"}
-              placeholder="Sexo"
-              style={styles.input}
-              iconBackgroundColor={AppTheme.ColorAccent}
-              inputStyle={{ color: '#464949' }}
-            />
-          </View>
-        </ScrollView>
+      //       <Hideo
+      //         iconClass={MaterialsIcon}
+      //         iconName={"person"}
+      //         onChangeText={val => { this.setState({ sexo: val }) }}
+      //         value={this.state.sexo}
+      //         iconColor={"white"}
+      //         placeholder="Sexo"
+      //         style={styles.input}
+      //         iconBackgroundColor={AppTheme.ColorAccent}
+      //         inputStyle={{ color: '#464949' }}
+      //       />
+      //     </View>
+      //   </ScrollView>
 
-        <Animated.View style={[styles.contenedorKeyboard, { maxHeight: this.keyboardHeight }]}></Animated.View>
-      </View>
+      //   <Animated.View style={[styles.contenedorKeyboard, { maxHeight: this.keyboardHeight }]}></Animated.View>
+      // </View>
     );
   }
 }
