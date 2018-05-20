@@ -2,42 +2,50 @@ import React, { Component } from "react";
 import App from "Cordoba/src/UI/App";
 
 export default class Rules_Requerimiento extends React.Component {
-  static get(callback, callbackError) {
+  static get() {
     return new Promise((resolve, reject) => {
-      const url =
-        "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeRequerimiento.asmx/ConsultarMisRequerimientos";
+      let rqs = [];
+      rqs.push({ id: 1, estadoKeyValue: 1, estadoColor: '#E53935', estadoNombre: 'Nuevo' });
+      rqs.push({ id: 2, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado' })
 
-      console.log('Rules_Requerimiento - get');
-      fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          token: App.Variables.Token
-        })
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          var data = responseJson.d;
-          console.log(data);
+      setTimeout(() => {
+        // reject('ouchilas');
+        resolve(rqs);
+      }, 500);
+      // const url =
+      //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeRequerimiento.asmx/ConsultarMisRequerimientos";
 
-          if (!data.Ok) {
-            console.log('Error');
-            console.log(data.Error);
+      // console.log('Rules_Requerimiento - get');
+      // fetch(url, {
+      //   method: "POST",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json"
+      //   },
+      //   body: JSON.stringify({
+      //     token: App.Variables.Token
+      //   })
+      // })
+      //   .then(response => response.json())
+      //   .then(responseJson => {
+      //     var data = responseJson.d;
+      //     console.log(data);
 
-            reject(data.Error);
-            return;
-          }
+      //     if (!data.Ok) {
+      //       console.log('Error');
+      //       console.log(data.Error);
 
-          resolve(data.Return);
-        })
-        .catch(error => {
-          console.log('Error');
-          console.log(error);
-          reject('Error procesando la solicitud');
-      });
+      //       reject(data.Error);
+      //       return;
+      //     }
+
+      //     resolve(data.Return);
+      //   })
+      //   .catch(error => {
+      //     console.log('Error');
+      //     console.log(error);
+      //     reject('Error procesando la solicitud');
+      // });
     });
 
   }

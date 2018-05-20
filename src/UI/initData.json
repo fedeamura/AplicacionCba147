@@ -1,0 +1,211 @@
+{
+    "general": {
+        "colorAccent": "green",
+        "colorPrimary": "green",
+        "colorPrimaryDark": "green",
+        "colorFondo": "white",
+        "error_DatoRequerido": "Dato requerido",
+        "error_Generico": "Algo salió mal al procesar la solicitud. Por favor intente nuevamente"
+    },
+    "login": {
+        "styles": {
+            "contenedor": {
+                "width": "100%",
+                "height": "100%",
+                "display": "flex",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "backgroundColor": "white"
+            },
+            "imagenFondo": {
+                "position": "absolute",
+                "width": "100%",
+                "height": "100%"
+            },
+            "imagenFondo_Dim": {
+                "position": "absolute",
+                "width": "100%",
+                "height": "100%",
+                "opacity": 0.5,
+                "backgroundColor": "#000000"
+            },
+            "contenedor_ScrollView": {
+                "width": "100%"
+            },
+            "contenedor_ScrollViewContent": {
+                "flexGrow": 1,
+                "justifyContent": "center"
+            },
+            "contenedor_ScrollViewContenido": {
+                "width": "100%",
+                "justifyContent": "center",
+                "alignItems": "center",
+                "paddingTop": 32,
+                "paddingBottom": 32
+            },
+            "imagenLogo": {
+                "width": 104,
+                "height": 104,
+                "marginBottom": 32
+            },
+            "contenedorFormulario": {
+                "height": "100%",
+                "width": "100%",
+                "maxWidth": 300,
+                "flexDirection": "column",
+                "alignItems": "center"
+            },
+            "contenedorInput": {
+                "marginBottom": 16
+            },
+            "input": {
+                "width": "100%",
+                "height": 50,
+                "maxHeight": 50,
+                "borderRadius": 50
+            },
+            "inputLabelStyle": {
+                "color": "black"
+            },
+            "inputStyle": {
+                "color": "black",
+                "paddingLeft": 0
+            },
+            "inputTextoError": {
+                "color": "red",
+                "marginLeft": 16,
+                "backgroundColor": "transparent",
+                "marginTop": 4
+            },
+            "contenedorBotones": {
+                "display": "flex",
+                "width": "100%",
+                "minWidth": "100%",
+                "flexDirection": "column"
+            },
+            "botonAcceder": {
+                "minHeight": 48,
+                "backgroundColor": "green",
+                "width": "100%",
+                "alignSelf": "center"
+            },
+            "botonAccederTexto": {
+                "color": "white"
+            },
+            "botonRecuperarCuenta": {
+                "minHeight": 48,
+                "backgroundColor": "transparent",
+                "width": "auto",
+                "alignSelf": "center"
+            },
+            "botonRecuperarCuentaTexto": {
+                "color": "white"
+            },
+            "botonNuevoUsuario": {
+                "minHeight": 48,
+                "backgroundColor": "rgba(0,0,0,0.5)",
+                "alignSelf": "center"
+            },
+            "botonNuevoUsuarioTexto": {
+                "color": "white"
+            }
+        },
+        "imagenFondo_ResizeMode": "cover",
+        "imagenFondo_Url": "https://servicios2.cordoba.gov.ar/CBA147/Resources/Imagenes/fondo_login_oscura.jpg",
+        "imagenLogo_ResizeMode": "cover",
+        "imagenLogo_Url": "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw",
+        "inputUsuario_Texto": "Usuario",
+        "inputUsuario_Icono": "person",
+        "inputUsuario_IconoColor": "black",
+        "inputPassword_Texto": "Contraseña",
+        "inputPassword_Icono": "vpn-key",
+        "inputPassword_IconoColor": "black",
+        "botonAcceder_Redondeado": true,
+        "botonAcceder_ColorCargando": "white",
+        "botonAcceder_TextoCargando": "Cargando...",
+        "botonAcceder_Texto": "Acceder",
+        "botonRecuperarCuenta_Redondeado": true,
+        "botonRecuperarCuenta_Texto": "¿Olvidaste tu contraseña?",
+        "botonNuevoUsuario_Redondeado": true,
+        "botonNuevoUsuario_Texto": "Crear usuario",
+        "error_IniciandoSesion": "Error iniciando sesion",
+        "error_UsuarioRequerido": "Dato requerido",
+        "error_ContraseñaRequerida": "Dato requerido"
+    },
+    "inicio": {
+        "requerimientos": {
+            "empty": {
+                "backgroundColor": "white",
+                "imagen": {
+                    "backgroundColor": "transparent",
+                    "width": 250,
+                    "height": 250,
+                    "resizeMode": "cover",
+                    "url": "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png",
+                    "marginTop": 0,
+                    "marginBottom": 0,
+                    "marginLeft": 0,
+                    "marginRight": 0
+                },
+                "texto": {
+                    "fontSize": 24,
+                    "color": "black",
+                    "marginTop": 8,
+                    "marginBottom": 0,
+                    "marginLeft": 0,
+                    "marginRight": 0
+                },
+                "boton": {
+                    "texto": "Registrar uno",
+                    "textoColor": "white",
+                    "fondoColor": "green",
+                    "marginTop": 16,
+                    "marginBottom": 0,
+                    "marginLeft": 0,
+                    "marginRight": 0
+                }
+            },
+            "error": {
+                "backgroundColor": "white",
+                "imagen": {
+                    "backgroundColor": "transparent",
+                    "width": 250,
+                    "height": 250,
+                    "resizeMode": "cover",
+                    "url": "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png",
+                    "marginTop": 0,
+                    "marginBottom": 0,
+                    "marginLeft": 0,
+                    "marginRight": 0
+                },
+                "texto": {
+                    "fontSize": 24,
+                    "color": "black",
+                    "marginTop": 8,
+                    "marginBottom": 0,
+                    "marginLeft": 0,
+                    "marginRight": 0
+                },
+                "boton": {
+                    "texto": "Reintentar",
+                    "color": "white",
+                    "backgroundColor": "green",
+                    "marginTop": 16,
+                    "marginBottom": 0,
+                    "marginLeft": 0,
+                    "marginRight": 0
+                }
+            },
+            "cardItem": {
+                "borderTopLeftRadius": 16,
+                "borderTopRightRadius": 16,
+                "borderBottomLeftRadius": 16,
+                "borderBottomRightRadius": 16,
+                "marginTop": 8,
+                "marginBottom": 8,
+                "marginLeft": 8,
+                "marginRight": 8
+            }
+        }
+    }
+}

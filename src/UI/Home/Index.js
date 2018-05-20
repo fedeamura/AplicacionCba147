@@ -301,12 +301,12 @@ const styles = StyleSheet.create({
     height: '100%'
   },
   listado: {
-    backgroundColor: global.styles.colorFondo
+    backgroundColor: AppTheme.colorFondo
   },
   indicadorCargando: {
     position: 'absolute',
     left: 0,
-    backgroundColor: global.styles.colorFondo,
+    backgroundColor: AppTheme.colorFondo,
     width: '100%',
     height: '100%',
     top: 0,

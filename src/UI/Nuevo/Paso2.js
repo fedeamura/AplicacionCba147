@@ -145,7 +145,7 @@ export default class Paso2 extends React.Component {
             <Card
               style={[
                 {
-                  borderBottomColor: global.styles.colorAccent,
+                  borderBottomColor: AppTheme.colorAccent,
                   borderBottomWidth: conDescripcion ? 4 : 0
                 }
               ]}
@@ -170,7 +170,7 @@ export default class Paso2 extends React.Component {
           <Card
             style={[
               {
-                borderBottomColor: global.styles.colorAccent,
+                borderBottomColor: AppTheme.colorAccent,
                 borderBottomWidth: conDomicilio ? 4 : 0
               }
             ]}

@@ -69,7 +69,7 @@ export default class MiFAB extends React.Component {
           onPress={() => {
             this.props.onPress();
           }}
-          style={AppStyles.fab}
+          style={AppTheme.Styles.fab}
         />
       </Animated.View>
 

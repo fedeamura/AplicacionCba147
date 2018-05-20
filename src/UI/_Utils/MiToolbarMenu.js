@@ -63,14 +63,27 @@ export default class MiToolbarMenu extends React.Component {
     //Init
     this.initOpciones(props);
 
+    let index = undefined;
+    for (let i = 0; i < this.props.opciones.length; i++) {
+      let o = this.props.opciones[i];
+      if (o.value == props.opcion) {
+        index = i;
+      }
+    }
+
     //Estado inicial
     this.state = {
       opcion: props.opcion || 0,
+      index: index || 0,
       expandido: this.props.expandido || false,
       animando: false,
       animandoExpandir: false,
+      toolbarTrigger: false,
+      closeIcon: props.closeIcon || false,
       leftIcon: props.leftIcon,
       leftIconOnClick: props.leftIconOnClick,
+      rightIcon: props.rightIcon,
+      rightIconOnClick: props.rightIconOnClick,
       opciones: props.opciones || [],
       hOpcion: this.hOpcion,
       hToolbar: props.toolbar_height || this.hToolbar,
@@ -78,8 +91,6 @@ export default class MiToolbarMenu extends React.Component {
       ySombraCollapse: this.hToolbar,
       ySombraExpandido: Dimensions.get('window').height
     };
-
-    this.keyboardHeight = new Animated.Value(0);
   }
 
   initOpciones(props) {
@@ -106,9 +117,7 @@ export default class MiToolbarMenu extends React.Component {
 
     //Calculo la posicion del toolbar minimizado
     this.yCollapse = -(this.hOpcion - this.hToolbar);
-
   }
-
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.expandido) {
@@ -118,26 +127,10 @@ export default class MiToolbarMenu extends React.Component {
     }
   }
 
-  componentWillMount() {
-    this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
-    this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
-  }
-
-  componentWillUpdate() {
-
-  }
-
-  componentDidMount() {
-
-  }
   shouldComponentUpdate(nextProps, nextState) {
     return JSON.stringify(this.state) != JSON.stringify(this.nextState)
   }
 
-  componentWillUnmount() {
-    this.keyboardWillShowSub.remove();
-    this.keyboardWillHideSub.remove();
-  }
 
   keyboardWillShow = (event) => {
     this.teclado = true;
@@ -148,20 +141,20 @@ export default class MiToolbarMenu extends React.Component {
     }).start();
   }
 
-  keyboardWillHide = (event) => {
-    this.teclado = false;
-
-    Animated.timing(this.keyboardHeight, {
-      duration: event.duration,
-      toValue: 0,
-    }).start();
-  }
-
   seleccionar(opcion) {
-    console.log('seleccionar ' + opcion);
+    let index = undefined;
+
+    for (let i = 0; i < this.props.opciones.length; i++) {
+      let o = this.props.opciones[i];
+      if (o.value == opcion) {
+        index = i;
+      }
+    }
+
     this.setState({
       animando: true,
       opcion: opcion,
+      index: index,
       expandido: false
     }, () => {
 
@@ -249,163 +242,147 @@ export default class MiToolbarMenu extends React.Component {
     }
 
     return (
-      <View style={styles.contenedor} >
+      <View style={styles.contenedor}>
 
-        <View style={styles.encabezado}>
 
-          <View style={styles.encabezado_Opciones}>
 
-            {state.opciones.map(function (opcion, index) {
+        <View style={[styles.encabezado_Opciones]}>
 
-              let zIndex = state.opciones.length - index;
-              if ((!state.expandido || state.animandoExpandir) && state.opcion == opcion.value) {
-                zIndex = zIndexFront;
-              }
+          {state.opciones.map(function (opcion, index) {
 
-              const yExpandido = state.hOpcion * index;
-              let yTextoCollapse = (-(fontSizeIcon + marginIcon) / 2) + ((state.hOpcion - state.hToolbar) / 2) - (25 / 2);
-              if (Platform.OS === 'ios') {
-                yTextoCollapse = yTextoCollapse + 10;
-              }
-              yTextoCollapse = 'icon' in opcion && opcion.icon != undefined ? yTextoCollapse : yTextoCollapse + ((fontSizeIcon + marginIcon) / 2);
+            let zIndex = state.opciones.length - index;
+            if ((!state.expandido || state.animandoExpandir) && state.opcion == opcion.value) {
+              zIndex = zIndexFront;
+            }
 
-              let anim = componente.anims[index];
-              let animSombra = componente.animsSombras[index];
+            const yExpandido = state.hOpcion * index;
+            let yTextoCollapse = (-(fontSizeIcon + marginIcon) / 2) + ((state.hOpcion - state.hToolbar) / 2) - (25 / 2);
+            if (Platform.OS === 'ios') {
+              yTextoCollapse = yTextoCollapse + 10;
+            }
+            yTextoCollapse = 'icon' in opcion && opcion.icon != undefined ? yTextoCollapse : yTextoCollapse + ((fontSizeIcon + marginIcon) / 2);
 
-              return (
+            let anim = componente.anims[index];
+            let animSombra = componente.animsSombras[index];
 
-                <Animated.View
-                  key={opcion.value}
-                  style={
-                    [
-                      styles.encabezado_Opcion,
-                      {
-                        maxHeight: state.hOpcion,
-                        zIndex: zIndex,
-                        transform: [
-                          {
-                            translateY: anim.interpolate({
-                              inputRange: [0, 1],
-                              outputRange: [componente.yCollapse, yExpandido]
-                            })
-                          }
-                        ]
+            return (
 
-                      }]}>
-                  <View style={styles.encabezado_Opcion}>
-                    <TouchableWithoutFeedback
-                      style={styles.encabezado_Opcion}
-                      onPress={() => {
-                        if (state.opciones.length == 0) return;
-
-                        if (!state.expandido) {
-                          componente.expandir();
-                          return;
-                        }
-                        componente.seleccionar(index);
-                      }}>
-                      <Animated.View style={
-                        [
-                          styles.encabezado_OpcionInterior,
-                          {
-                            backgroundColor: opcion.color
-                          }
-                        ]}>
-                        <Animated.View style={[styles.sombra, {
-                          opacity: animSombra.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0, 1]
-                          })
-                        }]}>
-                          <LinearGradient
-                            colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
-                            style={styles.sombra}></LinearGradient>
-
-                        </Animated.View>
-
-                        {('icon' in opcion && opcion.icon != undefined) && (
-
-                          <Animated.View style={{
-                            opacity: anim.interpolate({
-                              inputRange: [0, 0.7, 1],
-                              outputRange: [0, 0, 1]
-                            }),
-                            transform: [
-                              {
-                                scale: anim.interpolate({
-                                  inputRange: [0, 0.7, 1],
-                                  outputRange: [0, 0, 1]
-                                })
-                              }
-                            ]
-                          }}>
-                            <Icon style={[styles.encabezado_OpcionIcono, { fontSize: fontSizeIcon, marginBottom: marginIcon }]} type="MaterialIcons" name={opcion.icon} />
-                          </Animated.View>
-                        )}
-
-                        <Animated.View
-                          style={{
-                            transform: [
-                              {
-                                translateY: anim.interpolate({
-                                  inputRange: [0, 1],
-                                  outputRange: [yTextoCollapse, 0]
-                                })
-                              }
-                            ]
-                          }
-                          }
-                        >
-                          <MyText
-                            letterSpacing={4}
-                            style={
-                              [
-                                styles.encabezado_OpcionTexto,
-                                {
-                                  fontSize: fontSizeTexto
-                                }
-                              ]}>
-                            {opcion.text.toUpperCase()}
-                          </MyText>
-
-                        </Animated.View>
-                      </Animated.View>
-                    </TouchableWithoutFeedback>
-
-                  </View>
-
-                </Animated.View>
-
-              );
-            })}
-
-            <Animated.View
-              style={[
-                {
-                  zIndex: 100,
-                  transform: [
+              <Animated.View
+                key={opcion.value}
+                style={
+                  [
+                    styles.encabezado_Opcion,
                     {
-                      translateY: state.opciones.length == 0 ? state.ySombraCollapse : this.anims[0].interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [state.ySombraCollapse, state.ySombraExpandido]
-                      })
-                    }
-                  ]
-                }
-              ]}
-            >
-              <LinearGradient
-                colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
-                style={{
-                  width: '100%',
-                  height: 16
-                }}></LinearGradient>
+                      maxHeight: state.hOpcion,
+                      zIndex: zIndex,
+                      transform: [
+                        {
+                          translateY: anim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [componente.yCollapse, yExpandido]
+                          })
+                        }
+                      ]
 
-            </Animated.View>
-          </View>
+                    }]}>
+                <View style={styles.encabezado_Opcion}
+                  pointerEvents={state.animando == true ? "none" : "auto"}
+                >
+                  <TouchableWithoutFeedback
+                    style={styles.encabezado_Opcion}
+                    onPress={() => {
+                      if (state.opciones.length == 0) return;
 
-          {state.leftIcon != undefined && (
-            <Animated.View style={
+                      if (!state.expandido) {
+                        if (state.toolbarTrigger == true) {
+                          componente.expandir();
+                        }
+                        return;
+                      }
+                      componente.seleccionar(index);
+                    }}>
+                    <Animated.View style={
+                      [
+                        styles.encabezado_OpcionInterior,
+                        {
+                          backgroundColor: opcion.color
+                        }
+                      ]}>
+                      <Animated.View style={[styles.sombra, {
+                        opacity: animSombra.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0, 1]
+                        })
+                      }]}>
+                        <LinearGradient
+                          colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
+                          style={styles.sombra}></LinearGradient>
+
+                      </Animated.View>
+
+                      {('icon' in opcion && opcion.icon != undefined) && (
+
+                        <Animated.View style={{
+                          opacity: anim.interpolate({
+                            inputRange: [0, 0.7, 1],
+                            outputRange: [0, 0, 1]
+                          }),
+                          transform: [
+                            {
+                              scale: anim.interpolate({
+                                inputRange: [0, 0.7, 1],
+                                outputRange: [0, 0, 1]
+                              })
+                            }
+                          ]
+                        }}>
+                          <Icon style={[styles.encabezado_OpcionIcono, { fontSize: fontSizeIcon, marginBottom: marginIcon }]} type="MaterialIcons" name={opcion.icon} />
+                        </Animated.View>
+                      )}
+
+                      <Animated.View
+                        style={{
+                          transform: [
+                            {
+                              translateY: anim.interpolate({
+                                inputRange: [0, 1],
+                                outputRange: [yTextoCollapse, 0]
+                              })
+                            }
+                          ]
+                        }
+                        }
+                      >
+                        <MyText
+                          letterSpacing={2}
+                          style={
+                            [
+                              styles.encabezado_OpcionTexto,
+                              {
+                                fontSize: fontSizeTexto
+                              }
+                            ]}>
+                          {opcion.text.toUpperCase()}
+                        </MyText>
+
+                      </Animated.View>
+                    </Animated.View>
+                  </TouchableWithoutFeedback>
+
+                </View>
+
+              </Animated.View>
+
+            );
+          })}
+
+        </View>
+
+        {/* Boton left */}
+        {state.leftIcon != undefined && (
+          <Animated.View
+            pointerEvents={this.state.expandido || this.state.animando ? "none" : "auto"}
+            style={
               [
                 styles.btnLeft,
                 {
@@ -416,36 +393,104 @@ export default class MiToolbarMenu extends React.Component {
                   transform: [{
                     translateY: state.opciones.length == 0 ? state.ySombraCollapse : this.anims[0].interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, state.hOpcion/2]
+                      outputRange: [0, (state.hOpcion * (state.index || 0)) + (state.hOpcion / 2)]
                     })
                   }]
-                }]}
-            >
-              <Button transparent onPress={() => {
-                if (state.leftIconOnClick != undefined) {
-                  state.leftIconOnClick();
-                }
-              }}>
-                <Icon type="MaterialIcons" style={styles.btnLeftIcon} name={state.leftIcon} />
-              </Button>
-            </Animated.View>
+                }]}>
+            <Button transparent onPress={() => {
+              if (state.leftIconOnClick != undefined) {
+                state.leftIconOnClick();
+              }
+            }}>
+              <Icon type="MaterialIcons" style={styles.btnLeftIcon} name={state.leftIcon} />
+            </Button>
+          </Animated.View>
 
-          )}
-        </View>
+        )}
 
-        <View style={[styles.content, { top: this.hToolbar }]} key={state.opcion}>
+        {/* Boton right */}
+        {state.rightIcon != undefined && (
+          <Animated.View
+            pointerEvents={this.state.expandido || this.state.animando ? "none" : "auto"}
+            style={
+              [
+                styles.btnRight,
+                {
+                  opacity: componente.anims[0].interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 0]
+                  }),
+                  transform: [{
+                    translateY: state.opciones.length == 0 ? state.ySombraCollapse : this.anims[0].interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, state.hOpcion / 2]
+                    })
+                  }]
+                }]}>
+            <Button transparent onPress={() => {
+              if (state.rightIconOnClick != undefined) {
+                state.rightIconOnClick();
+              }
+            }}>
+              <Icon type="MaterialIcons" style={styles.btnRightIcon} name={state.rightIcon} />
+            </Button>
+          </Animated.View>
+
+        )}
+
+        {/* Boton Close */}
+        {state.toolbarTrigger == false && (
+          <Animated.View
+            pointerEvents={this.state.expandido && !this.state.animando ? "auto" : "none"}
+            style={[
+              styles.btnLeft,
+              {
+                opacity: componente.anims[0].interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 1]
+                })
+              }
+            ]}>
+            <Button transparent onPress={() => {
+              this.seleccionar(state.opcion);
+            }}>
+              <Icon type="MaterialIcons" style={styles.btnClose} name={'clear'} />
+            </Button>
+          </Animated.View>
+
+        )}
+
+        <Animated.View style={[styles.sombra, {
+          zIndex: 120,
+          transform: [
+            {
+              translateY: this.anims[0].interpolate({
+                inputRange: [0, 1],
+                outputRange: [state.hToolbar, Dimensions.get('window').height]
+              })
+            }
+          ]
+        }]}>
+
+          <LinearGradient
+            colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
+            style={styles.sombra}></LinearGradient>
+
+        </Animated.View>
+
+
+        {/* Content */}
+        <View
+          style={[
+            styles.content,
+            {
+              marginTop: state.hToolbar,
+              zIndex: this.state.animando || this.state.expandido ? -1 : 100
+            }]}
+          key={state.opcion}>
           {content}
         </View>
 
-        <Animated.View style={
-          [
-            styles.contenedorKeyboard,
-            {
-              maxHeight: this.keyboardHeight
-            }
-          ]
-        }>
-        </Animated.View>
       </View >
     );
   }
@@ -454,16 +499,7 @@ export default class MiToolbarMenu extends React.Component {
 const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
-    backgroundColor: global.styles.login_colorFondo,
-  },
-  encabezado: {
-    height: '100%',
-    width: '100%',
-    left: 0,
-    top: 0,
-    zIndex: 2,
-    maxHeight: '100%',
-    position: 'absolute'
+    backgroundColor: AppTheme.colorFondo,
   },
   encabezado_Opciones: {
     height: '100%',
@@ -520,6 +556,9 @@ const styles = StyleSheet.create({
     top: 16
   },
   btnLeftIcon: {
+    color: 'white'
+  },
+  btnClose: {
     color: 'white'
   }
 });

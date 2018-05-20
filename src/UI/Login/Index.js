@@ -31,11 +31,11 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
-import { AppTheme } from "@UI/AppTheme";
+import AppTheme from "@UI/AppTheme";
 
 //Rules
-import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
-import Rules_Init from "../../Rules/Rules_Init";
+import Rules_Usuario from "@Rules/Rules_Usuario";
+import Rules_Init from "@Rules/Rules_Init";
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -68,7 +68,6 @@ export default class Login extends React.Component {
     this.keyboardWillShowSub.remove();
     this.keyboardWillHideSub.remove();
   }
-
 
   keyboardWillShow = (event) => {
     this.teclado = true;
@@ -178,8 +177,8 @@ export default class Login extends React.Component {
 
           //Muestro el error
           Alert.alert(
-            global.InitData.IniciarSesion.Texto_TituloErrorIniciandoSesion,
-            error == undefined ? global.InitData.General.Texto_ErrorGenerico : error,
+            global.initData.login.error_IniciandoSesion,
+            error == undefined ? global.initData.general.error_Generico : error,
             [
               {
                 text: "Aceptar",
@@ -202,7 +201,7 @@ export default class Login extends React.Component {
         toValue: 0
       })
     ]).start(() => {
-      App.replace('Home');
+      App.replace('Inicio');
     });
   }
 
@@ -224,28 +223,33 @@ export default class Login extends React.Component {
 
     var errorUsuarioVisible = this.state.usuario == "" && this.state.escribioUsuario;
     var errorPasswordVisible = this.state.password == "" && this.state.escribioPassword;
+    const initData = global.initData.login;
 
     return (
       <View
-        style={styles.contenedor}
+        style={initData.styles.contenedor}
         onLayout={() => {
           this.animarLogo();
         }}>
 
+        <StatusBar backgroundColor={initData.statusBar_BackgroundColor} barStyle={initData.statusBar_Style} />
+
         <WebImage
-          resizeMode="cover"
-          style={styles.imagenFondo}
-          source={{ uri: global.InitData.IniciarSesion.Url_ImagenFondo }}
+          resizeMode={initData.imagenFondo_ResizeMode}
+          style={initData.styles.imagenFondo}
+          source={{ uri: initData.imagenFondo_Url }}
         />
 
-        <View style={styles.imageFondo_Dim}></View>
+        <View style={initData.styles.imagenFondo_Dim}></View>
 
         <ScrollView
-          style={styles.scrollView}
-          keyboardShouldPersistTaps={true}
-          contentContainerStyle={styles.contentScrollView}
+          style={initData.styles.contenedor_ScrollView}
+          keyboardShouldPersistTaps="always"
+          contentContainerStyle={[initData.styles.contenedor_ScrollViewContent, {
+            minHeight: Dimensions.get('window').height - ExtraDimensions.get('STATUS_BAR_HEIGHT') - ExtraDimensions.get('SOFT_MENU_BAR_HEIGHT')
+          }]}
         >
-          <View style={styles.contenidoScroll}>
+          <View style={initData.styles.contenedor_ScrollViewContenido}>
             <Animated.View
               style={{
                 transform: [{
@@ -263,16 +267,16 @@ export default class Login extends React.Component {
                   })
               }}>
               <WebImage
-                style={styles.img}
-                source={{ uri: global.InitData.IniciarSesion.Url_ImagenLogo }}
+                resizeMode={initData.imagenLogo_ResizeMode}
+                style={initData.styles.imagenLogo}
+                source={{ uri: initData.imagenLogo_Url }}
               />
-
 
             </Animated.View>
 
             <Animated.View style={
               [
-                styles.contenedorFormulario,
+                initData.styles.contenedorFormulario,
                 {
                   maxHeight: this.anim_Form.interpolate({
                     inputRange: [0, 1],
@@ -293,97 +297,90 @@ export default class Login extends React.Component {
                     })
                 }
               ]}>
-              <View style={styles.contenedorInput}>
+              <View style={initData.styles.contenedorInput}>
                 <Kohana
                   ref="inputUsuario"
                   editable={!this.state.cargandoLogin}
                   onChangeText={val => { this.onUsuarioChange(val); }}
                   value={this.state.usuario}
-                  style={styles.input}
-                  label={"Usuario"}
+                  style={initData.styles.input}
+                  label={initData.inputUsuario_Texto}
                   iconClass={MaterialsIcon}
-                  iconName={"person"}
-                  iconColor={"black"}
-                  labelStyle={{ color: "black" }}
-                  inputStyle={{ color: "black", paddingLeft: 0 }}
+                  iconName={initData.inputUsuario_Icono}
+                  iconColor={initData.inputUsuario_IconoColor}
+                  labelStyle={initData.styles.inputLabelStyle}
+                  inputStyle={initData.styles.inputStyle}
                   useNativeDriver
                 />
 
                 <Text
-                  style={{
-                    maxHeight: errorUsuarioVisible ? 20 : 0,
-                    color: "red",
-                    marginLeft: 16,
-                    backgroundColor: 'transparent',
-                    marginTop: 4
-                  }}>{global.InitData.General.Texto_DatoRequerido}</Text>
+                  style={[initData.styles.inputTextoError, { maxHeight: errorUsuarioVisible ? 20 : 0 }]}>{initData.error_UsuarioRequerido}
+                </Text>
               </View>
 
-              <View style={styles.contenedorInput}>
+              <View style={initData.styles.contenedorInput}>
                 <Kohana
                   ref="inputPassword"
                   editable={!this.state.cargandoLogin}
                   secureTextEntry={true}
                   value={this.state.password}
                   onChangeText={val => { this.onPasswordChange(val); }}
-                  style={styles.input}
-                  label={"Contraseña"}
+                  style={initData.styles.input}
+                  label={initData.inputPassword_Texto}
                   iconClass={MaterialsIcon}
-                  iconName={"vpn-key"}
-                  iconColor={"black"}
-                  labelStyle={{ color: "black" }}
-                  inputStyle={{ color: "black", paddingLeft: 0 }}
+                  iconName={initData.inputPassword_Icono}
+                  iconColor={initData.inputPassword_IconoColor}
+                  labelStyle={initData.styles.inputLabelStyle}
+                  inputStyle={initData.styles.inputStyle}
                   useNativeDriver
                 />
 
                 <Text
-                  style={{
-                    height: errorPasswordVisible ? 20 : 0,
-                    color: "red",
-                    marginLeft: 16,
-                    backgroundColor: 'transparent',
-                    marginTop: 4
-                  }}>{global.InitData.General.Texto_DatoRequerido}</Text>
+                  style={[initData.styles.inputTextoError, { maxHeight: errorPasswordVisible ? 20 : 0 }]}>{initData.error_ContraseñaRequerida}
+                </Text>
+
               </View>
 
-              <View style={styles.contenedorBotones}>
+              <View style={initData.styles.contenedorBotones}>
 
                 <View style={{ height: 16 }} />
 
                 <Button
                   full
-                  rounded
+                  rounded={initData.botonAcceder_Redondeado}
                   disabled={this.state.cargandoLogin}
-                  style={styles.btnAcceder}
+                  style={initData.styles.botonAcceder}
                   onPress={() => this.login()}
                 >
                   {this.state.cargandoLogin && (
-                    <Spinner color="white" />
+                    <Spinner color={initData.botonAcceder_ColorCargando} />
                   )}
 
-                  <Text>{this.state.cargandoLogin ? global.InitData.IniciarSesion.Texto_BotonIniciarSesionCargando : global.InitData.IniciarSesion.Texto_BotonIniciarSesion}</Text>
+                  <Text style={initData.styles.botonAccederTexto}>{this.state.cargandoLogin ? initData.botonAcceder_TextoCargando : initData.botonAcceder_Texto}</Text>
                 </Button>
 
                 <Button
-                  transparent
+                  full
+                  rounded={initData.botonRecuperarCuenta_Redondeado}
                   disabled={this.state.cargandoLogin}
-                  color="black"
-                  style={styles.btnRecuperarCuenta}
+                  style={initData.styles.botonRecuperarCuenta}
                 >
-                  <Text style={{ color: 'white' }}>{global.InitData.IniciarSesion.Texto_BotonRecuperarContraseña}</Text>
+                  <Text style={initData.styles.botonAccederTexto}>{initData.botonRecuperarCuenta_Texto}</Text>
                 </Button>
-
 
                 <View style={{ height: 32 }} />
+
                 <Button
-                  rounded
+                  full
+                  rounded={initData.botonNuevoUsuario_Redondeado}
                   disabled={this.state.cargandoLogin}
-                  style={styles.btnNuevoUsuario}
+                  style={initData.styles.botonNuevoUsuario}
                   onPress={() => this.nuevoUsuario()}
                 >
-                  <Text>{global.InitData.IniciarSesion.Texto_BotonNuevoUsuario}</Text>
+                  <Text style={initData.styles.botonNuevoUsuarioTexto}>{initData.botonNuevoUsuario_Texto}</Text>
                 </Button>
 
+                <View style={{ height: 16 }} />
 
               </View>
 
@@ -391,129 +388,9 @@ export default class Login extends React.Component {
           </View>
         </ScrollView>
 
-        <Animated.View style={[styles.contenedorKeyboard, { maxHeight: this.keyboardHeight }]}></Animated.View>
+        <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
 
-      </View>
+      </View >
     );
   }
 }
-
-const styles = StyleSheet.create({
-  imagenFondo: {
-    position: "absolute",
-    width: '100%',
-    height: '100%'
-  },
-  imageFondo_Dim: {
-    position: "absolute",
-    width: '100%',
-    height: '100%',
-    opacity: 0.5,
-    backgroundColor: '#000000'
-  },
-  contenedor: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: global.styles.login_colorFondo,
-  },
-  scrollView: {
-    width: '100%'
-  },
-  contentScrollView: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    minHeight: Dimensions.get('window').height - ExtraDimensions.get('STATUS_BAR_HEIGHT') - ExtraDimensions.get('SOFT_MENU_BAR_HEIGHT')
-  },
-  contenidoScroll: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 32,
-    paddingBottom: 32
-  },
-  contenedorInterior: {
-    flexDirection: "column",
-    alignItems: "center"
-  },
-  contenedorFormulario: {
-    height: '100%',
-    width: '100%',
-    maxWidth: 300,
-    flexDirection: "column",
-    alignItems: "center"
-  },
-
-  contenedorInput: {
-    marginBottom: 16
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    maxHeight: 50,
-    borderRadius: 50
-  },
-  inputUsuario: {
-    backgroundColor: "rgba(255, 255, 255, 0.7)"
-  },
-  inputPassword: {
-    marginTop: 16,
-    backgroundColor: "rgba(255, 255, 255, 0.7)"
-  },
-  contenedorBotones: {
-    display: 'flex',
-    width: '100%',
-    minWidth: '100%',
-    flexDirection: 'column'
-  },
-  btnAcceder: {
-    minHeight: 48,
-    backgroundColor: global.styles.colorAccent
-  },
-  btnRecuperarCuenta: {
-    alignSelf: 'center'
-  },
-  btnNuevoUsuario: {
-    minHeight: 48,
-    alignSelf: 'center'
-  },
-  textoError: {
-    height: 24,
-    maxHeight: 24,
-    marginLeft: 16,
-    marginTop: 4,
-    color: "red"
-  },
-  textoErrorLogin: {
-    padding: 8,
-    borderRadius: 32,
-    minWidth: 100,
-    borderWidth: 2,
-    borderColor: "red",
-    backgroundColor: "white"
-  },
-  img: {
-    width: 104,
-    height: 104,
-    marginBottom: 32
-  },
-  contenedorKeyboard: {
-    height: '100%'
-  },
-  contenedorError: {
-    display: 'flex',
-    alignContent: 'center',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  textoMensajeError: {
-    textAlign: 'center'
-  },
-  btnReintentar: {
-    marginTop: 16,
-    alignSelf: 'center',
-    backgroundColor: global.styles.colorAccent
-  }
-});

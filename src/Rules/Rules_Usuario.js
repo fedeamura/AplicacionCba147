@@ -11,130 +11,133 @@ export default class Rules_Usuario extends React.Component {
   static login(user, pass) {
     return new Promise((resolve, reject) => {
       console.log('Rules_Usuario - Login');
-      const url =
-        "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/IniciarSesion";
+      resolve();
 
-      fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          user: user,
-          pass: pass
-        })
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          var data = responseJson.d;
+      // const url =
+      //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/IniciarSesion";
 
-          console.log(data);
-          if (!data.Ok) {
-            console.log('Error');
-            console.log(data.Error);
-            
-            reject(data.Error);
-            return;
-          }
-          var token = data.Return;
+      // fetch(url, {
+      //   method: "POST",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json"
+      //   },
+      //   body: JSON.stringify({
+      //     user: user,
+      //     pass: pass
+      //   })
+      // })
+      //   .then(response => response.json())
+      //   .then(responseJson => {
+      //     var data = responseJson.d;
 
-          DB.setItem("token", token).then(() => {
-            App.Variables.Token = token;
-            resolve();
-          }).catch((error) => {
-            console.log('Error');
-            console.log(error);
+      //     console.log(data);
+      //     if (!data.Ok) {
+      //       console.log('Error');
+      //       console.log(data.Error);
 
-            reject('Error procesando la solicitud');
-          });
-        })
-        .catch(error => {
-          console.log('Error');
-          console.log(error);
+      //       reject(data.Error);
+      //       return;
+      //     }
+      //     var token = data.Return;
 
-          reject('Error procesando la solicitud');
-        });
+      //     DB.setItem("token", token).then(() => {
+      //       App.Variables.Token = token;
+      //       resolve();
+      //     }).catch((error) => {
+      //       console.log('Error');
+      //       console.log(error);
+
+      //       reject('Error procesando la solicitud');
+      //     });
+      //   })
+      //   .catch(error => {
+      //     console.log('Error');
+      //     console.log(error);
+
+      //     reject('Error procesando la solicitud');
+      //   });
     });
   }
 
   static isLogin() {
     return new Promise((resolve, reject) => {
-
       console.log('Rules_Usuario - Is Login');
+      resolve(false);
 
-      DB.getItem("token")
-        .then(response => {
-          if (response == undefined) {
-            console.log('Error');
-            console.log('Sin token');
+      // DB.getItem("token")
+      //   .then(response => {
+      //     if (response == undefined) {
+      //       console.log('Error');
+      //       console.log('Sin token');
 
-            App.Variables.Token = undefined;
-            resolve(false);
-            return;
-          }
+      //       App.Variables.Token = undefined;
+      //       resolve(false);
+      //       return;
+      //     }
 
-          const url =
-            "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/ValidarToken";
+      // const url =
+      //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/ValidarToken";
 
-          fetch(url, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              token: response
-            })
-          })
-            .then(response => response.json())
-            .then(responseJson => {
+      // fetch(url, {
+      //   method: "POST",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json"
+      //   },
+      //   body: JSON.stringify({
+      //     token: response
+      //   })
+      // })
+      //   .then(response => response.json())
+      //   .then(responseJson => {
 
-              if(responseJson==undefined || responseJson.d==undefined){
-                console.log('Sin datos');
-                App.Variables.Token = undefined;
-                resolve(false);
-                return;
-              }
+      //     if(responseJson==undefined || responseJson.d==undefined){
+      //       console.log('Sin datos');
+      //       App.Variables.Token = undefined;
+      //       resolve(false);
+      //       return;
+      //     }
 
-              var data = responseJson.d;
+      //     var data = responseJson.d;
 
 
-              if (!data.Ok) {
-                console.log('Error');
-                console.log(data.Error);
+      //     if (!data.Ok) {
+      //       console.log('Error');
+      //       console.log(data.Error);
 
-                App.Variables.Token = undefined;
-                resolve(false);
-                return;
-              }
+      //       App.Variables.Token = undefined;
+      //       resolve(false);
+      //       return;
+      //     }
 
-              if (!data.Return) {
-                console.log('No es login');
+      //     if (!data.Return) {
+      //       console.log('No es login');
 
-                App.Variables.Token = undefined;
-                resolve(false);
-                return;
-              }
+      //       App.Variables.Token = undefined;
+      //       resolve(false);
+      //       return;
+      //     }
 
-              App.Variables.Token = response;
-              resolve(true);
-            })
-            .catch(error => {
-              console.log('Error');
-              console.log(error);
+      //     App.Variables.Token = response;
+      //     resolve(true);
+      //   })
+      //   .catch(error => {
+      //     console.log('Error');
+      //     console.log(error);
 
-              App.Variables.Token = undefined;
-              resolve(false);
-            });
+      //     App.Variables.Token = undefined;
+      //     resolve(false);
+      //   });
 
-        }).catch((error) => {
-          console.log('Error');
-          console.log(error);
 
-          App.Variables.Token = undefined;
-          resolve(false);
-        });
+      // }).catch((error) => {
+      //   console.log('Error');
+      //   console.log(error);
+
+      //   App.Variables.Token = undefined;
+      //   resolve(false);
+      // });
     });
   }
 
@@ -154,7 +157,7 @@ export default class Rules_Usuario extends React.Component {
     });
   }
 
-  static getDatosUsuario(){
+  static getDatosUsuario() {
     return new Promise((resolve, reject) => {
       console.log('Rules_Usuario - Get Datos Usuario');
       const url =
@@ -172,7 +175,7 @@ export default class Rules_Usuario extends React.Component {
       })
         .then(response => response.json())
         .then(responseJson => {
-          if(responseJson==undefined || responseJson.d==undefined){
+          if (responseJson == undefined || responseJson.d == undefined) {
             console.log('Sin datos');
             reject('Error procesando la solicitud');
             return;
@@ -184,7 +187,7 @@ export default class Rules_Usuario extends React.Component {
           if (!data.Ok) {
             console.log('Error');
             console.log(data.Error);
-            
+
             reject(data.Error);
             return;
           }

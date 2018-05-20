@@ -330,11 +330,11 @@ export default class Home extends React.Component {
             {this.state.mostrarPasos ? view_pasos : <View />}
           </Animated.View>
 
-          <LinearGradient colors={[global.styles.colorFondo, global.styles.colorFondo, global.styles.colorFondo_0]} style={styles.fondoIndicadores} pointerEvents="none" />
+          <LinearGradient colors={[AppTheme.colorFondo, AppTheme.colorFondo, '#00000000']} style={styles.fondoIndicadores} pointerEvents="none" />
           <View style={styles.contenedorIndicadores}>{view_indicadores}</View>
 
           {/* Pasos */}
-          <LinearGradient colors={[global.styles.colorFondo_0, global.styles.colorFondo, global.styles.colorFondo]} style={styles.fondoBotonesPasos} pointerEvents="none" />
+          <LinearGradient colors={['#00000000', AppTheme.colorFondo, AppTheme.colorFondo]} style={styles.fondoBotonesPasos} pointerEvents="none" />
 
           <View style={styles.contenedorBotonesPasos}>
 
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    backgroundColor: global.styles.colorFondo
+    backgroundColor: AppTheme.colorFondo
   },
   contenedorToolbar: {
     zIndex: 10
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     top: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: global.styles.colorAccent,
+    backgroundColor: AppTheme.colorAccent,
     elevation: 20
   },
   contenedorKeyboard: {

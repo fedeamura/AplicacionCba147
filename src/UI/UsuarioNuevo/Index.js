@@ -9,7 +9,8 @@ import {
   StatusBar,
   ScrollView,
   Keyboard,
-  Dimensions
+  Dimensions,
+  TouchableOpacity
 } from "react-native";
 import {
   Container,
@@ -17,29 +18,17 @@ import {
   Text,
   Input,
   Item,
-  Icon,
   Spinner,
   Content
 } from "native-base";
-import {
-  ToolbarContent
-} from "react-native-paper";
 import ExtraDimensions from 'react-native-extra-dimensions-android';
-import MiToolbar from "@Utils/MiToolbar";
-import MiListado from "@Utils/MiListado";
-import MiToolbarMenu from "@Utils/MiToolbarMenu";
-
-import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
-import { Kohana, Hideo } from "react-native-textinput-effects";
-
-// import * as Animatable from 'react-native-animatable';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 //Anims
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
-import AppTheme from "@UI/AppTheme";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -54,30 +43,14 @@ export default class Login extends React.Component {
     super(props);
 
     this.state = {
-      expandido:false,
-      opciones: [
-        {
-          text: 'Requerimientos',
-          icon: 'insert-drive-file',
-          value: 0,
-          color: '#388E3C',
-          content: (<View style={{ width: '100%', height: '100%' }}><Text>Requerimientos</Text></View>)
-        },
-        {
-          text: 'Mi perfil',
-          icon: 'account-circle',
-          value: 1,
-          color: 'rgb(255, 96, 95)',
-          content: (<View style={{ backgroundColor: 'rgb(255, 96, 95)', width: '100%', height: '100%' }}><Text>Perfil</Text></View>)
-        },
-        {
-          text: 'Ajustes',
-          icon: 'settings',
-          value: 2,
-          color: 'rgb(0, 168, 255)',
-          content: (<View style={{ backgroundColor: 'rgb(0, 168, 255)', width: '100%', height: '100%' }}><Text>Ajustes</Text></View>)
-        }
-      ]
+      username: "",
+      errorUsername: false,
+      password: "",
+      errorPassword: false,
+      nombre: "",
+      errorNombre: false,
+      apellido: "",
+      errorApellido: false
     };
 
     this.keyboardHeight = new Animated.Value(0);
@@ -98,12 +71,13 @@ export default class Login extends React.Component {
 
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
-      toValue: event.endCoordinates.height + 100,
+      toValue: event.endCoordinates.height,
     }).start();
   }
 
   keyboardWillHide = (event) => {
     this.teclado = false;
+
 
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
@@ -111,100 +85,118 @@ export default class Login extends React.Component {
     }).start();
   }
 
+  onUsernameChange(val) {
+    this.setState({ username: val, errorUsername: val == "" });
+  }
+
+  onPasswordChange(val) {
+    this.setState({ password: val, errorPassword: val == "" });
+  }
+
+  onNombreChange(val) {
+    this.setState({ nombre: val, errorNombre: val == "" });
+  }
+  onApellidoChange(val) {
+    this.setState({ apellido: val, errorApellido: val == "" });
+  }
+
+  registrar() {
+    let errorUsername = this.state.username == "";
+    let errorPassword = this.state.password == "";
+    let errorNombre = this.state.nombre == "";
+    let errorApellido = this.state.apellido == "";
+
+    this.setState({
+      errorUsername: errorUsername,
+      errorPassword: errorPassword,
+      errorNombre: errorNombre,
+      errorApellido: errorApellido
+    });
+
+    if (errorUsername || errorPassword || errorNombre || errorApellido) {
+      Alert.alert(global.initData.nuevoUsuario.dialogoRevisarFormulario_Titulo || '', global.initData.nuevoUsuario.dialogoRevisarFormulario_Contenido || '');
+      return;
+    }
+  }
+
+  cerrar() {
+    let tieneAlgo = this.state.username != "" || this.state.password != "" || this.state.nombre != "" || this.state.apellido != "";
+    if (tieneAlgo) {
+      Alert.alert(global.initData.nuevoUsuario.dialogoCancelarFormulario_Titulo || '', global.initData.nuevoUsuario.dialogoCancelarFormulario_Contenido || '', [
+        { text: global.initData.nuevoUsuario.dialogoCancelarFormulario_OpcionSi || 'Si', onPress: () => App.goBack() },
+        { text: global.initData.nuevoUsuario.dialogoCancelarFormulario_OpcionNo || 'No', onPress: () => { } },
+
+      ]);
+      return
+    }
+
+    App.goBack();
+  }
 
   render() {
+    const initData = global.initData.nuevoUsuario;
 
     return (
-      <MiToolbarMenu
-        expandido={this.state.expandido}
-        opciones={this.state.opciones}
-        leftIcon="menu"
-        leftIconOnClick={() => { this.setState({ expandido: true }) }}
-      />
-      // <View
-      //   style={styles.contenedor}>
+      <View style={initData.styles.contenedor}>
+        <StatusBar backgroundColor={initData.statusBar_BackgroundColor} barStyle={initData.statusBar_Style} />
 
-      //   <MiToolbar
-      //     left={{
-      //       icon: "arrow-back",
-      //       onClick: () => {
-      //         App.goBack();
-      //       }
-      //     }}
-      //   >
-      //     <ToolbarContent title="Nuevo usuario" />
-      //   </MiToolbar>
+        <View style={[initData.styles.contenedor_Encabezado, {
+          paddingTop: Platform.OS == 'ios' ? 24 : 0
+        }]}>
+          <TouchableOpacity onPress={() => { this.cerrar(); }}>
+            <View style={initData.styles.botonCerrar}>
+              <Icon style={initData.styles.botonCerrarIcono} type={initData.botonCerrar_IconoFamily} name={initData.botonCerrar_Icono} />
+            </View>
+          </TouchableOpacity>
+          <Text style={initData.styles.textoTitulo}>{initData.titulo_Texto}</Text>
+        </View>
+        <View style={initData.styles.contenedor_Formulario}>
+          <ScrollView >
 
-      //   <ScrollView
-      //     style={styles.scrollView}
-      //     keyboardShouldPersistTaps={true}
-      //     contentContainerStyle={styles.contentScrollView}
-      //   >
-      //     <View style={styles.contenidoScroll}>
-      //       <Hideo
-      //         iconClass={MaterialsIcon}
-      //         iconName={"person"}
-      //         onChangeText={val => { this.setState({ nombre: val }) }}
-      //         value={this.state.nombre}
-      //         iconColor={"white"}
-      //         placeholder="Nombre"
-      //         style={styles.input}
-      //         iconBackgroundColor={AppTheme.ColorAccent}
-      //         inputStyle={{ color: '#464949' }}
-      //       />
+            <View style={initData.styles.scrollViewContent}>
+              <Item error={this.state.errorUsername}>
+                <Input placeholder={initData.inputUsername_Placeholder} value={this.state.username} onChangeText={(val) => { this.onUsernameChange(val) }} />
+                {this.state.errorUsername == true && (
+                  <Icon type={initData.input_IconoErrorFamily} name={initData.input_IconoError} style={initData.styles.inputIconoError} />
+                )}
+              </Item>
 
-      //       <Hideo
-      //         iconClass={MaterialsIcon}
-      //         iconName={"person"}
-      //         onChangeText={val => { this.setState({ apellido: val }) }}
-      //         value={this.state.apellido}
-      //         iconColor={"white"}
-      //         placeholder="Apellido"
-      //         style={styles.input}
-      //         iconBackgroundColor={AppTheme.ColorAccent}
-      //         inputStyle={{ color: '#464949' }}
-      //       />
+              <Item error={this.state.errorPassword}>
+                <Input placeholder={initData.inputPassword_Placeholder} value={this.state.password} onChangeText={(val) => { this.onPasswordChange(val) }} />
+                {this.state.errorPassword == true && (
+                  <Icon type={initData.input_IconoErrorFamily} name={initData.input_IconoError} style={initData.styles.inputIconoError} />
+                )}
+              </Item>
 
-      //       <Hideo
-      //         iconClass={MaterialsIcon}
-      //         iconName={"person"}
-      //         onChangeText={val => { this.setState({ sexo: val }) }}
-      //         value={this.state.sexo}
-      //         iconColor={"white"}
-      //         placeholder="Sexo"
-      //         style={styles.input}
-      //         iconBackgroundColor={AppTheme.ColorAccent}
-      //         inputStyle={{ color: '#464949' }}
-      //       />
-      //     </View>
-      //   </ScrollView>
 
-      //   <Animated.View style={[styles.contenedorKeyboard, { maxHeight: this.keyboardHeight }]}></Animated.View>
-      // </View>
+              <Item error={this.state.errorNombre}>
+                <Input placeholder={initData.inputNombre_Placeholder} value={this.state.nombre} onChangeText={(val) => { this.onNombreChange(val) }} />
+                {this.state.errorNombre == true && (
+                  <Icon type={initData.input_IconoErrorFamily} name={initData.input_IconoError} style={initData.styles.inputIconoError} />
+                )}
+              </Item>
+
+              <Item error={this.state.errorApellido}>
+                <Input placeholder={initData.inputApellido_Placeholder} value={this.state.apellido} onChangeText={(val) => { this.onApellidoChange(val) }} />
+                {this.state.errorApellido == true && (
+                  <Icon type={initData.input_IconoErrorFamily} name={initData.input_IconoError} style={initData.styles.inputIconoError} />
+                )}
+              </Item>
+
+
+
+            </View>
+
+          </ScrollView>
+
+          <Button full style={initData.styles.botonRegistrar} onPress={() => { this.registrar() }}>
+            <Text>{initData.botonRegistrar_Texto}</Text>
+          </Button>
+        </View>
+
+        <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
+
+      </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  contenedor: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: global.styles.login_colorFondo,
-  },
-  scrollView: {
-    flex: 1,
-    width: '100%'
-  },
-  contentScrollView: {
-    flexGrow: 1
-  },
-  contenidoScroll: {
-    width: '100%'
-  },
-  input: {
-    margin: 8
-  }
-});

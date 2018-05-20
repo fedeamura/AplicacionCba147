@@ -50,8 +50,8 @@ export default class MiToolbar extends React.Component {
     }
     return (
       <Toolbar
-        dark={global.styles.toolbarDark ? true : this.props.dark}
-        style={[AppTheme.Styles.Toolbar, this.props.style]}>
+        dark={AppTheme.toolbarDark ? true : this.props.dark}
+        style={[AppTheme.styles.toolbar, this.props.style]}>
         {left}
         {this.props.children != undefined ? this.props.children : center}
         {right}

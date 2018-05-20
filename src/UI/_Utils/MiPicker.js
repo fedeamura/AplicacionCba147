@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   contenedor: {
     height: "100%",
     width: "100%",
-    backgroundColor: global.styles.colorFondo
+    backgroundColor: AppTheme.colorFondo
   },
   contenedorBusqueda: {
     width: '100%',
@@ -114,6 +114,6 @@ const styles = StyleSheet.create({
   },
   listado: {
     flex:1,
-    backgroundColor: global.styles.colorFondo
+    backgroundColor: AppTheme.colorFondo
   }
 });

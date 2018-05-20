@@ -23,23 +23,19 @@ import {
 
 //Mis Componentes
 import AppTheme from "@UI/AppTheme";
-import Login from "Cordoba/src/UI/Login/Index";
-import UsuarioNuevo from "Cordoba/src/UI/UsuarioNuevo/Index";
-import Home from "Cordoba/src/UI/Home/Index";
-import Nuevo from "Cordoba/src/UI/Nuevo/Index";
-import Ajustes from "Cordoba/src/UI/Ajustes/Index";
-import Detalle from "Cordoba/src/UI/Detalle/Index";
+import Login from "@UI/Login/Index";
+import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
+import Inicio from "@UI/Inicio/Index";
+import Nuevo from "@UI/Nuevo/Index";
+import Ajustes from "@UI/Ajustes/Index";
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 
 //Rules
-import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
-import Rules_Init from "../Rules/Rules_Init";
+import Rules_Usuario from "@Rules/Rules_Usuario";
+import Rules_Init from "@Rules/Rules_Init";
 
-
-
-
-
+//Defino el las screens de la app
 const RootStack = StackNavigator(
   {
     Login: {
@@ -48,14 +44,11 @@ const RootStack = StackNavigator(
     UsuarioNuevo: {
       screen: UsuarioNuevo
     },
-    Home: {
-      screen: Home
+    Inicio:{
+      screen:Inicio
     },
     Nuevo: {
       screen: Nuevo
-    },
-    Detalle: {
-      screen: Detalle
     },
     Ajustes: {
       screen: Ajustes
@@ -69,30 +62,32 @@ const RootStack = StackNavigator(
   },
   {
     headerMode: "none",
-    initialRouteName: "UsuarioNuevo",
+    initialRouteName: "Login",
     cardStyle: {
       shadowOpacity: 1
     }
   }
 );
 
-global.InitData = undefined;
+//Init data por default nada
+global.initData = undefined;
 
 export default class App extends React.Component {
-  static Variables = {
-    Debug: true,
-    TodoCompletadoEnNuevo: false,
-    Token: undefined,
-    DatosUsuario: undefined,
-    KeyGoogleMaps: "AIzaSyDNZ3qqO-CJVnLrC8YJcNF6iOXFooAiW3M"
-  };
+  // static Variables = {
+  //   Debug: true,
+  //   TodoCompletadoEnNuevo: false,
+  //   Token: undefined,
+  //   DatosUsuario: undefined,
+  //   KeyGoogleMaps: "AIzaSyDNZ3qqO-CJVnLrC8YJcNF6iOXFooAiW3M"
+  // };
 
   constructor(props) {
     super(props);
     console.disableYellowBox = true;
 
     this.state = {
-      InitData: undefined
+      initData: undefined,
+      error: undefined
     };
 
   }
@@ -104,21 +99,21 @@ export default class App extends React.Component {
       index: 0,
       actions: [NavigationActions.navigate({ routeName: pagina })]
     });
-    global.Navigator._navigation.dispatch(resetAction);
+    global.navigator._navigation.dispatch(resetAction);
   }
 
   static goBack() {
-    const { goBack } = global.Navigator._navigation;
+    const { goBack } = global.navigator._navigation;
     goBack(null);
   }
 
   static navegar(pagina) {
-    const { navigate } = global.Navigator._navigation;
+    const { navigate } = global.navigator._navigation;
     navigate(pagina);
   }
 
   static getNavigator() {
-    return global.Navigator._navigation;
+    return global.navigator._navigation;
   }
 
   static animar(callback) {
@@ -138,24 +133,37 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Rules_Init.getInitData().then((initData) => {
-      global.InitData = initData;
-      AppTheme.crear(initData);
-      this.setState({
-        InitData: initData
+
+    //Busco la data inicial
+    Rules_Init.getInitData()
+      .then((initData) => {
+        global.initData = initData;
+        AppTheme.crear(initData);
+        
+        this.setState({
+          initData: initData,
+          error: undefined
+        });
+
+      })
+      .catch((error) => {
+        global.initData = undefined;
+        this.setState({
+          initData: undefined,
+          error: 'Error procesando la solicitud'
+        });
       });
-    });
   }
 
   render() {
-    if (this.state.InitData == undefined) return null;
+    if (this.state.initData == undefined) return null;
     return (
-      <PaperProvider theme={AppTheme.Styles.Theme}>
+      <PaperProvider theme={AppTheme.styles.theme}>
         <View
-          keyboardShouldPersistTaps='always'
+         keyboardShouldPersistTaps="always"
           style={{ height: '100%', width: '100%' }}>
-          <StatusBar backgroundColor={global.styles.colorStatusBar} barStyle="dark-content" />
-          <RootStack ref={(ref) => { global.Navigator = ref; }} />
+          <StatusBar backgroundColor={'white'} barStyle="dark-content" />
+          <RootStack ref={(ref) => { global.navigator = ref; }} />
         </View>
       </PaperProvider>
     );
