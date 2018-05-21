@@ -31,7 +31,6 @@ UIManager.setLayoutAnimationEnabledExperimental &&
 
 //Mis Compontentes
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 import IndicadorCargando from "@Utils/IndicadorCargando";
 import MiToolbar from "@Utils/MiToolbar";
 

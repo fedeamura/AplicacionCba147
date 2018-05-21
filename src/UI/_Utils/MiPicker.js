@@ -12,7 +12,6 @@ import { Toolbar, ToolbarContent, ToolbarAction } from "react-native-paper";
 
 //Mis compontenes
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 import MiToolbar from "@Utils/MiToolbar";
 import MiListado from "@Utils/MiListado";
 
@@ -98,7 +97,7 @@ const styles = StyleSheet.create({
   contenedor: {
     height: "100%",
     width: "100%",
-    backgroundColor: AppTheme.colorFondo
+    backgroundColor: "white"
   },
   contenedorBusqueda: {
     width: '100%',
@@ -114,6 +113,6 @@ const styles = StyleSheet.create({
   },
   listado: {
     flex:1,
-    backgroundColor: AppTheme.colorFondo
+    backgroundColor: "white"
   }
 });

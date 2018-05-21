@@ -3,7 +3,6 @@ import { View, Animated, Dimensions } from "react-native";
 
 //Mis compontentes
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 import { Text } from "native-base";
 import { Card, CardContent } from "react-native-paper";
 import ExtraDimensions from 'react-native-extra-dimensions-android';
@@ -18,25 +17,25 @@ export default class ServicioCardItem extends React.Component {
 
   render() {
 
-    const style = AppTheme.style.inicio.requerimientos;
+    const initData = global.initData.inicio.paginas.requerimientos;
 
-    let color_inicio = color(this.props.estadoColor).lighten(0.3).hex();
-    let color_fin = color(this.props.estadoColor).lighten(0.1).hex();
-    let radius = 16;
-    let padding = 16;
-    let margin = 16;
+  
 
     return (
       <Card
-        style={style.cardItem}
+        style={initData.styles.cardItem}
         onPress={() => {
           if (this.props.onPress != undefined) {
             this.props.onPress();
           }
         }}>
 
-        <View style={style.cardItemContent}>
-          <LinearGradient colors={[color_inicio, color_fin]} style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, borderTopLeftRadius: radius, borderTopRightRadius: radius, overflow:'hidden' }} pointerEvents="none" />
+        <View style={[initData.styles.cardItemHeader, { backgroundColor: this.props.estadoColor }]}>
+          <LinearGradient
+            colors={["rgba(255,255,255,0.5)", "rgba(255,255,255,0)"]}
+            backgroundColor="transparent"
+            style={initData.styles.cardItemHeaderGradiente}
+            pointerEvents="none" />
 
           <View style={{ flex: 1 }}>
             <Text style={{ fontWeight: "bold", fontSize: 24, backgroundColor: 'transparent', color: 'white' }}>{this.props.numero + '/' + this.props.año}</Text>
@@ -48,7 +47,7 @@ export default class ServicioCardItem extends React.Component {
 
         </View>
 
-        <View style={{ padding: padding }}>
+        <View style={{ padding: 16 }}>
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <Text style={{ fontWeight: "bold", backgroundColor: 'transparent', color: 'black' }}>Servicio: </Text>
             <Text style={{ backgroundColor: 'transparent', color: 'black' }}>Alumbrado</Text>
@@ -59,7 +58,7 @@ export default class ServicioCardItem extends React.Component {
           </View>
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <Text style={{ fontWeight: "bold", backgroundColor: 'transparent', color: 'black' }}>CPC: </Text>
-            <Text style={{ backgroundColor: 'transparent', color: 'white' }}>Nº 10 - Central</Text>
+            <Text style={{ backgroundColor: 'transparent', color: 'black' }}>Nº 10 - Central</Text>
           </View>
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <Text style={{ fontWeight: "bold", backgroundColor: 'transparent', color: 'black' }}>Barrio: </Text>

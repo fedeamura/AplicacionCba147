@@ -22,7 +22,6 @@ import { Marker } from 'react-native-maps';
 
 //Mis compontenes
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 import MiToolbar from "@Utils/MiToolbar";
 import Rules_Domicilio from "../../Rules/Rules_Domicilio";
 

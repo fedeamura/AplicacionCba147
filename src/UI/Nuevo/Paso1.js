@@ -22,7 +22,6 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mios
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 import IndicadorCargando from "@Utils/IndicadorCargando";
 import MiPicker from "@Utils/MiPicker";
 

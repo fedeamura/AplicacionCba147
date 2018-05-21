@@ -1,68 +1,266 @@
 {
     "general": {
         "colorAccent": "green",
+        "colorFondo": "white",
         "colorPrimary": "green",
         "colorPrimaryDark": "green",
-        "colorFondo": "white",
         "error_DatoRequerido": "Dato requerido",
-        "error_Generico": "Algo salió mal al procesar la solicitud. Por favor intente nuevamente"
+        "error_Generico": "Algo salió mal al procesar la solicitud. Por favor intente nuevamente",
+        "numero": 12
+    },
+    "inicio": {
+        "styles": {},
+        "menu": {
+            "requerimientos": {
+                "titulo": "Mis requerimientos",
+                "tituloColor": "white",
+                "backgroundColor": "#43A047",
+                "icono": "file-document",
+                "iconoColor": "white",
+                "iconoFontFamily": "MaterialCommunityIcons"
+            },
+            "perfil": {
+                "titulo": "Mi perfil",
+                "tituloColor": "white",
+                "backgroundColor": "#FFA726",
+                "icono": "account-circle",
+                "iconoColor": "white",
+                "iconoFontFamily": "MaterialIcons"
+            },
+            "ajustes": {
+                "titulo": "Ajustes",
+                "tituloColor": "white",
+                "backgroundColor": "#9E9E9E",
+                "icono": "settings",
+                "iconoColor": "white",
+                "iconoFontFamily": "MaterialIcons"
+            }
+        },
+        "toolbarExpandirAlHacerClick": false,
+        "toolbarMostrarBotonCerrar": false,
+        "toolbarIconoCerrar": "close",
+        "toolbarIconoCerrarColor": "white",
+        "toolbarIconoCerrarFontFamily": "MaterialIcons",
+        "toolbarMostrarBotonIzquierda": true,
+        "toolbarIconoIzquierda": "menu",
+        "toolbarIconoIzquierdaColor": "black",
+        "toolbarIconoIzquierdaFontFamily": "MaterialIcons",
+        "paginas": {
+            "requerimientos": {
+                "styles": {
+                    "cardItem": {
+                        "borderBottomLeftRadius": 16,
+                        "borderBottomRightRadius": 16,
+                        "borderTopLeftRadius": 16,
+                        "borderTopRightRadius": 16,
+                        "marginBottom": 8,
+                        "marginLeft": 8,
+                        "marginRight": 8,
+                        "marginTop": 8
+                    },
+                    "cardItemHeader": {
+                        "borderTopLeftRadius": 16, 
+                        "borderTopRightRadius": 16, 
+                        "display": "flex",
+                        "flexDirection": "row",
+                        "padding": 16
+                    },
+                    "cardItemHeaderGradiente":{
+                        "position": "absolute", 
+                        "left": 0, 
+                        "top": 0, 
+                        "right": 0, 
+                        "bottom": 0, 
+                        "borderTopLeftRadius": 16, 
+                        "borderTopRightRadius": 16, 
+                        "overflow": "hidden"
+                    },
+                    "cardItemContent": {},
+                    "contenedor_Empty": {
+                        "position": "absolute",
+                        "backgroundColor": "white",
+                        "width": "100%",
+                        "height": "100%",
+                        "display": "flex",
+                        "justifyContent": "center",
+                        "alignItems": "center"
+                    },
+                    "imagenEmpty": {
+                        "backgroundColor": "transparent",
+                        "width": 250,
+                        "height": 250
+                    },
+                    "textoEmpty": {
+                        "maxWidth": 250,
+                        "fontSize": 24,
+                        "color": "black",
+                        "textAlign": "center",
+                        "marginTop": 0,
+                        "marginBottom": 0,
+                        "marginLeft": 0,
+                        "marginRight": 0
+                    },
+                    "botonEmpty": {
+                        "backgroundColor": "green",
+                        "marginTop": 16,
+                        "alignSelf": "center",
+                        "borderRadius": 64
+                    },
+                    "botonEmptyTexto": {},
+                    "contenedor_Error": {
+                        "position": "absolute",
+                        "backgroundColor": "white",
+                        "width": "100%",
+                        "height": "100%",
+                        "display": "flex",
+                        "justifyContent": "center",
+                        "alignItems": "center"
+                    },
+                    "imagenError": {
+                        "backgroundColor": "transparent",
+                        "width": 250,
+                        "height": 250
+                    },
+                    "textoError": {
+                        "maxWidth": 250,
+                        "fontSize": 24,
+                        "color": "black",
+                        "textAlign": "center",
+                        "marginTop": 0,
+                        "marginBottom": 0,
+                        "marginLeft": 0,
+                        "marginRight": 0
+                    },
+                    "botonError": {
+                        "backgroundColor": "green",
+                        "marginTop": 16,
+                        "alignSelf": "center",
+                        "borderRadius": 64
+                    },
+                    "botonErrorTexto": {}
+                },
+                "imagenEmpty_ResizeMode": "cover",
+                "imagenEmpty_Url": "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png",
+                "textoEmpty_Mensaje": "No tenes ningun requerimiento aún...",
+                "botonEmpty_Texto": "Registrar uno",
+                "imagenError_ResizeMode": "cover",
+                "imagenError_Url": "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png",
+                "textoError_Mensaje": "Oops... al parecer algo salió mal al consultar sus requerimientos",
+                "botonError_Texto": "Reintentar"
+            }
+        }
     },
     "login": {
+        "botonAcceder_ColorCargando": "white",
+        "botonAcceder_Redondeado": true,
+        "botonAcceder_Texto": "Acceder",
+        "botonAcceder_TextoCargando": "Cargando...",
+        "botonNuevoUsuario_Redondeado": true,
+        "botonNuevoUsuario_Texto": "Crear usuario",
+        "botonRecuperarCuenta_Redondeado": true,
+        "botonRecuperarCuenta_Texto": "¿Olvidaste tu contraseña?",
+        "error_ContraseñaRequerida": "Dato requerido",
+        "error_IniciandoSesion": "Error iniciando sesion",
+        "error_UsuarioRequerido": "Dato requerido",
+        "imagenFondo_ResizeMode": "cover",
+        "imagenFondo_Url": "https://servicios2.cordoba.gov.ar/CBA147/Resources/Imagenes/fondo_login_oscura.jpg",
+        "imagenLogo_ResizeMode": "cover",
+        "imagenLogo_Url": "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw",
+        "inputPassword_Icono": "vpn-key",
+        "inputPassword_IconoColor": "black",
+        "inputPassword_Texto": "Contraseña",
+        "inputUsuario_Icono": "person",
+        "inputUsuario_IconoColor": "black",
+        "inputUsuario_Texto": "Usuario",
+        "statusBar_BackgroundColor": "transparent",
+        "statusBar_Style": "light-content",
         "styles": {
+            "botonAcceder": {
+                "alignSelf": "center",
+                "backgroundColor": "green",
+                "minHeight": 48,
+                "width": "100%"
+            },
+            "botonAccederTexto": {
+                "color": "white"
+            },
+            "botonNuevoUsuario": {
+                "alignSelf": "center",
+                "backgroundColor": "rgba(0,0,0,0.5)",
+                "minHeight": 48
+            },
+            "botonNuevoUsuarioTexto": {
+                "color": "white"
+            },
+            "botonRecuperarCuenta": {
+                "alignSelf": "center",
+                "backgroundColor": "transparent",
+                "minHeight": 48,
+                "width": "auto"
+            },
+            "botonRecuperarCuentaTexto": {
+                "color": "white"
+            },
             "contenedor": {
-                "width": "100%",
-                "height": "100%",
-                "display": "flex",
-                "justifyContent": "center",
                 "alignItems": "center",
-                "backgroundColor": "white"
-            },
-            "imagenFondo": {
-                "position": "absolute",
-                "width": "100%",
-                "height": "100%"
-            },
-            "imagenFondo_Dim": {
-                "position": "absolute",
-                "width": "100%",
+                "backgroundColor": "white",
+                "display": "flex",
                 "height": "100%",
-                "opacity": 0.5,
-                "backgroundColor": "#000000"
+                "justifyContent": "center",
+                "width": "100%"
+            },
+            "contenedorBotones": {
+                "display": "flex",
+                "flexDirection": "column",
+                "minWidth": "100%",
+                "width": "100%"
+            },
+            "contenedorFormulario": {
+                "alignItems": "center",
+                "flexDirection": "column",
+                "height": "100%",
+                "maxWidth": 300,
+                "width": "100%"
+            },
+            "contenedorInput": {
+                "marginBottom": 16
             },
             "contenedor_ScrollView": {
+                "width": "100%"
+            },
+            "contenedor_ScrollViewContenido": {
+                "alignItems": "center",
+                "justifyContent": "center",
+                "paddingBottom": 32,
+                "paddingTop": 32,
                 "width": "100%"
             },
             "contenedor_ScrollViewContent": {
                 "flexGrow": 1,
                 "justifyContent": "center"
             },
-            "contenedor_ScrollViewContenido": {
-                "width": "100%",
-                "justifyContent": "center",
-                "alignItems": "center",
-                "paddingTop": 32,
-                "paddingBottom": 32
+            "imagenFondo": {
+                "height": "100%",
+                "position": "absolute",
+                "width": "100%"
+            },
+            "imagenFondo_Dim": {
+                "backgroundColor": "#000000",
+                "height": "100%",
+                "opacity": 0.5,
+                "position": "absolute",
+                "width": "100%"
             },
             "imagenLogo": {
-                "width": 104,
                 "height": 104,
-                "marginBottom": 32
-            },
-            "contenedorFormulario": {
-                "height": "100%",
-                "width": "100%",
-                "maxWidth": 300,
-                "flexDirection": "column",
-                "alignItems": "center"
-            },
-            "contenedorInput": {
-                "marginBottom": 16
+                "marginBottom": 64,
+                "width": 104
             },
             "input": {
-                "width": "100%",
+                "borderRadius": 50,
                 "height": 50,
                 "maxHeight": 50,
-                "borderRadius": 50
+                "width": "100%"
             },
             "inputLabelStyle": {
                 "color": "black"
@@ -72,140 +270,170 @@
                 "paddingLeft": 0
             },
             "inputTextoError": {
+                "backgroundColor": "transparent",
                 "color": "red",
                 "marginLeft": 16,
-                "backgroundColor": "transparent",
                 "marginTop": 4
-            },
-            "contenedorBotones": {
-                "display": "flex",
-                "width": "100%",
-                "minWidth": "100%",
-                "flexDirection": "column"
-            },
-            "botonAcceder": {
-                "minHeight": 48,
-                "backgroundColor": "green",
-                "width": "100%",
-                "alignSelf": "center"
-            },
-            "botonAccederTexto": {
-                "color": "white"
-            },
-            "botonRecuperarCuenta": {
-                "minHeight": 48,
-                "backgroundColor": "transparent",
-                "width": "auto",
-                "alignSelf": "center"
-            },
-            "botonRecuperarCuentaTexto": {
-                "color": "white"
-            },
-            "botonNuevoUsuario": {
-                "minHeight": 48,
-                "backgroundColor": "rgba(0,0,0,0.5)",
-                "alignSelf": "center"
-            },
-            "botonNuevoUsuarioTexto": {
-                "color": "white"
-            }
-        },
-        "imagenFondo_ResizeMode": "cover",
-        "imagenFondo_Url": "https://servicios2.cordoba.gov.ar/CBA147/Resources/Imagenes/fondo_login_oscura.jpg",
-        "imagenLogo_ResizeMode": "cover",
-        "imagenLogo_Url": "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw",
-        "inputUsuario_Texto": "Usuario",
-        "inputUsuario_Icono": "person",
-        "inputUsuario_IconoColor": "black",
-        "inputPassword_Texto": "Contraseña",
-        "inputPassword_Icono": "vpn-key",
-        "inputPassword_IconoColor": "black",
-        "botonAcceder_Redondeado": true,
-        "botonAcceder_ColorCargando": "white",
-        "botonAcceder_TextoCargando": "Cargando...",
-        "botonAcceder_Texto": "Acceder",
-        "botonRecuperarCuenta_Redondeado": true,
-        "botonRecuperarCuenta_Texto": "¿Olvidaste tu contraseña?",
-        "botonNuevoUsuario_Redondeado": true,
-        "botonNuevoUsuario_Texto": "Crear usuario",
-        "error_IniciandoSesion": "Error iniciando sesion",
-        "error_UsuarioRequerido": "Dato requerido",
-        "error_ContraseñaRequerida": "Dato requerido"
-    },
-    "inicio": {
-        "requerimientos": {
-            "empty": {
-                "backgroundColor": "white",
-                "imagen": {
-                    "backgroundColor": "transparent",
-                    "width": 250,
-                    "height": 250,
-                    "resizeMode": "cover",
-                    "url": "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png",
-                    "marginTop": 0,
-                    "marginBottom": 0,
-                    "marginLeft": 0,
-                    "marginRight": 0
-                },
-                "texto": {
-                    "fontSize": 24,
-                    "color": "black",
-                    "marginTop": 8,
-                    "marginBottom": 0,
-                    "marginLeft": 0,
-                    "marginRight": 0
-                },
-                "boton": {
-                    "texto": "Registrar uno",
-                    "textoColor": "white",
-                    "fondoColor": "green",
-                    "marginTop": 16,
-                    "marginBottom": 0,
-                    "marginLeft": 0,
-                    "marginRight": 0
-                }
-            },
-            "error": {
-                "backgroundColor": "white",
-                "imagen": {
-                    "backgroundColor": "transparent",
-                    "width": 250,
-                    "height": 250,
-                    "resizeMode": "cover",
-                    "url": "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png",
-                    "marginTop": 0,
-                    "marginBottom": 0,
-                    "marginLeft": 0,
-                    "marginRight": 0
-                },
-                "texto": {
-                    "fontSize": 24,
-                    "color": "black",
-                    "marginTop": 8,
-                    "marginBottom": 0,
-                    "marginLeft": 0,
-                    "marginRight": 0
-                },
-                "boton": {
-                    "texto": "Reintentar",
-                    "color": "white",
-                    "backgroundColor": "green",
-                    "marginTop": 16,
-                    "marginBottom": 0,
-                    "marginLeft": 0,
-                    "marginRight": 0
-                }
-            },
-            "cardItem": {
-                "borderTopLeftRadius": 16,
-                "borderTopRightRadius": 16,
-                "borderBottomLeftRadius": 16,
-                "borderBottomRightRadius": 16,
-                "marginTop": 8,
-                "marginBottom": 8,
-                "marginLeft": 8,
-                "marginRight": 8
             }
         }
+    },
+    "nuevoUsuario": {
+        "botonCerrar_Icono": "close",
+        "botonCerrar_IconoFamily": "MaterialIcons",
+        "botonRegistrar_IconoFamily": "MaterialIcons",
+        "botonRegistrar_Texto": "Registrar",
+        "cargando_Color": "black",
+        "dialogoCancelarFormulario_Contenido": "¿Desea cancelar el registro del usuario?",
+        "dialogoCancelarFormulario_OpcionNo": "No, seguir con el registro",
+        "dialogoCancelarFormulario_OpcionSi": "Si, cancelar",
+        "dialogoRevisarFormulario_Contenido": "Revise el formulario",
+        "inputApellido_Placeholder": "Apellido",
+        "inputNombre_Placeholder": "Nombre",
+        "inputPassword_Placeholder": "Contraseña",
+        "inputUsername_Placeholder": "Usuario",
+        "input_IconoError": "error",
+        "input_IconoErrorFamily": "MaterialIcons",
+        "statusBar_BackgroundColor": "transparent",
+        "statusBar_Style": "dark-content",
+        "styles": {
+            "botonCerrar": {
+                "alignItems": "center",
+                "borderRadius": 48,
+                "display": "flex",
+                "height": 48,
+                "justifyContent": "center",
+                "marginLeft": 16,
+                "width": 48
+            },
+            "botonCerrarIcono": {
+                "backgroundColor": "transparent",
+                "fontSize": 32
+            },
+            "botonRegistrar": {
+                "alignSelf": "center",
+                "backgroundColor": "green",
+                "borderRadius": 32,
+                "bottom": 0,
+                "margin": 16,
+                "position": "absolute"
+            },
+            "contenedor": {
+                "display": "flex",
+                "flexDirection": "column",
+                "height": "100%"
+            },
+            "contenedor_Cargando": {
+                "backgroundColor": "white"
+            },
+            "contenedor_Encabezado": {
+                "alignItems": "center",
+                "backgroundColor": "white",
+                "display": "flex",
+                "flexDirection": "row"
+            },
+            "contenedor_Formulario": {
+                "backgroundColor": "white",
+                "flex": 1
+            },
+            "inputIconoError": {
+                "color": "red",
+                "fontSize": 32
+            },
+            "scrollViewContent": {
+                "paddingBottom": 80,
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "paddingTop": 16
+            },
+            "textoTitulo": {
+                "fontSize": 32,
+                "marginLeft": 16
+            }
+        },
+        "titulo_Texto": "Nuevo usuario"
+    },
+    "recuperarCuenta": {
+        "botonCerrar_Icono": "close",
+        "botonCerrar_IconoFamily": "MaterialIcons",
+        "botonRecuperar_Texto": "Recuperar cuenta",
+        "cargando_Color": "black",
+        "dialogoCancelarFormulario_Contenido": "¿Desea cancelar el proceso de recuperar su cuenta?",
+        "dialogoCancelarFormulario_OpcionNo": "No, seguir con el proceso",
+        "dialogoCancelarFormulario_OpcionSi": "Si, cancelar",
+        "dialogoRevisarFormulario_Contenido": "Revise el formulario",
+        "inputEmail_Placeholder": "E-Mail",
+        "input_IconoError": "error",
+        "input_IconoErrorFamily": "MaterialIcons",
+        "statusBar_BackgroundColor": "transparent",
+        "statusBar_Style": "dark-content",
+        "styles": {
+            "botonCerrar": {
+                "alignItems": "center",
+                "borderRadius": 48,
+                "display": "flex",
+                "height": 48,
+                "justifyContent": "center",
+                "marginLeft": 16,
+                "width": 48
+            },
+            "botonCerrarIcono": {
+                "backgroundColor": "transparent",
+                "fontSize": 32
+            },
+            "botonRecuperar": {
+                "alignSelf": "center",
+                "backgroundColor": "green",
+                "borderRadius": 32,
+                "bottom": 0,
+                "margin": 16,
+                "position": "absolute"
+            },
+            "contenedor": {
+                "display": "flex",
+                "flexDirection": "column",
+                "height": "100%"
+            },
+            "contenedor_Cargando": {
+                "backgroundColor": "white"
+            },
+            "contenedor_Encabezado": {
+                "alignItems": "center",
+                "backgroundColor": "white",
+                "display": "flex",
+                "flexDirection": "row"
+            },
+            "contenedor_Formulario": {
+                "backgroundColor": "white",
+                "flex": 1
+            },
+            "inputIconoError": {
+                "color": "red",
+                "fontSize": 32
+            },
+            "scrollViewContent": {
+                "paddingBottom": 80,
+                "paddingLeft": 16,
+                "paddingRight": 16,
+                "paddingTop": 16
+            },
+            "textoTitulo": {
+                "fontSize": 32,
+                "marginLeft": 16
+            },
+            "inputEmail": {},
+            "textoUsernames": {
+                "fontSize": 14,
+                "marginTop": 32
+            },
+            "textoUsernamesSeleccioneUno": {
+                "fontSize": 18,
+                "marginTop": 16
+            },
+            "cardUsername": {},
+            "textoUsername": {}
+        },
+        "textoUsernamesEncontrados_Texto": "Se encontraron los siguientes usuarios asociados a la dirección de e-mail ingresada.",
+        "textoUsernamesEncontrados_TextoSeleccioneUno": "Seleccione uno:",
+        "titulo_Texto": "Recuperar cuenta"
     }
 }

@@ -2,8 +2,7 @@ import React, { Component } from "react";
 import {
   View,
   Animated,
-  StyleSheet,
-  Dimensions
+  StyleSheet
 } from "react-native";
 import {
   Spinner,
@@ -16,9 +15,11 @@ export default class indicadorCargando extends React.Component {
 
     this.state = {
       visible: props.visible,
-      animando: false,
-      anim: new Animated.Value(0)
+      animando: false
     };
+
+    this.anim = new Animated.Value(0);
+
   }
 
   componentWillReceiveProps(nextProps) {
@@ -29,28 +30,29 @@ export default class indicadorCargando extends React.Component {
     }
   }
 
+  componentDidMount() {
+    if (this.props.visible) {
+      this.mostrar();
+    } else {
+      this.ocultar();
+    }
+  }
   mostrar() {
-    this.setState(
-      {
-        animando: true,
-        visible: true
-      },
-      function () {
-        Animated.timing(
-          // Animate over time
-          this.state.anim, // The animated value to drive
-          {
-            toValue: 1 // Animate to opacity: 1 (opaque)
-          }
-        ).start(
-          function () {
-            this.setState({
-              animando: false
-            });
-          }.bind(this)
-        );
-      }.bind(this)
-    );
+    this.setState({
+      animando: true,
+      visible: true
+    }, () => {
+      Animated.timing(
+        this.anim,
+        {
+          toValue: 1
+        }
+      ).start(() => {
+        this.setState({
+          animando: false
+        });
+      });
+    });
   }
 
   ocultar() {
@@ -58,46 +60,40 @@ export default class indicadorCargando extends React.Component {
       {
         animando: true,
         visible: false
-      },
-      function () {
+      }, () => {
         Animated.timing(
           // Animate over time
-          this.state.anim, // The animated value to drive
+          this.anim, // The animated value to drive
           {
             toValue: 0 // Animate to opacity: 1 (opaque)
           }
-        ).start(
-          function () {
-            this.setState({
-              animando: false
-            });
-          }.bind(this)
-        );
-      }.bind(this)
-    );
+        ).start(() => {
+          this.setState({
+            animando: false
+          });
+        });
+      });
   }
 
   render() {
-    let w = Dimensions.get("window").width + 200;
-    let h = Dimensions.get("window").height + 200;
+
 
     return (
       <Animated.View
         pointerEvents={this.state.visible ? "auto" : "none"}
         style={[
           styles.indicadorCargando,
+          this.props.style || {},
           {
-            opacity: this.state.anim.interpolate({
+            opacity: this.anim.interpolate({
               inputRange: [0, 1],
               outputRange: [0, 1]
-            }),
-            width: w,
-            height: h
+            })
           }
         ]}
       >
-        <Spinner color="white" />
-        <Text style={{ color: "white" }}>Cargando</Text>
+        <Spinner color={this.props.color || 'black'} />
+        <Text style={{ color: this.props.color || 'black' }}>{this.props.texto || "Cargando"}</Text>
       </Animated.View>
     );
   }
@@ -106,17 +102,14 @@ export default class indicadorCargando extends React.Component {
 const styles = StyleSheet.create({
   indicadorCargando: {
     position: "absolute",
-    left: -100,
-    top: -100,
-    width: 10,
-    height: 10,
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
     justifyContent: "center",
-    borderTopWidth: 0,
-    backgroundColor: "rgba(0,0,0,0.4)",
     alignItems: "center",
     flexDirection: "column",
-    display: "flex",
-    zIndex: 10,
-    elevation: 10
+    display: "flex", zIndex: 100
   }
 });

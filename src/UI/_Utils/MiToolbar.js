@@ -8,7 +8,6 @@ import { TextInput, Toolbar, ToolbarBackAction, ToolbarContent, ToolbarAction } 
 
 //Mis componentes
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 
 export default class MiToolbar extends React.Component {
   constructor(props) {

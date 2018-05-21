@@ -63,7 +63,7 @@ export default class Rules_Usuario extends React.Component {
   static isLogin() {
     return new Promise((resolve, reject) => {
       console.log('Rules_Usuario - Is Login');
-      resolve(false);
+      resolve(true);
 
       // DB.getItem("token")
       //   .then(response => {
@@ -200,6 +200,30 @@ export default class Rules_Usuario extends React.Component {
 
           reject('Error procesando la solicitud');
         });
+    });
+  }
+
+  static crearUsuario(usuario) {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback();
+      }, 2000);
+    });
+  }
+
+  static getUsuariosConEmail(email) {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback(['amura_f', 'fedeamura']);
+      }, 2000);
+    });
+  }
+
+  static recuperarCuenta(email, username) {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback();
+      }, 2000);
     });
   }
 }

@@ -20,7 +20,6 @@ import LinearGradient from 'react-native-linear-gradient';
 
 //Mios
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 import IndicadorCargando from "@Utils/IndicadorCargando";
 import MiToolbar from "@Utils/MiToolbar";
 import Paso1 from "Cordoba/src/UI/Nuevo/Paso1";
@@ -330,11 +329,11 @@ export default class Home extends React.Component {
             {this.state.mostrarPasos ? view_pasos : <View />}
           </Animated.View>
 
-          <LinearGradient colors={[AppTheme.colorFondo, AppTheme.colorFondo, '#00000000']} style={styles.fondoIndicadores} pointerEvents="none" />
+          <LinearGradient colors={["white", "white", '#00000000']} style={styles.fondoIndicadores} pointerEvents="none" />
           <View style={styles.contenedorIndicadores}>{view_indicadores}</View>
 
           {/* Pasos */}
-          <LinearGradient colors={['#00000000', AppTheme.colorFondo, AppTheme.colorFondo]} style={styles.fondoBotonesPasos} pointerEvents="none" />
+          <LinearGradient colors={['#00000000', "white", "white"]} style={styles.fondoBotonesPasos} pointerEvents="none" />
 
           <View style={styles.contenedorBotonesPasos}>
 
@@ -442,7 +441,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     height: "100%",
-    backgroundColor: AppTheme.colorFondo
+    backgroundColor: "white"
   },
   contenedorToolbar: {
     zIndex: 10
@@ -517,7 +516,7 @@ const styles = StyleSheet.create({
     top: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: AppTheme.colorAccent,
+    backgroundColor: "green",
     elevation: 20
   },
   contenedorKeyboard: {

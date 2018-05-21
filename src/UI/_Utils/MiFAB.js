@@ -8,7 +8,6 @@ import { FAB } from "react-native-paper";
 
 //Mis compontentes
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 
 var i = 0;
 export default class MiFAB extends React.Component {

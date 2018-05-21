@@ -1,6 +1,7 @@
 
 import React, { Component } from "react";
 import App from "Cordoba/src/UI/App";
+import initData from '@UI/initData.json';
 
 export default class Rules_Init extends React.Component {
   constructor() {
@@ -9,11 +10,13 @@ export default class Rules_Init extends React.Component {
 
   static getInitData() {
     return new Promise((resolve, reject) => {
-      fetch("https://cba147log.firebaseio.com/initData.json", { method: 'GET' })
-        .then(response => response.json())
-        .then(initData => {
-          resolve(initData);
-        });
+      
+      resolve(initData);
+      // fetch("https://cba147log.firebaseio.com/initData.json", { method: 'GET' })
+      //   .then(response => response.json())
+      //   .then(initData => {
+      //     resolve(initData);
+      //   });
     });
   }
 }

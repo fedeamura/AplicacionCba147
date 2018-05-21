@@ -31,7 +31,6 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
-import AppTheme from "@UI/AppTheme";
 
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
@@ -209,6 +208,10 @@ export default class Login extends React.Component {
     App.navegar('UsuarioNuevo');
   }
 
+  recuperarCuenta() {
+    App.navegar('RecuperarCuenta');
+  }
+
   onUsuarioChange(text) {
     App.animar();
     this.setState({ usuario: text, escribioUsuario: true });
@@ -363,6 +366,9 @@ export default class Login extends React.Component {
                   full
                   rounded={initData.botonRecuperarCuenta_Redondeado}
                   disabled={this.state.cargandoLogin}
+                  onPress={() => {
+                    this.recuperarCuenta();
+                  }}
                   style={initData.styles.botonRecuperarCuenta}
                 >
                   <Text style={initData.styles.botonAccederTexto}>{initData.botonRecuperarCuenta_Texto}</Text>

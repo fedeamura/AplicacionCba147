@@ -22,9 +22,9 @@ import {
 } from "react-native-paper";
 
 //Mis Componentes
-import AppTheme from "@UI/AppTheme";
 import Login from "@UI/Login/Index";
 import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
+import RecuperarCuenta from "@UI/RecuperarCuenta/Index";
 import Inicio from "@UI/Inicio/Index";
 import Nuevo from "@UI/Nuevo/Index";
 import Ajustes from "@UI/Ajustes/Index";
@@ -44,8 +44,11 @@ const RootStack = StackNavigator(
     UsuarioNuevo: {
       screen: UsuarioNuevo
     },
-    Inicio:{
-      screen:Inicio
+    RecuperarCuenta: {
+      screen: RecuperarCuenta
+    },
+    Inicio: {
+      screen: Inicio
     },
     Nuevo: {
       screen: Nuevo
@@ -138,8 +141,7 @@ export default class App extends React.Component {
     Rules_Init.getInitData()
       .then((initData) => {
         global.initData = initData;
-        AppTheme.crear(initData);
-        
+
         this.setState({
           initData: initData,
           error: undefined
@@ -158,9 +160,9 @@ export default class App extends React.Component {
   render() {
     if (this.state.initData == undefined) return null;
     return (
-      <PaperProvider theme={AppTheme.styles.theme}>
+      <PaperProvider>
         <View
-         keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="always"
           style={{ height: '100%', width: '100%' }}>
           <StatusBar backgroundColor={'white'} barStyle="dark-content" />
           <RootStack ref={(ref) => { global.navigator = ref; }} />

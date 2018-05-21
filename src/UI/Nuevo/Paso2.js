@@ -24,7 +24,6 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mios
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 
 //Rules
 import Rules_Servicio from "Cordoba/src/Rules/Rules_Servicio";

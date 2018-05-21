@@ -40,22 +40,15 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
-import AppTheme from "@UI/AppTheme";
 
 const tAnim = 500;
-const fontSizeIcon = 48;
 const marginIcon = 16;
-const fontSizeTexto = 20;
 const zIndexFront = 20;
 const hSolapamiento = 32;
 const hToolbarDefault = 72;
 const hSombra = 16;
 
 export default class MiToolbarMenu extends React.Component {
-  static navigationOptions = {
-    title: "Nuevo Usuario",
-    header: null
-  };
 
   constructor(props) {
     super(props);
@@ -66,7 +59,7 @@ export default class MiToolbarMenu extends React.Component {
     let index = undefined;
     for (let i = 0; i < this.props.opciones.length; i++) {
       let o = this.props.opciones[i];
-      if (o.value == props.opcion) {
+      if (o.valor == props.opcion) {
         index = i;
       }
     }
@@ -78,12 +71,6 @@ export default class MiToolbarMenu extends React.Component {
       expandido: this.props.expandido || false,
       animando: false,
       animandoExpandir: false,
-      toolbarTrigger: false,
-      closeIcon: props.closeIcon || false,
-      leftIcon: props.leftIcon,
-      leftIconOnClick: props.leftIconOnClick,
-      rightIcon: props.rightIcon,
-      rightIconOnClick: props.rightIconOnClick,
       opciones: props.opciones || [],
       hOpcion: this.hOpcion,
       hToolbar: props.toolbar_height || this.hToolbar,
@@ -95,12 +82,14 @@ export default class MiToolbarMenu extends React.Component {
 
   initOpciones(props) {
     this.anims = [];
+    this.animsBackground = [];
     this.animsSombras = [];
 
     let expandido = props.expandido || false;
 
     _.each(props.opciones, (opcion) => {
       this.anims.push(new Animated.Value(expandido ? 1 : 0));
+      this.animsBackground.push(new Animated.Value(expandido ? 1 : 0));
       this.animsSombras.push(new Animated.Value(expandido ? 1 : 0));
     });
 
@@ -146,7 +135,7 @@ export default class MiToolbarMenu extends React.Component {
 
     for (let i = 0; i < this.props.opciones.length; i++) {
       let o = this.props.opciones[i];
-      if (o.value == opcion) {
+      if (o.valor == opcion) {
         index = i;
       }
     }
@@ -168,6 +157,14 @@ export default class MiToolbarMenu extends React.Component {
             toValue: 0,
             easing: Easing.bezier(0.645, 0.045, 0.355, 1),
             useNativeDriver: true
+          }));
+      });
+
+      _.each(this.animsBackground, (anim) => {
+        animsPendientes.push(
+          Animated.timing(anim, {
+            duration: tAnim,
+            toValue: 0
           }));
       });
 
@@ -199,6 +196,14 @@ export default class MiToolbarMenu extends React.Component {
           }));
       });
 
+      _.each(this.animsBackground, (anim) => {
+        animsPendientes.push(
+          Animated.timing(anim, {
+            duration: tAnim,
+            toValue: 1
+          }));
+      });
+
       Animated.parallel(animsPendientes).start(() => {
         this.setState({
           animando: false,
@@ -213,7 +218,7 @@ export default class MiToolbarMenu extends React.Component {
 
     for (let i = 0; i < this.state.opciones.length; i++) {
       let front = false;
-      if ((!this.state.expandido) && this.state.opcion == this.state.opciones[i].value) {
+      if ((!this.state.expandido) && this.state.opcion == this.state.opciones[i].valor) {
         front = true;
       }
 
@@ -228,18 +233,30 @@ export default class MiToolbarMenu extends React.Component {
     Animated.parallel(animsPendientes).start();
   }
 
-  render() {
-    const componente = this;
-    const state = this.state;
+  onPressOpcion(opcion, index) {
+    if (this.state.opciones.length == 0) return;
 
+    if (!this.state.expandido) {
+      if (this.props.expandirAlHacerClick == true) {
+        this.expandir();
+      }
+      return;
+    }
+
+    this.seleccionar(index);
+  }
+
+  render() {
     let content = undefined;
     if (this.state.opcion != undefined) {
       _.each(this.state.opciones, (opcion) => {
-        if (opcion.value == state.opcion) {
-          content = opcion.content;
+        if (opcion.valor == this.state.opcion) {
+          content = opcion.contenido;
         }
       });
     }
+
+    const toolbarColor = this.props.toolbarBackgroundColor || 'white';
 
     return (
       <View style={styles.contenedor}>
@@ -248,64 +265,57 @@ export default class MiToolbarMenu extends React.Component {
 
         <View style={[styles.encabezado_Opciones]}>
 
-          {state.opciones.map(function (opcion, index) {
+          {this.state.opciones.map((opcion, index) => {
 
-            let zIndex = state.opciones.length - index;
-            if ((!state.expandido || state.animandoExpandir) && state.opcion == opcion.value) {
+            let zIndex = this.state.opciones.length - index;
+            if ((!this.state.expandido || this.state.animandoExpandir) && this.state.opcion == opcion.valor) {
               zIndex = zIndexFront;
             }
 
-            const yExpandido = state.hOpcion * index;
-            let yTextoCollapse = (-(fontSizeIcon + marginIcon) / 2) + ((state.hOpcion - state.hToolbar) / 2) - (25 / 2);
+            const yExpandido = this.state.hOpcion * index;
+            let yTextoCollapse = (-(opcion.iconoFontSize + marginIcon) / 2) + ((this.state.hOpcion - this.state.hToolbar) / 2) - (25 / 2);
             if (Platform.OS === 'ios') {
               yTextoCollapse = yTextoCollapse + 10;
             }
-            yTextoCollapse = 'icon' in opcion && opcion.icon != undefined ? yTextoCollapse : yTextoCollapse + ((fontSizeIcon + marginIcon) / 2);
+            yTextoCollapse = 'icono' in opcion && opcion.icono != undefined ? yTextoCollapse : yTextoCollapse + ((opcion.iconoFontSize + marginIcon) / 2);
 
-            let anim = componente.anims[index];
-            let animSombra = componente.animsSombras[index];
+            const anim = this.anims[index];
+            const animBackground = this.animsBackground[index];
+            const animSombra = this.animsSombras[index];
 
             return (
 
               <Animated.View
-                key={opcion.value}
+                key={opcion.valor}
                 style={
                   [
                     styles.encabezado_Opcion,
                     {
-                      maxHeight: state.hOpcion,
+                      maxHeight: this.state.hOpcion,
                       zIndex: zIndex,
                       transform: [
                         {
                           translateY: anim.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [componente.yCollapse, yExpandido]
+                            outputRange: [this.yCollapse, yExpandido]
                           })
                         }
                       ]
 
                     }]}>
                 <View style={styles.encabezado_Opcion}
-                  pointerEvents={state.animando == true ? "none" : "auto"}
+                  pointerEvents={this.state.animando == true ? "none" : "auto"}
                 >
                   <TouchableWithoutFeedback
-                    style={styles.encabezado_Opcion}
-                    onPress={() => {
-                      if (state.opciones.length == 0) return;
-
-                      if (!state.expandido) {
-                        if (state.toolbarTrigger == true) {
-                          componente.expandir();
-                        }
-                        return;
-                      }
-                      componente.seleccionar(index);
-                    }}>
+                    onPress={() => { this.onPressOpcion(opcion, index); }}>
                     <Animated.View style={
                       [
                         styles.encabezado_OpcionInterior,
                         {
-                          backgroundColor: opcion.color
+                          backgroundColor: this.props.toolbarBackgroundColor == undefined ? opcion.backgroundColor : animBackground.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [this.props.toolbarBackgroundColor, opcion.backgroundColor]
+                          })
                         }
                       ]}>
                       <Animated.View style={[styles.sombra, {
@@ -320,7 +330,7 @@ export default class MiToolbarMenu extends React.Component {
 
                       </Animated.View>
 
-                      {('icon' in opcion && opcion.icon != undefined) && (
+                      {('icono' in opcion && opcion.icono != undefined) && (
 
                         <Animated.View style={{
                           opacity: anim.interpolate({
@@ -336,7 +346,7 @@ export default class MiToolbarMenu extends React.Component {
                             }
                           ]
                         }}>
-                          <Icon style={[styles.encabezado_OpcionIcono, { fontSize: fontSizeIcon, marginBottom: marginIcon }]} type="MaterialIcons" name={opcion.icon} />
+                          <Icon style={[styles.encabezado_OpcionIcono, { fontSize: opcion.iconoFontSize, marginBottom: marginIcon, color: opcion.iconoColor }]} type={opcion.iconoFontFamily} name={opcion.icono} />
                         </Animated.View>
                       )}
 
@@ -353,17 +363,20 @@ export default class MiToolbarMenu extends React.Component {
                         }
                         }
                       >
-                        <MyText
-                          letterSpacing={2}
+                        <Animated.Text
                           style={
                             [
-                              styles.encabezado_OpcionTexto,
                               {
-                                fontSize: fontSizeTexto
+                                fontSize: opcion.tituloFontSize,
+                                color: this.props.toolbarTituloColor == undefined ? opcion.tituloColor : animBackground.interpolate({
+                                  inputRange: [0, 1],
+                                  outputRange: [this.props.toolbarTituloColor, opcion.tituloColor]
+                                })
+
                               }
                             ]}>
-                          {opcion.text.toUpperCase()}
-                        </MyText>
+                          {opcion.titulo.toUpperCase()}
+                        </Animated.Text>
 
                       </Animated.View>
                     </Animated.View>
@@ -378,83 +391,60 @@ export default class MiToolbarMenu extends React.Component {
 
         </View>
 
-        {/* Boton left */}
-        {state.leftIcon != undefined && (
+        {/* Boton Izquierda */}
+        {this.props.mostrarBotonIzquierda != undefined && (
           <Animated.View
             pointerEvents={this.state.expandido || this.state.animando ? "none" : "auto"}
             style={
               [
                 styles.btnLeft,
                 {
-                  opacity: componente.anims[0].interpolate({
+                  opacity: this.anims[0].interpolate({
                     inputRange: [0, 1],
                     outputRange: [1, 0]
                   }),
                   transform: [{
-                    translateY: state.opciones.length == 0 ? state.ySombraCollapse : this.anims[0].interpolate({
+                    translateY: this.state.opciones.length == 0 ? this.state.ySombraCollapse : this.anims[0].interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, (state.hOpcion * (state.index || 0)) + (state.hOpcion / 2)]
+                      outputRange: [0, (this.state.hOpcion * (this.state.index || 0)) + (this.state.hOpcion / 2)]
                     })
                   }]
                 }]}>
             <Button transparent onPress={() => {
-              if (state.leftIconOnClick != undefined) {
-                state.leftIconOnClick();
+              if (this.props.iconoIzquierdaOnPress != undefined) {
+                this.props.iconoIzquierdaOnPress();
               }
             }}>
-              <Icon type="MaterialIcons" style={styles.btnLeftIcon} name={state.leftIcon} />
+              <Icon
+                type={this.props.iconoIzquierdaFontFamily}
+                style={[
+                  styles.btnLeftIcon, {
+                    color: this.props.iconoIzquierdaColor
+                  }]}
+                name={this.props.iconoIzquierda} />
             </Button>
           </Animated.View>
 
         )}
 
-        {/* Boton right */}
-        {state.rightIcon != undefined && (
-          <Animated.View
-            pointerEvents={this.state.expandido || this.state.animando ? "none" : "auto"}
-            style={
-              [
-                styles.btnRight,
-                {
-                  opacity: componente.anims[0].interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [1, 0]
-                  }),
-                  transform: [{
-                    translateY: state.opciones.length == 0 ? state.ySombraCollapse : this.anims[0].interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, state.hOpcion / 2]
-                    })
-                  }]
-                }]}>
-            <Button transparent onPress={() => {
-              if (state.rightIconOnClick != undefined) {
-                state.rightIconOnClick();
-              }
-            }}>
-              <Icon type="MaterialIcons" style={styles.btnRightIcon} name={state.rightIcon} />
-            </Button>
-          </Animated.View>
-
-        )}
-
-        {/* Boton Close */}
-        {state.toolbarTrigger == false && (
+        {/* Boton Cerrar */}
+        {this.props.mostrarBotonCerrar == true && (
           <Animated.View
             pointerEvents={this.state.expandido && !this.state.animando ? "auto" : "none"}
             style={[
               styles.btnLeft,
               {
-                opacity: componente.anims[0].interpolate({
+                color: this.props.iconoCerrarColor,
+                opacity: this.anims[0].interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 1]
                 })
               }
             ]}>
             <Button transparent onPress={() => {
-              this.seleccionar(state.opcion);
+              this.seleccionar(this.state.opcion);
             }}>
-              <Icon type="MaterialIcons" style={styles.btnClose} name={'clear'} />
+              <Icon type={this.props.iconoCerrarFontFamily} style={styles.btnClose} name={this.props.iconoCerrar} />
             </Button>
           </Animated.View>
 
@@ -466,7 +456,7 @@ export default class MiToolbarMenu extends React.Component {
             {
               translateY: this.anims[0].interpolate({
                 inputRange: [0, 1],
-                outputRange: [state.hToolbar, Dimensions.get('window').height]
+                outputRange: [this.state.hToolbar, Dimensions.get('window').height]
               })
             }
           ]
@@ -484,10 +474,10 @@ export default class MiToolbarMenu extends React.Component {
           style={[
             styles.content,
             {
-              marginTop: state.hToolbar,
+              marginTop: this.state.hToolbar,
               zIndex: this.state.animando || this.state.expandido ? -1 : 100
             }]}
-          key={state.opcion}>
+          key={this.state.opcion}>
           {content}
         </View>
 
@@ -499,7 +489,7 @@ export default class MiToolbarMenu extends React.Component {
 const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
-    backgroundColor: AppTheme.colorFondo,
+    backgroundColor: 'white',
   },
   encabezado_Opciones: {
     height: '100%',
@@ -530,18 +520,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  encabezado_OpcionTexto: {
-    fontSize: 20,
-    color: 'white'
-  },
   encabezado_OpcionIcono: {
-    fontSize: 48,
     marginBottom: 8,
     color: 'white'
   },
   content: {
-    flex: 1,
-    height: 100
+    flex: 1
   },
   sombra: {
     position: 'absolute',
@@ -553,7 +537,7 @@ const styles = StyleSheet.create({
   btnLeft: {
     position: 'absolute',
     left: 8,
-    top: 16
+    top: 20
   },
   btnLeftIcon: {
     color: 'white'

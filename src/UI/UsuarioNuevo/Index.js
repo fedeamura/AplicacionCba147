@@ -29,6 +29,7 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
+import IndicadorCargando from "@Utils/IndicadorCargando";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -36,7 +37,8 @@ import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
 export default class Login extends React.Component {
   static navigationOptions = {
     title: "Nuevo Usuario",
-    header: null
+    header: null,
+    gesturesEnabled: false
   };
 
   constructor(props) {
@@ -50,7 +52,8 @@ export default class Login extends React.Component {
       nombre: "",
       errorNombre: false,
       apellido: "",
-      errorApellido: false
+      errorApellido: false,
+      cargando: false
     };
 
     this.keyboardHeight = new Animated.Value(0);
@@ -96,6 +99,7 @@ export default class Login extends React.Component {
   onNombreChange(val) {
     this.setState({ nombre: val, errorNombre: val == "" });
   }
+
   onApellidoChange(val) {
     this.setState({ apellido: val, errorApellido: val == "" });
   }
@@ -117,9 +121,27 @@ export default class Login extends React.Component {
       Alert.alert(global.initData.nuevoUsuario.dialogoRevisarFormulario_Titulo || '', global.initData.nuevoUsuario.dialogoRevisarFormulario_Contenido || '');
       return;
     }
+
+    this.setState({
+      cargando: true
+    }, () => {
+      Rules_Usuario.crearUsuario({}).then(() => {
+        Alert.alert('', 'Se creo correctamente su usuario. Por favor revise su casilla de correo para activarlo', [
+          { text: 'Aceptar', onPress: () => { App.goBack() } }
+        ]);
+      }).catch(() => {
+        Alert.alert('', 'Error procesando la solicitud');
+
+        this.setState({
+          cargando: false
+        });
+      });
+    });
   }
 
   cerrar() {
+    if (this.state.cargando) return;
+
     let tieneAlgo = this.state.username != "" || this.state.password != "" || this.state.nombre != "" || this.state.apellido != "";
     if (tieneAlgo) {
       Alert.alert(global.initData.nuevoUsuario.dialogoCancelarFormulario_Titulo || '', global.initData.nuevoUsuario.dialogoCancelarFormulario_Contenido || '', [
@@ -138,8 +160,11 @@ export default class Login extends React.Component {
 
     return (
       <View style={initData.styles.contenedor}>
+
+        {/* StatusBar */}
         <StatusBar backgroundColor={initData.statusBar_BackgroundColor} barStyle={initData.statusBar_Style} />
 
+        {/* Encabezado */}
         <View style={[initData.styles.contenedor_Encabezado, {
           paddingTop: Platform.OS == 'ios' ? 24 : 0
         }]}>
@@ -150,6 +175,8 @@ export default class Login extends React.Component {
           </TouchableOpacity>
           <Text style={initData.styles.textoTitulo}>{initData.titulo_Texto}</Text>
         </View>
+
+        {/* Contenido */}
         <View style={initData.styles.contenedor_Formulario}>
           <ScrollView >
 
@@ -189,9 +216,13 @@ export default class Login extends React.Component {
 
           </ScrollView>
 
+          {/* Boton Registrar */}
           <Button full style={initData.styles.botonRegistrar} onPress={() => { this.registrar() }}>
             <Text>{initData.botonRegistrar_Texto}</Text>
           </Button>
+
+          {/* Cargando */}
+          <IndicadorCargando visible={this.state.cargando} style={initData.styles.contenedor_Cargando} />
         </View>
 
         <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>

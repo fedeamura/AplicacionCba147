@@ -26,12 +26,10 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mis componentes
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
-// import ServicioCardItem from "@Utils/Servicio/CardItem";
 import MiListado from "@Utils/MiListado";
 import ItemRequerimiento from "@Utils/Requerimiento/CardItem";
 import Rules_Servicio from "@Rules/Rules_Servicio";
-import Rules_Requerimiento from "../../../../Rules/Rules_Requerimiento";
+import Rules_Requerimiento from "@Rules/Rules_Requerimiento";
 
 export default class PaginaInicio extends React.Component {
 
@@ -75,88 +73,57 @@ export default class PaginaInicio extends React.Component {
   }
   render() {
 
-    const styles = AppTheme.styles.inicio.requerimientos;
-    const initData = global.initData.inicio.requerimientos;
-
-    // const serviciosPrincipales = [];
-    // const servicios = [];
-
-    // if (!this.state.cargando) {
-    //   for (let i = 0; i < this.state.servicios.length; i++) {
-    //     let s = this.state.servicios[i];
-    //     if ('principal' in s && s.principal == true) {
-    //       serviciosPrincipales.push(s);
-    //     } else {
-    //       servicios.push(s);
-    //     }
-    //   }
-    // }
+    const initData = global.initData.inicio.paginas.requerimientos;
 
     return (
-      <View>
-
+      <View style={{ backgroundColor: 'red', flex: 1 }}>
         <MiListado
           cargando={this.state.cargando}
           error={this.state.error}
           data={this.state.requerimientos}
           keyExtractor={(item) => { return item.id }}
           renderItem={(item) => {
-            return <ItemRequerimiento estadoColor={item.item.estadoColor} estadoNombre={item.item.estadoNombre} />;
+            return <ItemRequerimiento
+              numero={item.item.numero}
+              año={item.item.año}
+              estadoColor={item.item.estadoColor}
+              estadoNombre={item.item.estadoNombre} 
+              fechaAlta={item.item.fechaAlta}
+              />;
           }}
           renderEmpty={() => {
-            return <View style={styles.contenedor_Empty} >
+            return <View style={initData.styles.contenedor_Empty} >
               <WebImage
                 resizeMode={initData.imagenEmpty_ResizeMode}
-                style={styles.imagenEmpty}
+                style={initData.styles.imagenEmpty}
                 source={{ uri: initData.imagenEmpty_Url }}
               />
 
-              <Text style={styles.textoEmpty}>{initData.textoEmpty_Mensaje}</Text>
+              <Text style={initData.styles.textoEmpty}>{initData.textoEmpty_Mensaje}</Text>
 
-              <Button style={styles.botonEmpty}><Text style={{ color: initData.botonEmpty_TextoColor }}>{initData.botonEmpty_Texto}</Text></Button>
+              <Button style={initData.styles.botonEmpty}><Text style={initData.styles.botonEmptyTexto}>{initData.botonEmpty_Texto}</Text></Button>
             </View>
           }}
           renderError={() => {
-            return <View style={styles.contenedor_Error} >
+            return <View style={initData.styles.contenedor_Error} >
               <WebImage
                 resizeMode={initData.imagenError_ResizeMode}
-                style={styles.imagenError}
+                style={initData.styles.imagenError}
                 source={{ uri: initData.imagenError_Url }}
               />
 
-              <Text style={styles.textoError}>{initData.textoError_Mensaje}</Text>
+              <Text style={initData.styles.textoError}>{initData.textoError_Mensaje}</Text>
 
-              <Button style={styles.botonError} onPress={() => {
+              <Button style={initData.styles.botonError} onPress={() => {
                 this.buscarRequerimientos();
               }}>
-                <Text style={{ color: initData.botonError_TextoColor }}>{initData.botonError_Texto}</Text>
+                <Text style={initData.styles.botonErrorTexto}>{initData.botonError_Texto}</Text>
               </Button>
             </View>
           }}
         />
+
       </View >
-
-      /* <ScrollView>
-
-        <View style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', padding: 16 }}>
-          {this.state.cargando && (<Text>Cargando</Text>)}
-          {!this.state.cargando && (
-            <View style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-
-              <Text style={{ fontSize: 32, marginTop: 16, marginBottom: 32 }}>Categorias principales</Text>
-
-              <View style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-                {serviciosPrincipales.map((servicio, index) => {
-                  return <ServicioCardItem cols={2} onPress={() => { Alert.alert('holu') }}></ServicioCardItem>;
-                })}
-              </View>
-            </View>
-
-          )}
-        </View>
-      </ScrollView> */
-      // </View>
-
     );
   }
 }

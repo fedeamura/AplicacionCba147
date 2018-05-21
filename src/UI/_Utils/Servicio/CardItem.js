@@ -3,7 +3,6 @@ import { View, Animated, Dimensions } from "react-native";
 
 //Mis compontentes
 import App from "@UI/App";
-import AppTheme from "@UI/AppTheme";
 import { Text } from "native-base";
 import { Card, CardContent } from "react-native-paper";
 import ExtraDimensions from 'react-native-extra-dimensions-android';
