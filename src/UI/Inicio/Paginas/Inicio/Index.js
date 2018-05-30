@@ -76,8 +76,9 @@ export default class PaginaInicio extends React.Component {
     const initData = global.initData.inicio.paginas.requerimientos;
 
     return (
-      <View style={{ backgroundColor: 'red', flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <MiListado
+          style={{ padding: 16, width: '100%' }}
           cargando={this.state.cargando}
           error={this.state.error}
           data={this.state.requerimientos}
@@ -87,9 +88,9 @@ export default class PaginaInicio extends React.Component {
               numero={item.item.numero}
               año={item.item.año}
               estadoColor={item.item.estadoColor}
-              estadoNombre={item.item.estadoNombre} 
+              estadoNombre={item.item.estadoNombre}
               fechaAlta={item.item.fechaAlta}
-              />;
+            />;
           }}
           renderEmpty={() => {
             return <View style={initData.styles.contenedor_Empty} >
@@ -101,7 +102,14 @@ export default class PaginaInicio extends React.Component {
 
               <Text style={initData.styles.textoEmpty}>{initData.textoEmpty_Mensaje}</Text>
 
-              <Button style={initData.styles.botonEmpty}><Text style={initData.styles.botonEmptyTexto}>{initData.botonEmpty_Texto}</Text></Button>
+              <Button
+                full={initData.botonEmpty_FullWidth}
+                transparent={initData.botonEmpty_Transparente}
+                rounded={initData.botonEmpty_Redondeado}
+                style={initData.styles.botonEmpty}>
+                <Text style={initData.styles.botonEmptyTexto}>{initData.botonEmpty_Texto}
+                </Text>
+              </Button>
             </View>
           }}
           renderError={() => {
@@ -114,9 +122,14 @@ export default class PaginaInicio extends React.Component {
 
               <Text style={initData.styles.textoError}>{initData.textoError_Mensaje}</Text>
 
-              <Button style={initData.styles.botonError} onPress={() => {
-                this.buscarRequerimientos();
-              }}>
+              <Button
+                full={initData.botonError_FullWidth}
+                transparent={initData.botonError_Transparente}
+                rounded={initData.botonError_Redondeado}
+                style={initData.styles.botonError}
+                onPress={() => {
+                  this.buscarRequerimientos();
+                }}>
                 <Text style={initData.styles.botonErrorTexto}>{initData.botonError_Texto}</Text>
               </Button>
             </View>

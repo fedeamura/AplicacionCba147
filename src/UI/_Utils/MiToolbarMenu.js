@@ -45,13 +45,16 @@ const tAnim = 500;
 const marginIcon = 16;
 const zIndexFront = 20;
 const hSolapamiento = 32;
-const hToolbarDefault = 72;
+let hToolbarDefault = 72;
 const hSombra = 16;
 
 export default class MiToolbarMenu extends React.Component {
 
   constructor(props) {
     super(props);
+
+
+    hToolbarDefault = global.initData.inicio.toolbar_Height;
 
     //Init
     this.initOpciones(props);
@@ -71,6 +74,7 @@ export default class MiToolbarMenu extends React.Component {
       expandido: this.props.expandido || false,
       animando: false,
       animandoExpandir: false,
+      animandoSeleccionar:false,
       opciones: props.opciones || [],
       hOpcion: this.hOpcion,
       hToolbar: props.toolbar_height || this.hToolbar,
@@ -103,9 +107,15 @@ export default class MiToolbarMenu extends React.Component {
     if (this.hToolbar > this.hOpcion) {
       this.hToolbar = this.hOpcion;
     }
+    if(Platform.OS=='ios'){
+      this.hToolbar+=20;
+    }
 
     //Calculo la posicion del toolbar minimizado
     this.yCollapse = -(this.hOpcion - this.hToolbar);
+    if(Platform.OS=='ios'){
+      this.yCollapse-=20;
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -142,6 +152,8 @@ export default class MiToolbarMenu extends React.Component {
 
     this.setState({
       animando: true,
+      animandoSeleccionar:true,
+      animandoExpandir: false,
       opcion: opcion,
       index: index,
       expandido: false
@@ -170,6 +182,7 @@ export default class MiToolbarMenu extends React.Component {
 
       Animated.parallel(animsPendientes).start(() => {
         this.setState({
+          animandoSeleccionar:false,
           animando: false
         });
       });
@@ -179,6 +192,7 @@ export default class MiToolbarMenu extends React.Component {
   expandir() {
     this.setState({
       animando: true,
+      animandoSeleccionar:false,
       animandoExpandir: true,
       expandido: true
     }, () => {
@@ -272,12 +286,19 @@ export default class MiToolbarMenu extends React.Component {
               zIndex = zIndexFront;
             }
 
-            const yExpandido = this.state.hOpcion * index;
+            let yExpandido = this.state.hOpcion * index;
+            if(Platform.OS=='ios'){
+              yExpandido-=20;
+            }
+
             let yTextoCollapse = (-(opcion.iconoFontSize + marginIcon) / 2) + ((this.state.hOpcion - this.state.hToolbar) / 2) - (25 / 2);
             if (Platform.OS === 'ios') {
               yTextoCollapse = yTextoCollapse + 10;
             }
             yTextoCollapse = 'icono' in opcion && opcion.icono != undefined ? yTextoCollapse : yTextoCollapse + ((opcion.iconoFontSize + marginIcon) / 2);
+            if(Platform.OS=='ios'){
+              // yTextoCollapse-=20;
+            }
 
             const anim = this.anims[index];
             const animBackground = this.animsBackground[index];
@@ -304,7 +325,7 @@ export default class MiToolbarMenu extends React.Component {
 
                     }]}>
                 <View style={styles.encabezado_Opcion}
-                  pointerEvents={this.state.animando == true ? "none" : "auto"}
+                  // pointerEvents={this.state.animando == true ? "none" : "auto"}
                 >
                   <TouchableWithoutFeedback
                     onPress={() => { this.onPressOpcion(opcion, index); }}>
@@ -406,7 +427,7 @@ export default class MiToolbarMenu extends React.Component {
                   transform: [{
                     translateY: this.state.opciones.length == 0 ? this.state.ySombraCollapse : this.anims[0].interpolate({
                       inputRange: [0, 1],
-                      outputRange: [0, (this.state.hOpcion * (this.state.index || 0)) + (this.state.hOpcion / 2)]
+                      outputRange: [Platform.OS == 'ios' ? ((this.hToolbar-20)/2) -20: -12, (this.state.hOpcion * (this.state.index || 0)) + (this.state.hOpcion / 2)]
                     })
                   }]
                 }]}>
@@ -475,7 +496,8 @@ export default class MiToolbarMenu extends React.Component {
             styles.content,
             {
               marginTop: this.state.hToolbar,
-              zIndex: this.state.animando || this.state.expandido ? -1 : 100
+              // zIndex:-1
+              zIndex: this.state.animandoSeleccionar==false && this.state.expandido==false ? 100 : -1
             }]}
           key={this.state.opcion}>
           {content}
@@ -496,6 +518,10 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     flexDirection: 'column',
+    top: Platform.select({
+      ios: 20,
+      android: 0
+    }),
     display: 'flex'
   },
   encabezado_Opcion: {
@@ -537,7 +563,9 @@ const styles = StyleSheet.create({
   btnLeft: {
     position: 'absolute',
     left: 8,
-    top: 20
+    height: 48,
+    zIndex: 100,
+    top: 16
   },
   btnLeftIcon: {
     color: 'white'

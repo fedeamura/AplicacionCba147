@@ -153,7 +153,7 @@ export default class MiListado extends React.Component {
     }
 
     return (
-      <View style={[styles.contenedor, this.props.style]}>
+      <View style={[styles.contenedor]}>
 
         {/* Listado */}
         <FlatList

@@ -349,7 +349,7 @@ export default class Login extends React.Component {
                 <View style={{ height: 16 }} />
 
                 <Button
-                  full
+                  full={initData.botonAcceder_FullWidth}
                   rounded={initData.botonAcceder_Redondeado}
                   disabled={this.state.cargandoLogin}
                   style={initData.styles.botonAcceder}
@@ -363,7 +363,8 @@ export default class Login extends React.Component {
                 </Button>
 
                 <Button
-                  full
+                  full={initData.botonRecuperarCuenta_FullWidth}
+                  transparent={initData.botonRecuperarCuenta_Transparente}
                   rounded={initData.botonRecuperarCuenta_Redondeado}
                   disabled={this.state.cargandoLogin}
                   onPress={() => {
@@ -377,7 +378,8 @@ export default class Login extends React.Component {
                 <View style={{ height: 32 }} />
 
                 <Button
-                  full
+                  full={initData.botonNuevoUsuario_FullWidth}
+                  transparent={initData.botonNuevoUsuario_Transparente}
                   rounded={initData.botonNuevoUsuario_Redondeado}
                   disabled={this.state.cargandoLogin}
                   style={initData.styles.botonNuevoUsuario}

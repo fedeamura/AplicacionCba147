@@ -36,6 +36,8 @@
                 "iconoFontFamily": "MaterialIcons"
             }
         },
+        //Toolbar
+        "toolbar_Height": 56,
         "toolbarExpandirAlHacerClick": false,
         "toolbarMostrarBotonCerrar": false,
         "toolbarIconoCerrar": "close",
@@ -45,6 +47,7 @@
         "toolbarIconoIzquierda": "menu",
         "toolbarIconoIzquierdaColor": "black",
         "toolbarIconoIzquierdaFontFamily": "MaterialIcons",
+        //Paginas
         "paginas": {
             "requerimientos": {
                 "styles": {
@@ -59,20 +62,20 @@
                         "marginTop": 8
                     },
                     "cardItemHeader": {
-                        "borderTopLeftRadius": 16, 
-                        "borderTopRightRadius": 16, 
+                        "borderTopLeftRadius": 16,
+                        "borderTopRightRadius": 16,
                         "display": "flex",
                         "flexDirection": "row",
                         "padding": 16
                     },
-                    "cardItemHeaderGradiente":{
-                        "position": "absolute", 
-                        "left": 0, 
-                        "top": 0, 
-                        "right": 0, 
-                        "bottom": 0, 
-                        "borderTopLeftRadius": 16, 
-                        "borderTopRightRadius": 16, 
+                    "cardItemHeaderGradiente": {
+                        "position": "absolute",
+                        "left": 0,
+                        "top": 0,
+                        "right": 0,
+                        "bottom": 0,
+                        "borderTopLeftRadius": 16,
+                        "borderTopRightRadius": 16,
                         "overflow": "hidden"
                     },
                     "cardItemContent": {},
@@ -96,15 +99,13 @@
                         "color": "black",
                         "textAlign": "center",
                         "marginTop": 0,
-                        "marginBottom": 0,
+                        "marginBottom": 16,
                         "marginLeft": 0,
                         "marginRight": 0
                     },
                     "botonEmpty": {
                         "backgroundColor": "green",
-                        "marginTop": 16,
-                        "alignSelf": "center",
-                        "borderRadius": 64
+                        "alignSelf": "center"
                     },
                     "botonEmptyTexto": {},
                     "contenedor_Error": {
@@ -127,53 +128,75 @@
                         "color": "black",
                         "textAlign": "center",
                         "marginTop": 0,
-                        "marginBottom": 0,
+                        "marginBottom": 16,
                         "marginLeft": 0,
                         "marginRight": 0
                     },
                     "botonError": {
                         "backgroundColor": "green",
-                        "marginTop": 16,
-                        "alignSelf": "center",
-                        "borderRadius": 64
+                        "alignSelf": "center"
                     },
                     "botonErrorTexto": {}
                 },
+                //Empty
                 "imagenEmpty_ResizeMode": "cover",
                 "imagenEmpty_Url": "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png",
                 "textoEmpty_Mensaje": "No tenes ningun requerimiento aún...",
                 "botonEmpty_Texto": "Registrar uno",
+                "botonEmpty_FullWidth": false,
+                "botonEmpty_Redondeado": true,
+                "botonEmpty_Transparente": false,
+                //Error
                 "imagenError_ResizeMode": "cover",
                 "imagenError_Url": "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png",
                 "textoError_Mensaje": "Oops... al parecer algo salió mal al consultar sus requerimientos",
-                "botonError_Texto": "Reintentar"
+                "botonError_Texto": "Reintentar",
+                "botonError_FullWidth": false,
+                "botonError_Redondeado": true,
+                "botonError_Transparente": false
             }
         }
     },
     "login": {
+        //Boton acceder
         "botonAcceder_ColorCargando": "white",
-        "botonAcceder_Redondeado": true,
         "botonAcceder_Texto": "Acceder",
         "botonAcceder_TextoCargando": "Cargando...",
-        "botonNuevoUsuario_Redondeado": true,
+        "botonAcceder_Transparente": false,
+        "botonAcceder_FullWidth": true,
+        "botonAcceder_Redondeado": true,
+        //Boton nuevo
         "botonNuevoUsuario_Texto": "Crear usuario",
-        "botonRecuperarCuenta_Redondeado": true,
+        "botonNuevoUsuario_Transparente": false,
+        "botonNuevoUsuario_FullWidth": false,
+        "botonNuevoUsuario_Redondeado": true,
+        //Boton recuperar cuenta
         "botonRecuperarCuenta_Texto": "¿Olvidaste tu contraseña?",
+        "botonRecuperarCuenta_Transparente": true,
+        "botonRecuperarCuenta_Redondeado": true,
+        "botonRecuperarCuenta_FullWidth": true,
+        //Errores
         "error_ContraseñaRequerida": "Dato requerido",
         "error_IniciandoSesion": "Error iniciando sesion",
         "error_UsuarioRequerido": "Dato requerido",
+        //Imagen fondo
         "imagenFondo_ResizeMode": "cover",
         "imagenFondo_Url": "https://servicios2.cordoba.gov.ar/CBA147/Resources/Imagenes/fondo_login_oscura.jpg",
+        //Imagen logo
         "imagenLogo_ResizeMode": "cover",
         "imagenLogo_Url": "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw",
+        //Input password
         "inputPassword_Icono": "vpn-key",
         "inputPassword_IconoColor": "black",
         "inputPassword_Texto": "Contraseña",
+        //Input usuario
         "inputUsuario_Icono": "person",
         "inputUsuario_IconoColor": "black",
         "inputUsuario_Texto": "Usuario",
+        //Status bar
         "statusBar_BackgroundColor": "transparent",
         "statusBar_Style": "light-content",
+        //Styles
         "styles": {
             "botonAcceder": {
                 "alignSelf": "center",
@@ -186,7 +209,7 @@
             },
             "botonNuevoUsuario": {
                 "alignSelf": "center",
-                "backgroundColor": "rgba(0,0,0,0.5)",
+                "backgroundColor": "rgba(100,100,100,1)",
                 "minHeight": 48
             },
             "botonNuevoUsuarioTexto": {
@@ -194,7 +217,6 @@
             },
             "botonRecuperarCuenta": {
                 "alignSelf": "center",
-                "backgroundColor": "transparent",
                 "minHeight": 48,
                 "width": "auto"
             },
