@@ -150,7 +150,6 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                             padding: 16,
                             paddingTop: 20 + 16
                         }}>
-                    <Text>Servicio: {this.props.servicioNombre}</Text>
                     <Text
                         style={{
                             textAlign: 'center',
@@ -162,6 +161,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                 <View style={{ flex: 1 }}>
                     <ScrollView
                         scrollEventThrottle={1}
+                        contentContainerStyle={{paddingBottom:16}}
                         onScroll={
                             Animated.event(
                                 [{ nativeEvent: { contentOffset: { y: this.animScrollY } } }]
@@ -213,30 +213,6 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
 
                     </Animated.View>
                 </View>
-
-
-
-                {/* {
-                    this.state.cargando == false && (
-                        <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-
-                            <Button
-                                style={{ position: 'absolute', left: 16, bottom: 16 }}
-                                onPress={() => {
-                                    this.actualizar();
-                                }}
-                            ><Text>Actualizar</Text></Button>
-
-                            <Button
-                                style={{ position: 'absolute', right: 16, bottom: 16 }}
-                                onPress={() => {
-                                    this.props.onSiguiente();
-                                }}
-                            ><Text>Siguiente</Text></Button>
-                        </View>
-
-                    )
-                } */}
             </View >
         );
     }

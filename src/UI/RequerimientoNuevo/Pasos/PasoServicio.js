@@ -147,7 +147,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                             flexDirection: 'row',
                             justifyContent: 'center',
                             padding: 16,
-                            paddingTop:20+16
+                            paddingTop: 20 + 16
                         }}>
                     <Text
                         style={{
@@ -159,7 +159,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
                 <View style={{ flex: 1 }}>
                     <ScrollView
-                        scrollEventThrottle={1}
+                        scrollEventThrottle={16}
+                        contentContainerStyle={{ paddingBottom: 16 }}
                         onScroll={
                             Animated.event(
                                 [{ nativeEvent: { contentOffset: { y: this.animScrollY } } }]

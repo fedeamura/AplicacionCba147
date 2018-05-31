@@ -169,22 +169,16 @@ export default class PaginaInicio extends React.Component {
           refreshing={this.state.cargando}
         />
 
-        {/* <Animated.View
+        <Animated.View
+          pointerEvents={(this.state.cargando || this.state.error || (this.state.data != undefined && this.state.data.length == 0)) ? "none" : "auto"}
           style={{
             opacity: this.animBoton.interpolate({
               inputRange: [0, 1],
               outputRange: [0, 1]
-            }),
-            transform: [
-              {
-                translateY: this.animBoton.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [200, 1]
-                })
-              }
-            ]
+            })
           }}
-        > */}
+        >
+
           <Button
             iconLeft
             rounded={initData.botonNuevoRequerimiento_Redondeado}
@@ -204,7 +198,7 @@ export default class PaginaInicio extends React.Component {
             </Text>
           </Button>
 
-        {/* </Animated.View> */}
+        </Animated.View>
       </View >
     );
   }
