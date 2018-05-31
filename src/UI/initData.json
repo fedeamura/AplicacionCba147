@@ -136,7 +136,21 @@
                         "backgroundColor": "green",
                         "alignSelf": "center"
                     },
-                    "botonErrorTexto": {}
+                    "botonErrorTexto": {},
+                    "botonNuevoRequerimiento": {
+                        "position": "absolute",
+                        "bottom": 16,
+                        "alignSelf": "center",
+                        "backgroundColor": "green"
+                    },
+                    "botonNuevoRequerimiento_Icono": {
+                        "fontSize": 32,
+                        "left":8,
+                        "color": "white"
+                    },
+                    "botonNuevoRequerimiento_Texto": {
+                        "color": "white"
+                    }
                 },
                 //Empty
                 "imagenEmpty_ResizeMode": "cover",
@@ -153,7 +167,14 @@
                 "botonError_Texto": "Reintentar",
                 "botonError_FullWidth": false,
                 "botonError_Redondeado": true,
-                "botonError_Transparente": false
+                "botonError_Transparente": false,
+                //Nuevo Requerimiento
+                "botonNuevoRequerimiento_Texto": "Nuevo requerimiento",
+                "botonNuevoRequerimiento_Icono": "plus-circle-outline",
+                "botonNuevoRequerimiento_IconoFontFamily": "MaterialCommunityIcons",
+                "botonNuevoRequerimiento_FullWidth": false,
+                "botonNuevoRequerimiento_Redondeado": true,
+                "botonNuevoRequerimiento_Transparente": false
             }
         }
     },

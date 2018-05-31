@@ -48,6 +48,36 @@ export default class Rules_Servicio extends React.Component {
           },
           {
             id: 2,
+            nombre: 'Higiene urbana',
+            principal: true
+          },
+          {
+            id: 2,
+            nombre: 'Higiene urbana',
+            principal: true
+          },
+          {
+            id: 2,
+            nombre: 'Higiene urbana',
+            principal: true
+          },
+          {
+            id: 2,
+            nombre: 'Higiene urbana',
+            principal: true
+          },
+          {
+            id: 2,
+            nombre: 'Higiene urbana',
+            principal: true
+          },
+          {
+            id: 2,
+            nombre: 'Higiene urbana',
+            principal: true
+          },
+          {
+            id: 2,
             nombre: 'Higiene urbana'
           },
           {

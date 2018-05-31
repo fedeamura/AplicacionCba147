@@ -41,10 +41,24 @@ export default class PaginaInicio extends React.Component {
       error: undefined,
       requerimientos: []
     };
+
+    this.animBoton = new Animated.Value(0);
   }
 
   componentDidMount() {
     this.buscarRequerimientos();
+  }
+
+  mostrarBotonNuevo() {
+    Animated.spring(this.animBoton, {
+      toValue: 1
+    }).start();
+  }
+
+  ocultarBotonNuevo() {
+    Animated.spring(this.animBoton, {
+      toValue: 0
+    }).start();
   }
 
   buscarRequerimientos() {
@@ -54,11 +68,19 @@ export default class PaginaInicio extends React.Component {
       cargando: true
     }, () => {
 
+      this.ocultarBotonNuevo();
+
       Rules_Requerimiento.get()
         .then((requerimientos) => {
           this.setState({
             cargando: false,
             requerimientos: requerimientos
+          }, () => {
+            if (requerimientos.length == 0) {
+              this.ocultarBotonNuevo();
+            } else {
+              this.mostrarBotonNuevo();
+            }
           });
 
         }).catch((error) => {
@@ -66,11 +88,18 @@ export default class PaginaInicio extends React.Component {
             cargando: false,
             requerimientos: [],
             error: error
+          }, () => {
+            this.ocultarBotonNuevo();
           });
         })
     });
 
   }
+
+  abrirNuevoRequerimiento() {
+    App.navegar('RequerimientoNuevo');
+  }
+
   render() {
 
     const initData = global.initData.inicio.paginas.requerimientos;
@@ -78,8 +107,8 @@ export default class PaginaInicio extends React.Component {
     return (
       <View style={{ flex: 1 }}>
         <MiListado
-          style={{ padding: 16, width: '100%' }}
-          cargando={this.state.cargando}
+          style={{ padding: 16, paddingBottom: 72 }}
+          // cargando={this.state.cargando}
           error={this.state.error}
           data={this.state.requerimientos}
           keyExtractor={(item) => { return item.id }}
@@ -134,8 +163,48 @@ export default class PaginaInicio extends React.Component {
               </Button>
             </View>
           }}
+          onRefresh={() => {
+            this.buscarRequerimientos();
+          }}
+          refreshing={this.state.cargando}
         />
 
+        {/* <Animated.View
+          style={{
+            opacity: this.animBoton.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 1]
+            }),
+            transform: [
+              {
+                translateY: this.animBoton.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [200, 1]
+                })
+              }
+            ]
+          }}
+        > */}
+          <Button
+            iconLeft
+            rounded={initData.botonNuevoRequerimiento_Redondeado}
+            transparent={initData.botonNuevoRequerimiento_Transparent}
+            full={initData.botonNuevoRequerimiento_FullWidth}
+            style={initData.styles.botonNuevoRequerimiento}
+            onPress={() => {
+              this.abrirNuevoRequerimiento();
+            }}
+          >
+            <Icon
+              style={initData.styles.botonNuevoRequerimiento_Icono}
+              type={initData.botonNuevoRequerimiento_IconoFontFamily}
+              name={initData.botonNuevoRequerimiento_Icono} />
+            <Text style={initData.styles.botonNuevoRequerimiento_Texto}>
+              {initData.botonNuevoRequerimiento_Texto}
+            </Text>
+          </Button>
+
+        {/* </Animated.View> */}
       </View >
     );
   }

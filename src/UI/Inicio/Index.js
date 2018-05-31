@@ -21,7 +21,10 @@ import {
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
 import MiToolbarMenu from "@Utils/MiToolbarMenu";
-import PaginaInicio from "@Paginas/Inicio/Index";
+import PaginaInicio from "@Paginas/Requerimientos/Index";
+import PaginaPerfil from "@Paginas/Perfil/Index";
+import PaginaAjustes from "@Paginas/Ajustes/Index";
+
 
 //Anims
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -68,7 +71,7 @@ export default class Login extends React.Component {
           iconoColor: initData.menu.perfil.iconoColor,
           iconoFontFamily: initData.menu.perfil.iconoFontFamily,
           valor: 1,
-          contenido: (<PaginaInicio />)
+          contenido: (<PaginaPerfil />)
         },
         {
           titulo: initData.menu.ajustes.titulo,
@@ -81,7 +84,7 @@ export default class Login extends React.Component {
           iconoColor: initData.menu.ajustes.iconoColor,
           iconoFontFamily: initData.menu.ajustes.iconoFontFamily,
           valor: 2,
-          contenido: (<PaginaInicio />)
+          contenido: (<PaginaAjustes />)
         }
         // ,
         // {

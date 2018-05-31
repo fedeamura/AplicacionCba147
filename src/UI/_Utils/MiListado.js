@@ -22,60 +22,59 @@ export default class MiListado extends React.Component {
     this.state = {
       mostrandoError: false,
       mostrandoEmpty: false,
-      mostrandoCargando: false
+      // mostrandoCargando: false
     };
 
-    this.anim_Cargando = new Animated.Value(0);
+    // this.anim_Cargando = new Animated.Value(0);
     this.anim_Empty = new Animated.Value(0);
     this.anim_Error = new Animated.Value(0);
   }
 
   componentWillReceiveProps(nextProps) {
-    let cargando = false;
+    // let cargando = false;
     let empty = false;
     let error = false;
 
-    if ('cargando' in nextProps && nextProps.cargando == true) {
-      cargando = true;
-      this.mostrarCargando();
+
+    if ('error' in nextProps && nextProps.error != undefined) {
+      error = true;
+      this.mostrarError();
     } else {
-      this.ocultarCargando();
+      this.ocultarError();
 
-      if ('error' in nextProps && nextProps.error != undefined) {
-        error = true;
-        this.mostrarError();
-      } else {
-        this.ocultarError();
-
-        if (!('data' in nextProps) || nextProps.data.length == 0) {
+      if (!('data' in nextProps) || nextProps.data.length == 0) {
+        if ('refreshing' in nextProps && nextProps.refreshing == true) {
+          this.ocultarEmpty();
+        } else {
           empty = true;
           this.mostrarEmpty();
-        } else {
-          this.ocultarEmpty();
         }
+      } else {
+        this.ocultarEmpty();
       }
     }
 
+
     this.setState({
-      mostrandoCargando: cargando,
+      // mostrandoCargando: cargando,
       mostrandoEmpty: empty,
       mostrandoError: error
     });
   }
 
-  mostrarCargando() {
-    Animated.timing(this.anim_Cargando, {
-      duration: 500,
-      toValue: 1
-    }).start();
-  }
+  // mostrarCargando() {
+  //   Animated.timing(this.anim_Cargando, {
+  //     duration: 500,
+  //     toValue: 1
+  //   }).start();
+  // }
 
-  ocultarCargando() {
-    Animated.timing(this.anim_Cargando, {
-      duration: 500,
-      toValue: 0
-    }).start();
-  }
+  // ocultarCargando() {
+  //   Animated.timing(this.anim_Cargando, {
+  //     duration: 500,
+  //     toValue: 0
+  //   }).start();
+  // }
 
   mostrarError() {
     Animated.timing(this.anim_Error, {
@@ -108,20 +107,20 @@ export default class MiListado extends React.Component {
 
   render() {
 
-    //Cargando
-    let viewCargando;
-    if (this.props.renderCargando != undefined) {
-      viewCargando = this.props.renderCargando();
-    } else {
-      viewCargando = (
-        <View style={{
-          width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white',
-        }}>
-          <Spinner color="black" />
-        </View>
+    // //Cargando
+    // let viewCargando;
+    // if (this.props.renderCargando != undefined) {
+    //   viewCargando = this.props.renderCargando();
+    // } else {
+    //   viewCargando = (
+    //     <View style={{
+    //       width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white',
+    //     }}>
+    //       <Spinner color="black" />
+    //     </View>
 
-      );
-    }
+    //   );
+    // }
 
     //Empty
     let viewEmpty;
@@ -161,15 +160,18 @@ export default class MiListado extends React.Component {
             if (this.props.refListado == undefined) return;
             this.props.refListado(ref);
           }}
-          style={[styles.listado, this.props.style]}
+          style={[styles.listado]}
           data={this.props.data}
+          contentContainerStyle={this.props.style}
           keyExtractor={this.props.keyExtractor}
           renderItem={item => {
             return this.props.renderItem(item);
           }}
+          onRefresh={this.props.onRefresh}
+          refreshing={this.props.refreshing}
         />
 
-        {/* Cargando */}
+        {/* Cargando
         <Animated.View
           pointerEvents={this.state.mostrandoCargando ? "auto" : "none"}
           style={
@@ -186,7 +188,7 @@ export default class MiListado extends React.Component {
                 })
               }]}>
           {viewCargando}
-        </Animated.View>
+        </Animated.View> */}
 
         {/* Error */}
         <Animated.View
@@ -237,12 +239,14 @@ const styles = StyleSheet.create({
   contenedor: {
     position: 'relative',
     width: '100%',
-    height: '100%'
+    flex: 1,
+    display: 'flex'
   },
   listado: {
     backgroundColor: 'white',
     width: '100%',
-    height: '100%',
+    top: 0,
+    bottom: 0,
     position: 'absolute'
   },
   cargando: {

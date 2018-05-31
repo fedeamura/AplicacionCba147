@@ -14,17 +14,76 @@ export default class ServicioCardItem extends React.Component {
   }
 
   render() {
-    const w = (Dimensions.get('window').width - 72) / this.props.cols;
-    const wCard = 104;
-
     return (
-      <View style={{width: w,height: w, display:'flex', justifyContent:'center', alignItems:'center', marginBottom:16}}>
-        <Card style={[{width:wCard,height: wCard, margin:8, borderRadius:200}]} onPress={()=>{this.props.onPress()}}>
-          <CardContent style={{backgroundColor: 'rgba(0,0,0,0.1)',borderRadius:200, height:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
-            <Icon name="flash" style={{fontSize:56, backgroundColor:'transparent'}}/>
+      <View style={
+        [
+          {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          },
+          this.props.style || {}
+        ]
+      }>
+        <Card
+          style={
+            [
+              {
+                width: 72,
+                height: 72,
+                margin: 8,
+                borderRadius: 200
+              },
+              this.props.cardStyle || {}
+            ]
+          }
+          onPress={this.props.onPress}
+        >
+          <CardContent
+            style={
+              [
+                {
+                  backgroundColor: 'white',
+                  borderRadius: 200,
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }
+              ]
+            }>
+            {this.props.icono != undefined && (
+              <Icon
+                name={this.props.icono}
+                style={
+                  [
+                    {
+                      backgroundColor: 'transparent',
+                      color: 'black',
+                      fontSize: 48
+                    },
+                    this.props.iconoStyle
+                  ]
+                } />
+            )}
           </CardContent>
         </Card>
-        <Text style={{backgroundColor:'transparent', fontSize:22, marginTop:4}}>Hola</Text>
+        {this.props.texto != undefined && (
+          <Text
+            numberOfLines={this.props.textoLines || 2}
+            style={
+              [
+                {
+                  textAlign: 'center',
+                  backgroundColor: 'transparent',
+                  fontSize: 22,
+                  maxWidth: 72,
+                  marginTop: 4
+                },
+                this.props.textoStyle || {}
+              ]
+            }>{this.props.texto}</Text>
+        )}
       </View>
 
     );

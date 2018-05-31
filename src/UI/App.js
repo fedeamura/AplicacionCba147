@@ -26,8 +26,8 @@ import Login from "@UI/Login/Index";
 import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
 import RecuperarCuenta from "@UI/RecuperarCuenta/Index";
 import Inicio from "@UI/Inicio/Index";
-import Nuevo from "@UI/Nuevo/Index";
-import Ajustes from "@UI/Ajustes/Index";
+import RequerimientoNuevo from "@UI/RequerimientoNuevo/Index";
+
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 
@@ -50,17 +50,8 @@ const RootStack = StackNavigator(
     Inicio: {
       screen: Inicio
     },
-    Nuevo: {
-      screen: Nuevo
-    },
-    Ajustes: {
-      screen: Ajustes
-    },
-    MiPicker: {
-      screen: MiPicker
-    },
-    MiPickerUbicacion: {
-      screen: MiPickerUbicacion
+    RequerimientoNuevo: {
+      screen: RequerimientoNuevo
     }
   },
   {
