@@ -52,6 +52,9 @@ const RootStack = StackNavigator(
     },
     RequerimientoNuevo: {
       screen: RequerimientoNuevo
+    },
+    PickerUbicacion: {
+      screen: MiPickerUbicacion
     }
   },
   {
@@ -101,9 +104,8 @@ export default class App extends React.Component {
     goBack(null);
   }
 
-  static navegar(pagina) {
-    const { navigate } = global.navigator._navigation;
-    navigate(pagina);
+  static navegar(pagina, params) {
+    App.getNavigator().navigate(pagina, params);
   }
 
   static getNavigator() {

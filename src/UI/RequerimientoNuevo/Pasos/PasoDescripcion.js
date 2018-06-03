@@ -14,11 +14,13 @@ import {
     Container,
     Button,
     Text,
+    Item,
     Input,
+    Textarea,
+    Label,
     ListItem,
     Content,
-    CardItem,
-    Label
+    CardItem
 } from "native-base";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
@@ -31,14 +33,6 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 
 //Mis componentes
 import App from "@UI/App";
-import CardServicio from "@Utils/Servicio/CardItem";
-import MiListado from "@Utils/MiListado";
-
-import Rules_Motivo from "@Rules/Rules_Motivo";
-
-
-const MAX_FONT_SIZE = 40;
-const MIN_FONT_SIZE = 10;
 
 export default class RequerimientoNuevo_PasoDescripcion extends React.Component {
 
@@ -47,58 +41,35 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
         super(props);
 
         this.state = {
-            descripcion: ''
+            descripcion: ""
         };
-
-        this.animScrollY = new Animated.Value(0);
     }
 
-    componentDidMount() {
-    }
-
-    informarListo() {
-        if (this.props.onDescripcionLista != undefined) {
-            this.props.onDescripcionLista(this.state.descripcion);
+    informarSeleccion() {
+        if (this.props.onReady != undefined) {
+            this.props.onReady(this.state.descripcion);
         }
     }
 
     render() {
-        const opacitySombra = this.animScrollY.interpolate({
-            inputRange: [0, 20],
-            outputRange: [0, 1]
-        });
-
-        // const initData = global.initData.requerimientoNuevo.pasos.servicio;
-
         return (
-            <View style={{ flex: 1 }}>
 
+            <View>
 
-                <View style={{ flex: 1 }}>
-                    <ScrollView
-                        scrollEventThrottle={1}
-                        contentContainerStyle={{ padding: 16 }}
-                    >
+                <View style={{ margin: 32 }}>
+                    <Textarea
+                        onChangeText={(text) => { this.setState({ descripcion: text }) }}
+                        style={{ fontSize: 22 }} rowSpan={5} placeholder="Contanos que está pasando..." />
 
-                        <Text style={{ fontSize: 32, marginTop: 16, marginBottom: 16 }}>Ingresá una descripcion de tu inconveniente</Text>
-                        <Input
-                            onChangeText={(text) => {
-                                this.setState({ descripcion: text });
-                            }}
-                            multiline={true}
-                            placeholder="Contanos que esta pasando..." style={{ fontSize: 24 }} />
-                    </ScrollView>
-
-
-                    <Button
-                        onPress={() => {
-                            this.informarListo();
-                        }}
-                        disabled={this.state.descripcion == ""}
-                        style={{ position: 'absolute', right: 16, bottom: 16 }}>
-                        <Text>Siguiente</Text>
-                    </Button>
                 </View>
+
+                <Button
+                    onPress={() => {
+                        this.informarSeleccion();
+                    }}
+                    rounded
+                    disabled={this.state.descripcion == undefined || this.state.descripcion.trim() == ""} style={{ alignSelf: 'flex-end', marginRight: 32 }}><Text>Siguiente</Text></Button>
+
             </View >
         );
     }

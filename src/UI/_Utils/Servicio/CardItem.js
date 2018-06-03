@@ -43,7 +43,7 @@ export default class ServicioCardItem extends React.Component {
             style={
               [
                 {
-                  backgroundColor: 'white',
+                  backgroundColor: this.props.cardColor || 'white',
                   borderRadius: 200,
                   height: '100%',
                   display: 'flex',

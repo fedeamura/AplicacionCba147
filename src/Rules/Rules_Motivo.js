@@ -2,63 +2,40 @@ import React, { Component } from "react";
 import App from "Cordoba/src/UI/App";
 
 export default class Rules_Motivo extends React.Component {
-  static get() {
+  static get(idServicio) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([
           {
             id: 1,
-            nombre: 'Alumbrado',
+            nombre: 'Motivo 1',
             principal: true
           },
           {
             id: 2,
-            nombre: 'Higiene urbana',
+            nombre: 'Motivo 2',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana',
+            id: 3,
+            nombre: 'Motivo 3',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana',
+            id: 4,
+            nombre: 'Motivo 4',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana',
+            id: 5,
+            nombre: 'Motivo 5',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana',
+            id: 6,
+            nombre: 'Motivo 6',
             principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana'
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana'
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana'
           }
-
         ])
       }, 500);
       // const url =

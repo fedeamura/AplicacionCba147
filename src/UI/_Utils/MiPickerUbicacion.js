@@ -59,53 +59,51 @@ export default class MiPickerUbicacion extends React.Component {
   }
 
   buscar() {
-    if (this.state.busqueda == undefined || this.state.busqueda == "") {
-      this.setState({
-        errorSurgerencias: undefined,
-        buscandoSugerencias: false,
-        sugerencias: []
-      });
+    // if (this.state.busqueda == undefined || this.state.busqueda == "") {
+    //   this.setState({
+    //     errorSurgerencias: undefined,
+    //     buscandoSugerencias: false,
+    //     sugerencias: []
+    //   });
 
-      Animated.spring(this.animSugerencias, {
-        toValue: 0
-      }).start();
+    //   Animated.spring(this.animSugerencias, {
+    //     toValue: 0
+    //   }).start();
 
-      return;
-    }
+    //   return;
+    // }
 
-    Animated.spring(this.animSugerencias, {
-      toValue: 1
-    }).start();
+    // Animated.spring(this.animSugerencias, {
+    //   toValue: 1
+    // }).start();
 
-    this.setState({
-      buscandoSugerencias: true
-    }, () => {
-      Rules_Domicilio.buscarCoordenada(this.state.busqueda)
-        .then((results) => {
-          this.setState({
-            errorSurgerencias: undefined,
-            buscandoSugerencias: false,
-            sugerencias: results
-          });
-        })
-        .catch((error) => {
-          this.setState({
-            buscandoSugerencias: false,
-            errorSurgerencias: 'Error buscando',
-            sugerencias: []
-          });
-        });
-    });
+    // this.setState({
+    //   buscandoSugerencias: true
+    // }, () => {
+    //   Rules_Domicilio.buscarCoordenada(this.state.busqueda)
+    //     .then((results) => {
+    //       this.setState({
+    //         errorSurgerencias: undefined,
+    //         buscandoSugerencias: false,
+    //         sugerencias: results
+    //       });
+    //     })
+    //     .catch((error) => {
+    //       this.setState({
+    //         buscandoSugerencias: false,
+    //         errorSurgerencias: 'Error buscando',
+    //         sugerencias: []
+    //       });
+    //     });
+    // });
 
   }
 
   onMapaClick(coordenadas) {
-    App.animar();
-    this.setState({ marcador: coordenadas })
+
   }
 
   render() {
-    const { goBack } = this.props.navigation;
     const { params } = this.props.navigation.state;
 
     return (
@@ -143,13 +141,14 @@ export default class MiPickerUbicacion extends React.Component {
 
             <View style={styles.contenedorBotones}>
 
-              < Button onPress={() => {
-                this.setState({
-                  cargarMapa: false
-                }, () => {
-                  goBack();
-                });
-              }}
+              <Button
+                onPress={() => {
+                  this.setState({
+                    cargarMapa: false
+                  }, () => {
+                    App.goBack();
+                  });
+                }}
 
                 raised >Cancelar</Button>
 
@@ -158,10 +157,10 @@ export default class MiPickerUbicacion extends React.Component {
                   this.setState({
                     cargarMapa: false
                   }, () => {
-                    if (params != undefined && 'onUbicacionSeleccionada' in params) {
+                    if (params != undefined && params.onUbicacionSeleccionada != undefined) {
                       params.onUbicacionSeleccionada(this.state.marcador);
+                      App.goBack();
                     }
-                    goBack();
                   });
                 }}
                   raised color="green" style={styles.btnConfirmar}>Confirmar ubicación</Button>
@@ -173,7 +172,7 @@ export default class MiPickerUbicacion extends React.Component {
           )}
 
 
-        <Animated.View style={[styles.contenedorSurgerencias, {
+        {/* <Animated.View style={[styles.contenedorSurgerencias, {
           opacity: this.animSugerencias.interpolate({
             inputRange: [0, 1],
             outputRange: [0, 1],
@@ -194,7 +193,7 @@ export default class MiPickerUbicacion extends React.Component {
 
           </Card>
 
-        </Animated.View>
+        </Animated.View> */}
 
       </View >
     );
@@ -249,3 +248,4 @@ const styles = StyleSheet.create({
     height: 100
   }
 });
+

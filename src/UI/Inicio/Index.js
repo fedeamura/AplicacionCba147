@@ -86,57 +86,11 @@ export default class Login extends React.Component {
           valor: 2,
           contenido: (<PaginaAjustes />)
         }
-        // ,
-        // {
-        //   text: initData.menu.perfil.titulo,
-        //   icon: initData.menu.perfil.icono,
-        //   iconFontFamily: initData.menu.perfil.iconoFontFamily,
-        //   value: 1,
-        //   color: initData.menu.perfil.color,
-        //   content: (<View style={{ backgroundColor: 'rgb(255, 96, 95)', width: '100%', height: '100%' }}><Text>Perfil</Text></View>)
-        // },
-        // {
-        //   text: initData.menu.ajustes.titulo,
-        //   icon: initData.menu.ajustes.icono,
-        //   iconFontFamily: initData.menu.ajustes.iconoFontFamily,
-        //   value: 2,
-        //   color: initData.menu.ajustes.color,
-        //   content: (<View style={{ backgroundColor: 'rgb(0, 168, 255)', width: '100%', height: '100%' }}><Text>Ajustes</Text></View>)
-        // }
       ]
     };
 
     this.keyboardHeight = new Animated.Value(0);
   }
-
-  // componentWillMount() {
-  //   this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
-  //   this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
-  // }
-
-  // componentWillUnmount() {
-  //   this.keyboardWillShowSub.remove();
-  //   this.keyboardWillHideSub.remove();
-  // }
-
-  // keyboardWillShow = (event) => {
-  //   this.teclado = true;
-
-  //   Animated.timing(this.keyboardHeight, {
-  //     duration: event.duration,
-  //     toValue: event.endCoordinates.height + 100,
-  //   }).start();
-  // }
-
-  // keyboardWillHide = (event) => {
-  //   this.teclado = false;
-
-  //   Animated.timing(this.keyboardHeight, {
-  //     duration: event.duration,
-  //     toValue: 0,
-  //   }).start();
-  // }
-
 
   render() {
     const initData = global.initData.inicio;

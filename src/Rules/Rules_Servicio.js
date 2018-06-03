@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import App from "@UI/App";
 
 export default class Rules_Servicio extends React.Component {
+
   static get() {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
@@ -9,46 +10,6 @@ export default class Rules_Servicio extends React.Component {
           {
             id: 1,
             nombre: 'Alumbrado',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Higiene urbana',
             principal: true
           },
           {
@@ -118,6 +79,45 @@ export default class Rules_Servicio extends React.Component {
       //     callbackError("Error procesando la solicitud");
       //   });
 
+    });
+  }
+
+  static getPrincipales() {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback([
+          {
+            id: 1,
+            nombre: 'Servicio 1',
+            principal: true
+          },
+          {
+            id: 2,
+            nombre: 'Servicio 2',
+            principal: true
+          },
+          {
+            id: 3,
+            nombre: 'Servicio 3',
+            principal: true
+          },
+          {
+            id: 4,
+            nombre: 'Servicio 4',
+            principal: true
+          },
+          {
+            id: 5,
+            nombre: 'Servicio 5',
+            principal: true
+          },
+          {
+            id: 6,
+            nombre: 'Servicio 6',
+            principal: true
+          }
+        ])
+      }, 500);
     });
   }
 }

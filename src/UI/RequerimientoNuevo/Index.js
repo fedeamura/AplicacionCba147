@@ -21,6 +21,8 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
+import LinearGradient from 'react-native-linear-gradient';
+import color from "color";
 
 //Anims
 UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -38,14 +40,21 @@ import PasoDescripcion from "@RequerimientoNuevoPasos/PasoDescripcion";
 import PasoUbicacion from "@RequerimientoNuevoPasos/PasoUbicacion";
 import PasoFoto from "@RequerimientoNuevoPasos/PasoFoto";
 import PasoConfirmacion from "@RequerimientoNuevoPasos/PasoConfirmacion";
+import IndicadorPaso from "./IndicadorPaso";
 
 
 export default class RequerimientoNuevo extends React.Component {
+  static navigationOptions = {
+    title: "Nuevo requerimiento",
+    header: null,
+    gesturesEnabled: false
+  };
 
   constructor(props) {
     super(props);
 
     this.state = {
+      cargando: true,
       pasos: [
         {
           nombre: 'servicio',
@@ -72,15 +81,32 @@ export default class RequerimientoNuevo extends React.Component {
           completado: false,
           data: undefined
         }],
-      indexPaso: 0
+      pasoActual: 1,
+      servicio: undefined,
+      motivo: undefined
     };
 
-    this.animPaso = new Animated.Value(0);
+    this.animPaso1 = new Animated.Value(1);
+    this.animPaso2 = new Animated.Value(0);
+    this.animPaso3 = new Animated.Value(0);
+    this.animPaso4 = new Animated.Value(0);
+    this.animPaso5 = new Animated.Value(0);
+    this.animPaso6 = new Animated.Value(0);
+
     this.keyboardHeight = new Animated.Value(0);
   }
 
   componentDidMount() {
-
+    this.setState({
+      cargando: true
+    }, () => {
+      Rules_Servicio.getPrincipales().then((servicios) => {
+        this.setState({
+          cargando: false,
+          servicios: servicios
+        });
+      });
+    })
   }
 
   componentWillMount() {
@@ -112,234 +138,213 @@ export default class RequerimientoNuevo extends React.Component {
     }).start();
   }
 
-  animarCambiarPaginaSiguiente() {
-    let indexNuevo = this.state.indexPaso + 1;
-    if (indexNuevo >= this.state.pasos.length) return
+  mostrarPaso(paso) {
+    this.setState({
+      pasoActual: paso
+    }, () => {
+      let anim1 = Animated.timing(this.animPaso1, { toValue: paso == 1 ? 1 : 0, duration: 300 });
+      let anim2 = Animated.timing(this.animPaso2, { toValue: paso == 2 ? 1 : 0, duration: 300 });
+      let anim3 = Animated.timing(this.animPaso3, { toValue: paso == 3 ? 1 : 0, duration: 300 });
+      let anim4 = Animated.timing(this.animPaso4, { toValue: paso == 4 ? 1 : 0, duration: 300 });
+      let anim5 = Animated.timing(this.animPaso5, { toValue: paso == 5 ? 1 : 0, duration: 300 });
+      let anim6 = Animated.timing(this.animPaso6, { toValue: paso == 6 ? 1 : 0, duration: 300 });
 
-    Animated.timing(this.animPaso, {
-      duration: 300,
-      toValue: -1,
-      useNativeDriver: true
-    }).start(() => {
-      this.setState({
-        indexPaso: indexNuevo
-      }, () => {
-        Animated.timing(this.animPaso, {
-          duration: 0,
-          toValue: 1,
-          useNativeDriver: true
-        }).start(() => {
-          Animated.timing(this.animPaso, {
-            duration: 300,
-            toValue: 0,
-            useNativeDriver: true
-          }).start();
-        });
-      });
-
+      Animated.parallel([anim1, anim2, anim3, anim4, anim5, anim6]).start();
     });
-  }
-
-  animarCambiarPaginaAnterior() {
-    let indexNuevo = this.state.indexPaso - 1;
-    if (indexNuevo < 0) return
-
-    Animated.timing(this.animPaso, {
-      duration: 300,
-      toValue: 1,
-      useNativeDriver: true
-    }).start(() => {
-      this.setState({
-        indexPaso: indexNuevo
-      }, () => {
-        Animated.timing(this.animPaso, {
-          duration: 0,
-          toValue: -1,
-          useNativeDriver: true
-        }).start(() => {
-          Animated.timing(this.animPaso, {
-            duration: 300,
-            toValue: 0,
-            useNativeDriver: true
-          }).start();
-        });
-      });
-
-    });
-  }
-
-  getViewPaso(index) {
-    switch (index) {
-      case 0: {
-        return <PasoServicio
-          key={0}
-          onSeleccion={(servicio) => {
-            let pasos = this.state.pasos;
-            pasos[0].data = servicio;
-            pasos[0].completado = true;
-
-            this.setState({
-              pasos: pasos
-            }, () => {
-              this.animarCambiarPaginaSiguiente();
-            });
-          }} />
-      } break;
-
-      case 1: {
-        return <PasoMotivo
-          key={1}
-          servicioNombre={this.state.pasos[0].data.nombre}
-          servicioId={this.state.pasos[0].data.id}
-          onSeleccion={(motivo) => {
-            let pasos = this.state.pasos;
-            pasos[1].data = motivo;
-            pasos[1].completado = true;
-
-            this.setState({
-              pasos: pasos
-            }, () => {
-              this.animarCambiarPaginaSiguiente();
-            });
-          }} />
-      } break;
-
-      case 2: {
-        return <PasoDescripcion
-          key={2}
-          onDescripcionLista={(descripcion) => {
-            let pasos = this.state.pasos;
-            pasos[2].data = descripcion;
-            pasos[2].completado = true;
-
-            this.setState({
-              pasos: pasos
-            }, () => {
-              this.animarCambiarPaginaSiguiente();
-            });
-          }} />
-      } break;
-
-      case 3: {
-        return <PasoUbicacion
-          key={3}
-          onUbicacion={(ubicacion) => {
-            let pasos = this.state.pasos;
-            pasos[3].data = ubicacion;
-            pasos[3].completado = true;
-
-            this.setState({
-              pasos: pasos
-            }, () => {
-              this.animarCambiarPaginaSiguiente();
-            });
-          }} />
-      } break;
-
-      case 4: {
-        return <PasoFoto
-          key={4}
-          onSiguiente={(foto) => {
-            let pasos = this.state.pasos;
-            pasos[4].data = foto;
-            pasos[4].completado = true;
-
-            this.setState({
-              pasos: pasos
-            }, () => {
-              this.animarCambiarPaginaSiguiente();
-            });
-          }} />
-      } break;
-
-      case 5: {
-        return <PasoConfirmacion
-          key={5}
-          onConfirmado={() => {
-
-          }} />
-      } break;
-    }
-
-    return undefined;
   }
 
   render() {
+    if (this.state.cargando == true) return null;
 
     const initData = global.initData.requerimientoNuevo;
-    const viewPaso = this.getViewPaso(this.state.indexPaso);
 
-    // const x = this.animPaso.interpolate({
-    //   inputRange: [-1, 0, 1],
-    //   outputRange: [-Dimensions.get("window").width, 0, Dimensions.get("window").width]
-    // });
-
-    const alpha = this.animPaso.interpolate({
-      inputRange: [-1, 0, 1],
-      outputRange: [0, 1, 0]
-    });
     return (
       <View style={{ flex: 1 }}>
 
-        <Animated.View
-          style={{
-            flex: 1,
-            opacity: alpha,
-            // transform: [
-            //   {
-            //     translateX: x
-            //   }
-            // ]
-          }}>
-          {viewPaso}
-        </Animated.View >
+        <View style={{ padding: 16, paddingTop: 16 + 20, width: '100%', alignItems: 'center', backgroundColor: 'white' }}>
+          <Button
+            onPress={() => {
+              App.goBack();
+            }}
+            transparent
+            style={{ position: 'absolute', left: 16, top: 10 + 20 }}><Icon name="close" style={{ fontSize: 24 }} />
+          </Button>
+          <Text style={{ fontSize: 24 }}>Nuevo requerimiento</Text>
+        </View>
+        <View style={{ flex: 1 }}>
 
-        <View style={{ display: 'flex', flexDirection: 'row', width: '100%', alignContent: 'center', alignItems: 'center', justifyContent: 'center' }}>
-          {this.state.pasos.map((paso, index) => {
+          <ScrollView>
 
-            let esActual = this.state.indexPaso == index;
-            let esCompletado = index <= this.state.indexPaso;
+            {/* Indicador 1 */}
+            <IndicadorPaso
+              completado={this.state.servicio != undefined}
+              resaltado={this.state.pasoActual == 1}
+              numero="1º"
+              texto="Seleccione un servicio"
+              colorFondoCirculo='white'
+              colorFondoCirculoCompletado='green'
+              colorTextoCirculo='green'
+              colorTextoCirculoCompletado='white'
+              onPress={() => {
+                this.mostrarPaso(1);
+              }} />
 
-            let color;
-            if (esActual) {
-              color = 'white';
-            } else {
-              if (esCompletado) {
-                color = 'green';
-              } else {
-                color = 'rgba(100,100,100,1)';
-              }
-            }
+            {/* Paso 1  */}
+            <Animated.View style={{
+              overflow: 'hidden',
+              opacity: this.animPaso1,
+              maxHeight: this.animPaso1.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 500]
+              })
+            }} >
+              <PasoServicio
+                servicios={this.state.servicios}
+                onSeleccion={(servicio) => {
+                  this.setState({
+                    servicio: servicio,
+                    motivo: undefined
+                  }, () => {
+                    this.mostrarPaso(2);
+                  });
+                }} />
+            </Animated.View>
 
-            let colorBorde;
-            if (esActual) {
-              colorBorde = 'green';
-            } else {
-              if (esCompletado) {
-                colorBorde = 'green';
-              } else {
-                colorBorde = 'rgba(100,100,100,1)';
-              }
-            }
 
-            return <TouchableWithoutFeedback onPress={() => {
-            }}>
-              <View
-                style={{
-                  borderRadius: 100,
-                  borderColor: colorBorde,
-                  borderWidth: 2,
-                  width: index == this.state.indexPaso ? 24 : 16,
-                  height: index == this.state.indexPaso ? 24 : 16,
-                  backgroundColor: color,
-                  margin: 8
-                }}></View>
-            </TouchableWithoutFeedback>;
+            {/* Indicador 2 */}
+            <IndicadorPaso
+              completado={this.state.motivo != undefined}
+              resaltado={this.state.pasoActual == 2}
+              numero="2º"
+              texto="Seleccione un motivo"
+              colorFondoCirculo='white'
+              colorFondoCirculoCompletado='green'
+              colorTextoCirculo='green'
+              colorTextoCirculoCompletado='white'
+              onPress={() => {
+                if (this.state.servicio != undefined) {
+                  this.mostrarPaso(2);
+                }
+              }} />
 
-          })}
+            {/* //Paso 2  */}
+            <Animated.View style={{
+              overflow: 'hidden',
+              opacity: this.animPaso2,
+              maxHeight: this.animPaso2.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 500]
+              })
+            }} >
+              <PasoMotivo
+                servicio={this.state.servicio}
+                onSeleccion={(motivo) => {
+                  this.setState({
+                    motivo: motivo
+                  }, () => {
+                    this.mostrarPaso(3);
+                  });
+                }}>
+              </PasoMotivo>
+
+            </Animated.View>
+
+
+            {/* Indicador 3 */}
+            <IndicadorPaso
+              completado={this.state.descripcion != undefined && this.state.descripcion.trim() != ""}
+              resaltado={this.state.pasoActual == 3}
+              numero="3º"
+              texto="Descripción"
+              colorFondoCirculo='white'
+              colorFondoCirculoCompletado='green'
+              colorTextoCirculo='green'
+              colorTextoCirculoCompletado='white'
+              onPress={() => {
+                if (this.state.servicio != undefined && this.state.servicio != undefined) {
+                  this.mostrarPaso(3);
+                }
+              }} />
+            {/* Paso 3  */}
+            <Animated.View style={{
+              overflow: 'hidden',
+              opacity: this.animPaso3,
+              maxHeight: this.animPaso3.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 500]
+              })
+            }} >
+              <PasoDescripcion
+                onReady={(descripcion) => {
+                  this.setState({
+                    descripcion: descripcion
+                  }, () => {
+                    this.mostrarPaso(4);
+                  });
+                }}>
+              </PasoDescripcion>
+
+            </Animated.View>
+
+
+            {/* Indicador 4 */}
+            <IndicadorPaso
+              completado={this.state.ubicacion != undefined}
+              resaltado={this.state.pasoActual == 4}
+              numero="4º"
+              texto="Ubicación"
+              colorFondoCirculo='white'
+              colorFondoCirculoCompletado='green'
+              colorTextoCirculo='green'
+              colorTextoCirculoCompletado='white'
+              onPress={() => {
+                if (this.state.servicio != undefined && this.state.servicio != undefined && this.state.descripcion != undefined && this.state.descripcion.trim() != "") {
+                  this.mostrarPaso(4);
+                }
+              }} />
+            {/* Paso 4 */}
+            <Animated.View style={{
+              overflow: 'hidden',
+              opacity: this.animPaso4,
+              maxHeight: this.animPaso4.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 500]
+              })
+            }} >
+              <PasoUbicacion
+                onReady={(ubicacion) => {
+                  this.setState({
+                    ubicacion: ubicacion
+                  }, () => {
+                    this.mostrarPaso(5);
+                  });
+                }}>
+              </PasoUbicacion>
+
+            </Animated.View>
+
+            <IndicadorPaso
+              resaltado={this.state.pasoActual == 5}
+              numero="5º"
+              texto="Foto" />
+            <IndicadorPaso
+              resaltado={this.state.pasoActual == 6}
+              numero="6º"
+              texto="Confirmación" />
+
+          </ScrollView>
+
+
+          <LinearGradient
+            colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
+            backgroundColor="transparent"
+            style={{ left: 0, top: 0, right: 0, height: 16, position: 'absolute' }}
+            pointerEvents="none" />
         </View>
 
-                <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
+
+
+        <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
 
       </View >
 
