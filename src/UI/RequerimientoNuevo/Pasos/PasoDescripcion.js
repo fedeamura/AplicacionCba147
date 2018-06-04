@@ -45,30 +45,41 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
         };
     }
 
-    informarSeleccion() {
-        if (this.props.onReady != undefined) {
-            this.props.onReady(this.state.descripcion);
-        }
+    informarDescripcion() {
+        if (this.props.onDescripcion == undefined) return;
+        this.props.onDescripcion(this.state.descripcion);
+    }
+
+    informarReady() {
+        if (this.props.onReady == undefined) return;
+        this.props.onReady();
     }
 
     render() {
         return (
 
             <View>
-
-                <View style={{ margin: 32 }}>
+                <View style={{ marginTop: 32 }}>
                     <Textarea
-                        onChangeText={(text) => { this.setState({ descripcion: text }) }}
-                        style={{ fontSize: 22 }} rowSpan={5} placeholder="Contanos que está pasando..." />
-
+                        onChangeText={(text) => {
+                            this.setState({ descripcion: text }, () => {
+                                this.informarDescripcion();
+                            });
+                        }}
+                        style={{ fontSize: 22 }}
+                        rowSpan={5}
+                        placeholder="Contanos que está pasando..." />
                 </View>
 
                 <Button
                     onPress={() => {
-                        this.informarSeleccion();
+                        this.informarReady();
                     }}
                     rounded
-                    disabled={this.state.descripcion == undefined || this.state.descripcion.trim() == ""} style={{ alignSelf: 'flex-end', marginRight: 32 }}><Text>Siguiente</Text></Button>
+                    disabled={this.state.descripcion == undefined || this.state.descripcion.trim() == ""}
+                    style={{ alignSelf: 'flex-end' }}>
+                    <Text>Siguiente</Text>
+                </Button>
 
             </View >
         );

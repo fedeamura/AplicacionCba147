@@ -9,45 +9,76 @@ export default class Rules_Servicio extends React.Component {
         callback([
           {
             id: 1,
-            nombre: 'Alumbrado',
+            nombre: 'Servicio 1',
             principal: true
           },
           {
             id: 2,
-            nombre: 'Higiene urbana',
+            nombre: 'Servicio 2',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana',
+            id: 3,
+            nombre: 'Servicio 3',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana',
+            id: 4,
+            nombre: 'Servicio 4',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana',
+            id: 5,
+            nombre: 'Servicio 5',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana',
+            id: 6,
+            nombre: 'Servicio 6',
             principal: true
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana'
+            id: 7,
+            nombre: 'Servicio 7'
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana'
+            id: 8,
+            nombre: 'Servicio 8'
           },
           {
-            id: 2,
-            nombre: 'Higiene urbana'
+            id: 9,
+            nombre: 'Servicio 9'
+          },
+          {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
+          }, {
+            id: 9,
+            nombre: 'Servicio 9'
           }
 
         ])

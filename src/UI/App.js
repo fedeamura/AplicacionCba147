@@ -55,6 +55,9 @@ const RootStack = StackNavigator(
     },
     PickerUbicacion: {
       screen: MiPickerUbicacion
+    },
+    PickerListado: {
+      screen: MiPicker
     }
   },
   {

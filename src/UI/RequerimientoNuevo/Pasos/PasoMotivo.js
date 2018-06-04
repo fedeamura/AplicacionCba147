@@ -17,16 +17,14 @@ import {
     Input,
     ListItem,
     Content,
-    CardItem
+    CardItem,
+    Spinner
 } from "native-base";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
 import LinearGradient from 'react-native-linear-gradient';
 import color from "color";
-
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 //Mis componentes
 import App from "@UI/App";
@@ -41,14 +39,14 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
     constructor(props) {
         super(props);
 
-
-
         this.state = {
             cargando: false,
             error: undefined,
             servicio: props.servicio,
             motivos: undefined,
-            seleccionado: undefined
+            seleccionado: undefined,
+            anims: undefined,
+            animMotivoNoPrincipal: new Animated.Value(0)
         };
     }
 
@@ -72,7 +70,6 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                 });
         }
     }
-
 
     buscarMotivos() {
         this.setState({
@@ -107,6 +104,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
         this.setState({
             seleccionado: motivo
         }, () => {
+            //Animo
             if (this.state.anims != undefined && this.state.anims.length != 0) {
                 let anims = [];
                 for (var id in this.state.anims) {
@@ -114,8 +112,15 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                         anims.push(Animated.timing(this.state.anims[id], { toValue: id != motivo.id ? 0 : 1, duration: 300 }))
                     }
                 }
+
+                //Anim no principal
+                anims.push(Animated.timing(this.state.animMotivoNoPrincipal, { toValue: motivo.principal ? 0 : 1, duration: 300 }));
+
                 Animated.parallel(anims).start();
             }
+
+            //Informo
+            this.informarMotivo();
         });
     }
 
@@ -123,6 +128,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
         this.setState({
             seleccionado: undefined
         }, () => {
+            //Animo
             if (this.state.anims != undefined && this.state.anims.length != 0) {
                 let anims = [];
                 for (var id in this.state.anims) {
@@ -130,24 +136,46 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                         anims.push(Animated.timing(this.state.anims[id], { toValue: 0, duration: 300 }))
                     }
                 }
+
+                //Anim no principal
+                anims.push(Animated.timing(this.state.animMotivoNoPrincipal, { toValue: 0, duration: 300 }));
+
                 Animated.parallel(anims).start();
             }
+
+            //Informo
+            this.informarMotivo();
         });
     }
 
-    informarSeleccion() {
-        if (this.props.onSeleccion != undefined) {
-            this.props.onSeleccion(this.state.seleccionado);
-        }
+    informarMotivo() {
+        if (this.props.onMotivo == undefined) return;
+        this.props.onMotivo(this.state.seleccionado);
     }
+
+    informarReady() {
+        if (this.props.onReady == undefined) return;
+        this.props.onReady();
+    }
+
     render() {
         if (this.state.servicio == undefined) return null;
         if (this.state.cargando || this.state.motivos == undefined) {
-            return <Text>Cargando motivos...</Text>;
+            return <Spinner color="green"></Spinner>;
         }
 
+        const motivosPrincipales = [];
+        let hayMasMotivos = false;
+        for (let i = 0; i < this.state.motivos.length; i++) {
+            let motivo = this.state.motivos[i];
+            if (motivo.principal) {
+                motivosPrincipales.push(motivo);
+            } else {
+                hayMasMotivos = true;
+            }
+        }
 
-        const viewPrincipales = this.state.motivos.map((motivo) => {
+        const viewPrincipales = motivosPrincipales.map((motivo) => {
             let seleccionado = this.state.seleccionado != undefined && this.state.seleccionado.id == motivo.id;
             let backgroundColor = seleccionado ? 'green' : 'white';
             let iconColor = seleccionado ? 'white' : 'black';
@@ -172,7 +200,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                         onPress={() => {
                             this.seleccionar(motivo);
                         }}
-                        icono={"flash"}
+                        icono={motivo.icono || 'flash'}
                         texto={motivo.nombre}
                         textoLines={2}
                         style={{ marginBottom: 16 }}
@@ -187,36 +215,38 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
         });
 
 
-        let seleccionadoEnPrincipales = false;
-        if (this.state.seleccionado != undefined) {
-            for (let i = 0; i < this.state.motivos.length; i++) {
-                let motivo = this.state.motivos[i];
-                if (motivo.principal && motivo.id == this.state.seleccionado.id) {
-                    seleccionadoEnPrincipales = true;
-                }
-            }
-        }
         return (
 
-            <View>
+            <View style={{ marginTop: 32 }}>
 
-                {this.state.seleccionado != undefined && seleccionadoEnPrincipales == false && (
+                <Animated.View
+                    style={{
+                        overflow: 'hidden',
+                        opacity: this.state.seleccionado == undefined ? 0 : this.state.animMotivoNoPrincipal.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 1]
+                        }),
+                        maxHeight: this.state.seleccionado == undefined ? 0 : this.state.animMotivoNoPrincipal.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 1000]
+                        })
+                    }}
+                >
                     <CardServicio
-                        key={this.state.seleccionado.id}
-                        icono={this.state.seleccionado.icono || 'flash'}
-                        texto={this.state.seleccionado.nombre}
+                        key={this.state.seleccionado == undefined ? -1 : this.state.seleccionado.id}
+                        icono={this.state.seleccionado == undefined ? '' : (this.state.seleccionado.icono || 'flash')}
+                        texto={this.state.seleccionado == undefined ? '' : this.state.seleccionado.nombre}
                         textoLines={2}
                         style={{ marginBottom: 16 }}
-                        iconoStyle={{ fontSize: 48 }}
+                        iconoStyle={{ fontSize: 48, color: 'white' }}
+                        cardColor={'green'}
                         cardStyle={{ width: 72, height: 72, margin: 8, borderRadius: 200 }}
                         textoStyle={{ fontSize: 16, maxWidth: 100, minWidth: 100, minHeight: 40, maxHeight: 40 }}
                     />
-                )}
-
+                </Animated.View>
 
                 <View
                     style={{
-                        padding: 16,
                         display: 'flex',
                         flexDirection: 'row',
                         flexWrap: 'wrap',
@@ -224,17 +254,34 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                         justifyContent: 'center'
                     }}>
 
-
                     {viewPrincipales}
 
-
+                    {hayMasMotivos && (
+                        <Button
+                            onPress={() => {
+                                App.navegar('PickerListado', {
+                                    busqueda: true,
+                                    cumpleBusqueda: (item, texto) => {
+                                        return item.nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                                    },
+                                    data: this.state.motivos,
+                                    title: (item) => { return item.nombre },
+                                    onPress: (item) => {
+                                        this.seleccionar(item);
+                                    }
+                                })
+                            }}
+                            style={{ marginBottom: 32 }}>
+                            <Text>Ver todos los motivos</Text>
+                        </Button>
+                    )}
                 </View>
                 <Button
                     onPress={() => {
-                        this.informarSeleccion();
+                        this.informarReady();
                     }}
                     rounded
-                    disabled={this.state.seleccionado == undefined} style={{ alignSelf: 'flex-end', marginRight: 32 }}><Text>Siguiente</Text></Button>
+                    disabled={this.state.seleccionado == undefined} style={{ alignSelf: 'flex-end' }}><Text>Siguiente</Text></Button>
 
             </View >
         );

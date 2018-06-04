@@ -35,7 +35,24 @@ export default class Rules_Motivo extends React.Component {
             id: 6,
             nombre: 'Motivo 6',
             principal: true
-          }
+          },
+          {
+            id: 7,
+            nombre: 'Motivo 7',
+            principal: false
+          }, {
+            id: 8,
+            nombre: 'Motivo 8',
+            principal: false
+          }, {
+            id: 9,
+            nombre: 'Motivo 9',
+            principal: false
+          }, {
+            id: 10,
+            nombre: 'Motivo 10',
+            principal: false
+          },
         ])
       }, 500);
       // const url =

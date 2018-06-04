@@ -15,43 +15,54 @@ import {
     Button,
     Text,
     Input,
-    Content
+    ListItem,
+    Content,
+    CardItem
 } from "native-base";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
-
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+import LinearGradient from 'react-native-linear-gradient';
+import color from "color";
 
 //Mis componentes
 import App from "@UI/App";
 
 export default class RequerimientoNuevo_PasoConfirmacion extends React.Component {
 
+
     constructor(props) {
         super(props);
 
         this.state = {
-        };
 
+        };
     }
 
-    componentDidMount() {
+    informarReady() {
+        if (this.props.onReady == undefined) return;
+        this.props.onReady();
     }
 
     render() {
 
-        // const initData = global.initData.requerimientoNuevo.pasos.servicio;
-
         return (
-            <View style={{ flex: 1 }}>
-                <Text>Confirmacion</Text>
+
+            <View>
+
+                <View style={{ padding: 32 }}>
+                    <Text>Detalle del rq</Text>
+                </View>
+
                 <Button
                     onPress={() => {
-                        this.props.onSiguiente();
+                        this.informarReady();
                     }}
-                ><Text>Siguiente</Text></Button>
+                    rounded
+                    style={{ alignSelf: 'flex-end' }}>
+                    <Text>Registrar</Text>
+                </Button>
+
             </View >
         );
     }

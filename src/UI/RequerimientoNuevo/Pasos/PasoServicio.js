@@ -17,7 +17,8 @@ import {
     Input,
     ListItem,
     Content,
-    CardItem
+    CardItem,
+    Spinner
 } from "native-base";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
@@ -35,39 +36,63 @@ import MiListado from "@Utils/MiListado";
 
 import Rules_Servicio from "@Rules/Rules_Servicio";
 
-
-const MAX_FONT_SIZE = 40;
-const MIN_FONT_SIZE = 10;
-
 export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
 
     constructor(props) {
         super(props);
 
-        let anims = {};
-        for (let i = 0; i < props.servicios.length; i++) {
-            anims[props.servicios[i].id] = new Animated.Value(0);
-        }
-
         this.state = {
-            servicios: props.servicios,
-            seleccionado: undefined,
-            anims: anims
+            cargando: true,
+            error: undefined,
+            servicios: undefined,
+            anims: undefined,
+            animServicioNoPrincipal: new Animated.Value(0),
+            seleccionado: undefined
         };
+
     }
 
+    componentDidMount() {
+        this.setState({
+            cargando: true,
+            error: undefined,
+            servicios: undefined
+        }, () => {
+            Rules_Servicio.get().then((servicios) => {
+                let anims = {};
+                for (let i = 0; i < servicios.length; i++) {
+                    anims[servicios[i].id] = new Animated.Value(0);
+                }
+
+                this.setState({
+                    cargando: false,
+                    servicios: servicios,
+                    anims: anims
+                })
+            });
+
+        });
+    }
     seleccionar(servicio) {
         this.setState({
             seleccionado: servicio
         }, () => {
+            //Animo el seleccionado entre los principales
             let anims = [];
             for (var id in this.state.anims) {
                 if (this.state.anims.hasOwnProperty(id)) {
                     anims.push(Animated.timing(this.state.anims[id], { toValue: id != servicio.id ? 0 : 1, duration: 300 }))
                 }
             }
+
+            //Anim no principal
+            anims.push(Animated.timing(this.state.animServicioNoPrincipal, { toValue: servicio.principal ? 0 : 1, duration: 300 }));
+
             Animated.parallel(anims).start();
+
+            //Informo
+            this.informarServicio();
         });
     }
 
@@ -75,25 +100,51 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         this.setState({
             seleccionado: undefined
         }, () => {
+            //Animo
             let anims = [];
             for (var id in this.state.anims) {
                 if (this.state.anims.hasOwnProperty(id)) {
                     anims.push(Animated.timing(this.state.anims[id], { toValue: id != servicio.id ? 1 : 0, duration: 300 }))
                 }
             }
+            //Anim no principal
+            anims.push(Animated.timing(this.state.animServicioNoPrincipal, { toValue: 0, duration: 300 }));
+
             Animated.parallel(anims).start();
+
+            //Informo
+            this.informarServicio();
         });
     }
 
-    informarSeleccion() {
-        if (this.props.onSeleccion != undefined) {
-            this.props.onSeleccion(this.state.seleccionado);
-        }
+    informarServicio() {
+        if (this.props.onServicio == undefined) return;
+        this.props.onServicio(this.state.seleccionado);
     }
+
+    informarReady() {
+        if (this.props.onReady == undefined) return;
+        this.props.onReady(this.state.seleccionado);
+    }
+
     render() {
+        if (this.state.cargando) {
+            return <Spinner color="green"></Spinner>;
+        }
         if (this.state.servicios == undefined) return null;
 
-        const viewPrincipales = this.state.servicios.map((servicio) => {
+        const serviciosPrincipales = [];
+        let hayMasServicios = false;
+        for (let i = 0; i < this.state.servicios.length; i++) {
+            let servicio = this.state.servicios[i];
+            if (servicio.principal) {
+                serviciosPrincipales.push(servicio);
+            } else {
+                hayMasServicios = true;
+            }
+        }
+
+        const viewPrincipales = serviciosPrincipales.map((servicio) => {
             let seleccionado = this.state.seleccionado != undefined && this.state.seleccionado.id == servicio.id;
             let backgroundColor = seleccionado ? 'green' : 'white';
             let iconColor = seleccionado ? 'white' : 'black';
@@ -133,58 +184,75 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         });
 
 
-        let seleccionadoEnPrincipales = false;
-        if (this.state.seleccionado != undefined) {
-            for (let i = 0; i < this.state.servicios.length; i++) {
-                let s = this.state.servicios[i];
-                if (s.id == this.state.seleccionado.id) {
-                    seleccionadoEnPrincipales = true;
-                }
-            }
-        }
+
         return (
 
-            <View>
+            <View style={{ marginTop: 32 }}>
 
-
-                {this.state.seleccionado != undefined && seleccionadoEnPrincipales == false && (
+                <Animated.View
+                    style={{
+                        overflow: 'hidden',
+                        opacity: this.state.animServicioNoPrincipal.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 1]
+                        }),
+                        maxHeight: this.state.animServicioNoPrincipal.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 1000]
+                        })
+                    }}
+                >
                     <CardServicio
-                        key={this.state.seleccionado.id}
-                        onPress={() => {
-                            this.deseleccionar();
-                        }}
+                        key={this.state.seleccionado == undefined ? -1 : this.state.seleccionado.id}
                         icono={"flash"}
-                        texto={this.state.seleccionado.nombre}
+                        texto={this.state.seleccionado == undefined ? '' : this.state.seleccionado.nombre}
                         textoLines={2}
                         style={{ marginBottom: 16 }}
-                        iconoStyle={{ fontSize: 48 }}
+                        iconoStyle={{ fontSize: 48, color: 'white' }}
+                        cardColor={'green'}
                         cardStyle={{ width: 72, height: 72, margin: 8, borderRadius: 200 }}
                         textoStyle={{ fontSize: 16, maxWidth: 100, minWidth: 100, minHeight: 40, maxHeight: 40 }}
                     />
-                )}
+                </Animated.View>
+
 
 
                 <View
                     style={{
-                        padding: 16,
                         display: 'flex',
                         flexDirection: 'row',
                         flexWrap: 'wrap',
                         alignItems: 'flex-start',
                         justifyContent: 'center'
                     }}>
-
-
                     {viewPrincipales}
 
-
+                    {hayMasServicios && (
+                        <Button
+                            onPress={() => {
+                                App.navegar('PickerListado', {
+                                    busqueda: true,
+                                    cumpleBusqueda: (item, texto) => {
+                                        return item.nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                                    },
+                                    data: this.state.servicios,
+                                    title: (item) => { return item.nombre },
+                                    onPress: (item) => {
+                                        this.seleccionar(item);
+                                    }
+                                })
+                            }}
+                            style={{ marginBottom: 32 }}>
+                            <Text>Ver todos los servicios</Text>
+                        </Button>
+                    )}
                 </View>
                 <Button
                     onPress={() => {
-                        this.informarSeleccion();
+                        this.informarReady();
                     }}
                     rounded
-                    disabled={this.state.seleccionado == undefined} style={{ alignSelf: 'flex-end', marginRight: 32 }}><Text>Siguiente</Text></Button>
+                    disabled={this.state.seleccionado == undefined} style={{ alignSelf: 'flex-end' }}><Text>Siguiente</Text></Button>
 
             </View >
         );

@@ -54,36 +54,12 @@ export default class RequerimientoNuevo extends React.Component {
     super(props);
 
     this.state = {
-      cargando: true,
-      pasos: [
-        {
-          nombre: 'servicio',
-          completado: false,
-          data: undefined
-        },
-        {
-          nombre: 'motivo',
-          completado: false,
-          data: undefined
-        },
-        {
-          nombre: 'descripcion',
-          completado: false,
-          data: undefined
-        },
-        {
-          nombre: 'foto',
-          completado: false,
-          data: undefined
-        },
-        {
-          nombre: 'confirmacion',
-          completado: false,
-          data: undefined
-        }],
       pasoActual: 1,
       servicio: undefined,
-      motivo: undefined
+      motivo: undefined,
+      descripcion: undefined,
+      ubicacion: undefined,
+      foto: undefined
     };
 
     this.animPaso1 = new Animated.Value(1);
@@ -94,19 +70,6 @@ export default class RequerimientoNuevo extends React.Component {
     this.animPaso6 = new Animated.Value(0);
 
     this.keyboardHeight = new Animated.Value(0);
-  }
-
-  componentDidMount() {
-    this.setState({
-      cargando: true
-    }, () => {
-      Rules_Servicio.getPrincipales().then((servicios) => {
-        this.setState({
-          cargando: false,
-          servicios: servicios
-        });
-      });
-    })
   }
 
   componentWillMount() {
@@ -131,7 +94,6 @@ export default class RequerimientoNuevo extends React.Component {
   keyboardWillHide = (event) => {
     this.teclado = false;
 
-
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
       toValue: 0,
@@ -154,8 +116,6 @@ export default class RequerimientoNuevo extends React.Component {
   }
 
   render() {
-    if (this.state.cargando == true) return null;
-
     const initData = global.initData.requerimientoNuevo;
 
     return (
@@ -173,7 +133,7 @@ export default class RequerimientoNuevo extends React.Component {
         </View>
         <View style={{ flex: 1 }}>
 
-          <ScrollView>
+          <ScrollView contentContainerStyle={{ padding: 32 }}>
 
             {/* Indicador 1 */}
             <IndicadorPaso
@@ -186,7 +146,11 @@ export default class RequerimientoNuevo extends React.Component {
               colorTextoCirculo='green'
               colorTextoCirculoCompletado='white'
               onPress={() => {
-                this.mostrarPaso(1);
+                if (this.state.pasoActual == 1) {
+                  this.mostrarPaso(-1);
+                } else {
+                  this.mostrarPaso(1);
+                }
               }} />
 
             {/* Paso 1  */}
@@ -195,19 +159,21 @@ export default class RequerimientoNuevo extends React.Component {
               opacity: this.animPaso1,
               maxHeight: this.animPaso1.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, 500]
+                outputRange: [0, 1000]
               })
             }} >
               <PasoServicio
                 servicios={this.state.servicios}
-                onSeleccion={(servicio) => {
+                onServicio={(servicio) => {
                   this.setState({
                     servicio: servicio,
                     motivo: undefined
-                  }, () => {
-                    this.mostrarPaso(2);
                   });
-                }} />
+                }}
+                onReady={() => {
+                  this.mostrarPaso(2);
+                }}
+              />
             </Animated.View>
 
 
@@ -222,28 +188,35 @@ export default class RequerimientoNuevo extends React.Component {
               colorTextoCirculo='green'
               colorTextoCirculoCompletado='white'
               onPress={() => {
-                if (this.state.servicio != undefined) {
-                  this.mostrarPaso(2);
+                if (this.state.pasoActual == 2) {
+                  this.mostrarPaso(-1);
+                } else {
+                  if (this.state.servicio != undefined) {
+                    this.mostrarPaso(2);
+                  } else {
+                    Alert.alert('', 'Debe completar los pasos anteriores');
+                  }
                 }
-              }} />
 
-            {/* //Paso 2  */}
+              }} />
+            {/* Paso 2  */}
             <Animated.View style={{
               overflow: 'hidden',
               opacity: this.animPaso2,
               maxHeight: this.animPaso2.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, 500]
+                outputRange: [0, 1000]
               })
             }} >
               <PasoMotivo
                 servicio={this.state.servicio}
-                onSeleccion={(motivo) => {
+                onMotivo={(motivo) => {
                   this.setState({
                     motivo: motivo
-                  }, () => {
-                    this.mostrarPaso(3);
                   });
+                }}
+                onReady={(motivo) => {
+                  this.mostrarPaso(3);
                 }}>
               </PasoMotivo>
 
@@ -261,8 +234,14 @@ export default class RequerimientoNuevo extends React.Component {
               colorTextoCirculo='green'
               colorTextoCirculoCompletado='white'
               onPress={() => {
-                if (this.state.servicio != undefined && this.state.servicio != undefined) {
-                  this.mostrarPaso(3);
+                if (this.state.pasoActual == 3) {
+                  this.mostrarPaso(-1);
+                } else {
+                  if (this.state.servicio != undefined && this.state.servicio != undefined) {
+                    this.mostrarPaso(3);
+                  } else {
+                    Alert.alert('', 'Debe completar los pasos anteriores');
+                  }
                 }
               }} />
             {/* Paso 3  */}
@@ -271,16 +250,15 @@ export default class RequerimientoNuevo extends React.Component {
               opacity: this.animPaso3,
               maxHeight: this.animPaso3.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, 500]
+                outputRange: [0, 1000]
               })
             }} >
               <PasoDescripcion
-                onReady={(descripcion) => {
-                  this.setState({
-                    descripcion: descripcion
-                  }, () => {
-                    this.mostrarPaso(4);
-                  });
+                onDescripcion={(descripcion) => {
+                  this.setState({ descripcion: descripcion });
+                }}
+                onReady={() => {
+                  this.mostrarPaso(4);
                 }}>
               </PasoDescripcion>
 
@@ -298,8 +276,14 @@ export default class RequerimientoNuevo extends React.Component {
               colorTextoCirculo='green'
               colorTextoCirculoCompletado='white'
               onPress={() => {
-                if (this.state.servicio != undefined && this.state.servicio != undefined && this.state.descripcion != undefined && this.state.descripcion.trim() != "") {
-                  this.mostrarPaso(4);
+                if (this.state.pasoActual == 4) {
+                  this.mostrarPaso(-1);
+                } else {
+                  if (this.state.servicio != undefined && this.state.servicio != undefined && this.state.descripcion != undefined && this.state.descripcion.trim() != "") {
+                    this.mostrarPaso(4);
+                  } else {
+                    Alert.alert('', 'Debe completar los pasos anteriores');
+                  }
                 }
               }} />
             {/* Paso 4 */}
@@ -308,30 +292,107 @@ export default class RequerimientoNuevo extends React.Component {
               opacity: this.animPaso4,
               maxHeight: this.animPaso4.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, 500]
+                outputRange: [0, 1000]
               })
             }} >
               <PasoUbicacion
-                onReady={(ubicacion) => {
+                onUbicacion={(ubicacion) => {
                   this.setState({
                     ubicacion: ubicacion
-                  }, () => {
-                    this.mostrarPaso(5);
                   });
+                }}
+                onReady={() => {
+                  this.mostrarPaso(5);
                 }}>
               </PasoUbicacion>
-
             </Animated.View>
 
+            {/* Indicador 5 */}
             <IndicadorPaso
+              completado={this.state.foto != undefined}
               resaltado={this.state.pasoActual == 5}
               numero="5º"
-              texto="Foto" />
+              texto="Foto"
+              colorFondoCirculo='white'
+              colorFondoCirculoCompletado='green'
+              colorTextoCirculo='green'
+              colorTextoCirculoCompletado='white'
+              onPress={() => {
+                if (this.state.pasoActual == 5) {
+                  this.mostrarPaso(-1);
+                } else {
+                  if (
+                    this.state.servicio != undefined &&
+                    this.state.servicio != undefined &&
+                    this.state.descripcion != undefined && this.state.descripcion.trim() != "" &&
+                    this.state.ubicacion != undefined) {
+                    this.mostrarPaso(5);
+                  } else {
+                    Alert.alert('', 'Debe completar los pasos anteriores');
+                  }
+                }
+              }} />
+            {/* Paso 5 */}
+            <Animated.View style={{
+              overflow: 'hidden',
+              opacity: this.animPaso5,
+              maxHeight: this.animPaso5.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 1000]
+              })
+            }} >
+              <PasoFoto
+                onReady={(foto) => {
+                  this.setState({
+                    foto: foto
+                  }, () => {
+                    this.mostrarPaso(6);
+                  });
+                }}>
+              </PasoFoto>
+            </Animated.View>
+
+
+            {/* Indicador 6 */}
             <IndicadorPaso
+              completado={false}
               resaltado={this.state.pasoActual == 6}
               numero="6º"
-              texto="Confirmación" />
+              texto="Confirmacón"
+              colorFondoCirculo='white'
+              colorFondoCirculoCompletado='green'
+              colorTextoCirculo='green'
+              colorTextoCirculoCompletado='white'
+              onPress={() => {
+                if (this.state.pasoActual == 6) {
+                  this.mostrarPaso(-1);
+                } else {
+                  if (
+                    this.state.servicio != undefined &&
+                    this.state.servicio != undefined &&
+                    this.state.descripcion != undefined && this.state.descripcion.trim() != "" &&
+                    this.state.ubicacion != undefined) {
+                    this.mostrarPaso(6);
+                  } else {
+                    Alert.alert('', 'Debe completar los pasos anteriores');
+                  }
+                }
 
+
+              }} />
+            <Animated.View style={{
+              overflow: 'hidden',
+              opacity: this.animPaso6,
+              maxHeight: this.animPaso6.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 1000]
+              })
+            }} >
+              <PasoConfirmacion
+                onReady={() => {
+                }}>
+              </PasoConfirmacion>
+            </Animated.View>
           </ScrollView>
 
 
