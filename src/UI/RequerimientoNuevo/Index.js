@@ -342,12 +342,11 @@ export default class RequerimientoNuevo extends React.Component {
               })
             }} >
               <PasoFoto
-                onReady={(foto) => {
-                  this.setState({
-                    foto: foto
-                  }, () => {
-                    this.mostrarPaso(6);
-                  });
+                onFoto={(foto) => {
+                  this.setState({ foto: foto });
+                }}
+                onReady={() => {
+                  this.mostrarPaso(6);
                 }}>
               </PasoFoto>
             </Animated.View>
