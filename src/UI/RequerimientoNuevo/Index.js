@@ -19,7 +19,7 @@ import {
   Input,
   Content
 } from "native-base";
-import { Card, CardContent } from 'react-native-paper';
+import { Card, CardContent, Toolbar, ToolbarBackAction, ToolbarContent, ToolbarAction } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
@@ -30,6 +30,7 @@ import LottieView from 'lottie-react-native';
 //Mis componentes
 import App from "@UI/App";
 
+import Paso from "./Paso";
 import PasoServicio from "@RequerimientoNuevoPasos/PasoServicio";
 import PasoMotivo from "@RequerimientoNuevoPasos/PasoMotivo";
 import PasoDescripcion from "@RequerimientoNuevoPasos/PasoDescripcion";
@@ -62,13 +63,6 @@ export default class RequerimientoNuevo extends React.Component {
       errorRegistrando: undefined,
       animRegistrado: new Animated.Value(0)
     };
-
-    this.animPaso1 = new Animated.Value(1);
-    this.animPaso2 = new Animated.Value(0);
-    this.animPaso3 = new Animated.Value(0);
-    this.animPaso4 = new Animated.Value(0);
-    this.animPaso5 = new Animated.Value(0);
-    this.animPaso6 = new Animated.Value(0);
 
     this.keyboardHeight = new Animated.Value(0);
   }
@@ -105,7 +99,7 @@ export default class RequerimientoNuevo extends React.Component {
         .then(() => {
           Animated.timing(this.state.animRegistrado, {
             toValue: 1,
-            duration: 500
+            duration: 1500
           }).start();
 
           this.setState({
@@ -142,16 +136,48 @@ export default class RequerimientoNuevo extends React.Component {
   mostrarPaso(paso) {
     this.setState({
       pasoActual: paso
-    }, () => {
-      let anim1 = Animated.timing(this.animPaso1, { toValue: paso == 1 ? 1 : 0, duration: 300 });
-      let anim2 = Animated.timing(this.animPaso2, { toValue: paso == 2 ? 1 : 0, duration: 300 });
-      let anim3 = Animated.timing(this.animPaso3, { toValue: paso == 3 ? 1 : 0, duration: 300 });
-      let anim4 = Animated.timing(this.animPaso4, { toValue: paso == 4 ? 1 : 0, duration: 300 });
-      let anim5 = Animated.timing(this.animPaso5, { toValue: paso == 5 ? 1 : 0, duration: 300 });
-      let anim6 = Animated.timing(this.animPaso6, { toValue: paso == 6 ? 1 : 0, duration: 300 });
-
-      Animated.parallel([anim1, anim2, anim3, anim4, anim5, anim6]).start();
     });
+  }
+
+  onPasoClick(paso) {
+    if (this.state.pasoActual == paso) {
+      this.mostrarPaso(-1);
+      return;
+    }
+
+    let conServicio = this.state.servicio != undefined;
+    let conMotivo = this.state.motivo != undefined;
+    let conDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim() != "";
+    let conUbicacion = this.state.ubicacion != undefined;
+
+    let cumple = false;
+    switch (paso) {
+      case 1: {
+        cumple = true;
+      } break;
+      case 2: {
+        cumple = conServicio;
+      } break;
+      case 3: {
+        cumple = conServicio && conMotivo;
+      } break;
+      case 4: {
+        cumple = conServicio && conMotivo && conDescripcion;
+      } break;
+      case 5: {
+        cumple = conServicio && conMotivo && conDescripcion && conUbicacion;
+      } break;
+      case 6: {
+        cumple = conServicio && conMotivo && conDescripcion && conUbicacion;
+      } break;
+    }
+
+    if (!cumple) {
+      Alert.alert('', 'Debe completar los pasos anteriores');
+      return;
+    }
+
+    this.mostrarPaso(paso);
   }
 
   render() {
@@ -161,334 +187,155 @@ export default class RequerimientoNuevo extends React.Component {
       <View style={{ flex: 1 }}>
 
 
-
-
-        <View style={{ padding: 16, paddingTop: 16 + 20, width: '100%', alignItems: 'center', backgroundColor: 'white' }}>
-          <Button
+        <Toolbar style={{ backgroundColor: 'white', elevation: 0 }} elevation={0} dark={false}>
+          <ToolbarBackAction
             onPress={() => {
               App.goBack();
             }}
-            transparent
-            style={{ position: 'absolute', left: 16, top: 10 + 20 }}><Icon name="close" style={{ fontSize: 24 }} />
-          </Button>
-          <Text style={{ fontSize: 24 }}>Nuevo requerimiento</Text>
-        </View>
+          />
+          <ToolbarContent title="Nuevo requerimiento" />
+        </Toolbar>
+
         <View style={{ flex: 1 }}>
 
           <ScrollView contentContainerStyle={{ padding: 16 }}>
 
-            <View style={{
-              shadowColor: 'rgba(0,0,0,0.1)',
-              shadowRadius: 5,
-              shadowOpacity: 1,
-              position: 'absolute', left: 56, width: 16, top: 56, bottom: 56, backgroundColor: 'white'
-            }}></View>
-
             {/* Paso 1 */}
-            <Card
-              style={{ backgroundColor: this.state.pasoActual == 1 ? 'white' : 'transparent', elevation: this.state.pasoActual == 1 ? 2 : 0 }}>
-              <CardContent style={{ overflow: 'hidden' }}>
-
-                {/* Indicador */}
-                <IndicadorPaso
-                  completado={this.state.servicio != undefined}
-                  resaltado={this.state.pasoActual == 1}
-                  numero="1º"
-                  texto="Seleccione un servicio"
-                  colorFondoCirculo='white'
-                  colorFondoCirculoCompletado='green'
-                  colorTextoCirculo='green'
-                  colorTextoCirculoCompletado='white'
-                  onPress={() => {
-                    if (this.state.pasoActual == 1) {
-                      this.mostrarPaso(-1);
-                    } else {
-                      this.mostrarPaso(1);
-                    }
-                  }} />
-
-                {/* Paso  */}
-                <Animated.View style={{
-                  overflow: 'hidden',
-                  opacity: this.animPaso1,
-                  maxHeight: this.animPaso1.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1000]
-                  })
-                }} >
-                  <PasoServicio
-                    servicios={this.state.servicios}
-                    onServicio={(servicio) => {
-                      this.setState({
-                        servicio: servicio,
-                        motivo: undefined
-                      });
-                    }}
-                    onReady={() => {
-                      this.mostrarPaso(2);
-                    }}
-                  />
-                </Animated.View>
-              </CardContent>
-
-            </Card>
+            <Paso
+              numero={1}
+              titulo="Servicio"
+              onPress={(paso) => {
+                this.onPasoClick(paso);
+              }}
+              expandido={this.state.pasoActual == 1 ? true : false}
+              completado={this.state.servicio != undefined}
+            >
+              <PasoServicio
+                servicios={this.state.servicios}
+                onServicio={(servicio) => {
+                  this.setState({
+                    servicio: servicio,
+                    motivo: undefined
+                  });
+                }}
+                onReady={() => {
+                  this.mostrarPaso(2);
+                }}
+              />
+            </Paso>
 
             {/* Paso 2 */}
-            <Card style={{ backgroundColor: this.state.pasoActual == 2 ? 'white' : 'transparent', elevation: this.state.pasoActual == 2 ? 2 : 0 }}>
-              <CardContent style={{ overflow: 'hidden' }}>
-
-                {/* Indicador */}
-                <IndicadorPaso
-                  completado={this.state.motivo != undefined}
-                  resaltado={this.state.pasoActual == 2}
-                  numero="2º"
-                  texto="Seleccione un motivo"
-                  colorFondoCirculo='white'
-                  colorFondoCirculoCompletado='green'
-                  colorTextoCirculo='green'
-                  colorTextoCirculoCompletado='white'
-                  onPress={() => {
-                    if (this.state.pasoActual == 2) {
-                      this.mostrarPaso(-1);
-                    } else {
-                      if (this.state.servicio != undefined) {
-                        this.mostrarPaso(2);
-                      } else {
-                        Alert.alert('', 'Debe completar los pasos anteriores');
-                      }
-                    }
-
-                  }} />
-                {/* Paso */}
-                <Animated.View style={{
-                  overflow: 'hidden',
-                  opacity: this.animPaso2,
-                  maxHeight: this.animPaso2.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1000]
-                  })
-                }} >
-                  <PasoMotivo
-                    servicio={this.state.servicio}
-                    onMotivo={(motivo) => {
-                      this.setState({
-                        motivo: motivo
-                      });
-                    }}
-                    onReady={(motivo) => {
-                      this.mostrarPaso(3);
-                    }}>
-                  </PasoMotivo>
-
-                </Animated.View>
-              </CardContent>
-            </Card>
+            <Paso
+              numero={2}
+              titulo="Motivo"
+              onPress={(paso) => {
+                this.onPasoClick(paso);
+              }}
+              expandido={this.state.pasoActual == 2}
+              completado={this.state.motivo != undefined}
+            >
+              <PasoMotivo
+                servicio={this.state.servicio}
+                onMotivo={(motivo) => {
+                  this.setState({
+                    motivo: motivo
+                  });
+                }}
+                onReady={(motivo) => {
+                  this.mostrarPaso(3);
+                }}>
+              </PasoMotivo>
+            </Paso>
 
             {/* Paso 3 */}
-            <Card style={{ backgroundColor: this.state.pasoActual == 3 ? 'white' : 'transparent', elevation: this.state.pasoActual == 3 ? 2 : 0 }}>
-              <CardContent style={{ overflow: 'hidden' }}>
-                {/* Indicador*/}
-                <IndicadorPaso
-                  completado={this.state.descripcion != undefined && this.state.descripcion.trim() != ""}
-                  resaltado={this.state.pasoActual == 3}
-                  numero="3º"
-                  texto="Descripción"
-                  colorFondoCirculo='white'
-                  colorFondoCirculoCompletado='green'
-                  colorTextoCirculo='green'
-                  colorTextoCirculoCompletado='white'
-                  onPress={() => {
-                    if (this.state.pasoActual == 3) {
-                      this.mostrarPaso(-1);
-                    } else {
-                      if (
-                        this.state.servicio != undefined &&
-                        this.state.motivo != undefined) {
-                        this.mostrarPaso(3);
-                      } else {
-                        Alert.alert('', 'Debe completar los pasos anteriores');
-                      }
-                    }
-                  }} />
-                {/* Paso */}
-                <Animated.View style={{
-                  overflow: 'hidden',
-                  opacity: this.animPaso3,
-                  maxHeight: this.animPaso3.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1000]
-                  })
-                }} >
-                  <PasoDescripcion
-                    onDescripcion={(descripcion) => {
-                      this.setState({ descripcion: descripcion });
-                    }}
-                    onReady={() => {
-                      this.mostrarPaso(4);
-                    }}>
-                  </PasoDescripcion>
-
-                </Animated.View>
-              </CardContent>
-            </Card>
+            <Paso
+              numero={3}
+              titulo="Descripción"
+              onPress={(paso) => {
+                this.onPasoClick(paso);
+              }}
+              expandido={this.state.pasoActual == 3}
+              completado={this.state.descripcion != undefined && this.state.descripcion.trim() != ""}
+            >
+              <PasoDescripcion
+                onDescripcion={(descripcion) => {
+                  this.setState({ descripcion: descripcion });
+                }}
+                onReady={() => {
+                  this.mostrarPaso(4);
+                }}>
+              </PasoDescripcion>
+            </Paso>
 
             {/* Paso 4 */}
-            <Card style={{ backgroundColor: this.state.pasoActual == 4 ? 'white' : 'transparent', elevation: this.state.pasoActual == 4 ? 2 : 0 }}>
-              <CardContent style={{ overflow: 'hidden' }}>
-
-                {/* Indicador */}
-                <IndicadorPaso
-                  completado={this.state.ubicacion != undefined}
-                  resaltado={this.state.pasoActual == 4}
-                  numero="4º"
-                  texto="Ubicación"
-                  colorFondoCirculo='white'
-                  colorFondoCirculoCompletado='green'
-                  colorTextoCirculo='green'
-                  colorTextoCirculoCompletado='white'
-                  onPress={() => {
-                    if (this.state.pasoActual == 4) {
-                      this.mostrarPaso(-1);
-                    } else {
-                      if (this.state.servicio != undefined &&
-                        this.state.motivo != undefined &&
-                        this.state.descripcion != undefined &&
-                        this.state.descripcion.trim() != "") {
-                        this.mostrarPaso(4);
-                      } else {
-                        Alert.alert('', 'Debe completar los pasos anteriores');
-                      }
-                    }
-                  }} />
-                {/* Contenido */}
-                <Animated.View style={{
-                  overflow: 'hidden',
-                  opacity: this.animPaso4,
-                  maxHeight: this.animPaso4.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1000]
-                  })
-                }} >
-                  <PasoUbicacion
-                    onUbicacion={(ubicacion) => {
-                      this.setState({
-                        ubicacion: ubicacion
-                      });
-                    }}
-                    onReady={() => {
-                      this.mostrarPaso(5);
-                    }}>
-                  </PasoUbicacion>
-                </Animated.View>
-              </CardContent>
-            </Card>
+            <Paso
+              numero={4}
+              titulo="Ubicación"
+              onPress={(paso) => {
+                this.onPasoClick(paso);
+              }}
+              expandido={this.state.pasoActual == 4}
+              completado={this.state.ubicacion != undefined}
+            >
+              <PasoUbicacion
+                onUbicacion={(ubicacion) => {
+                  this.setState({
+                    ubicacion: ubicacion
+                  });
+                }}
+                onReady={() => {
+                  this.mostrarPaso(5);
+                }}>
+              </PasoUbicacion>
+            </Paso>
 
             {/* Paso 5 */}
-            <Card style={{ backgroundColor: this.state.pasoActual == 5 ? 'white' : 'transparent', elevation: this.state.pasoActual == 5 ? 2 : 0 }}>
-              <CardContent style={{ overflow: 'hidden' }}>
-
-                {/* Indicador */}
-                <IndicadorPaso
-                  completado={this.state.foto != undefined}
-                  resaltado={this.state.pasoActual == 5}
-                  numero="5º"
-                  texto="Foto"
-                  colorFondoCirculo='white'
-                  colorFondoCirculoCompletado='green'
-                  colorTextoCirculo='green'
-                  colorTextoCirculoCompletado='white'
-                  onPress={() => {
-                    if (this.state.pasoActual == 5) {
-                      this.mostrarPaso(-1);
-                    } else {
-                      if (
-                        this.state.servicio != undefined &&
-                        this.state.motivo != undefined &&
-                        this.state.descripcion != undefined && this.state.descripcion.trim() != "" &&
-                        this.state.ubicacion != undefined) {
-                        this.mostrarPaso(5);
-                      } else {
-                        Alert.alert('', 'Debe completar los pasos anteriores');
-                      }
-                    }
-                  }} />
-                {/* Contenido */}
-                <Animated.View style={{
-                  overflow: 'hidden',
-                  opacity: this.animPaso5,
-                  maxHeight: this.animPaso5.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1000]
-                  })
-                }} >
-                  <PasoFoto
-                    onFoto={(foto) => {
-                      this.setState({ foto: foto });
-                    }}
-                    onReady={() => {
-                      this.mostrarPaso(6);
-                    }}>
-                  </PasoFoto>
-                </Animated.View>
-              </CardContent>
-            </Card>
+            <Paso
+              numero={5}
+              titulo="Foto"
+              onPress={(paso) => {
+                this.onPasoClick(paso);
+              }}
+              expandido={this.state.pasoActual == 5}
+              completado={this.state.foto != undefined}
+            >
+              <PasoFoto
+                onFoto={(foto) => {
+                  this.setState({
+                    foto: foto
+                  });
+                }}
+                onReady={() => {
+                  this.mostrarPaso(6);
+                }}>
+              </PasoFoto>
+            </Paso>
 
             {/* Paso 6 */}
-            <Card style={{ backgroundColor: this.state.pasoActual == 6 ? 'white' : 'transparent', elevation: this.state.pasoActual == 6 ? 2 : 0 }}>
-              <CardContent style={{ overflow: 'hidden' }}>
+            <Paso
+              numero={6}
+              titulo="Confirmación"
+              onPress={(paso) => {
+                this.onPasoClick(paso);
+              }}
+              expandido={this.state.pasoActual == 6}
+              completado={false}
+            >
+              <PasoConfirmacion
+                servicio={this.state.servicio}
+                motivo={this.state.motivo}
+                descripcion={this.state.descripcion}
+                ubicacion={this.state.ubicacion}
+                onReady={() => {
+                  this.registrar();
+                }}>
+              </PasoConfirmacion>
+            </Paso>
 
-                {/* Indicador */}
-                <IndicadorPaso
-                  completado={false}
-                  resaltado={this.state.pasoActual == 6}
-                  numero="6º"
-                  texto="Confirmación"
-                  colorFondoCirculo='white'
-                  colorFondoCirculoCompletado='green'
-                  colorTextoCirculo='green'
-                  colorTextoCirculoCompletado='white'
-                  onPress={() => {
-                    if (this.state.pasoActual == 6) {
-                      this.mostrarPaso(-1);
-                    } else {
-                      if (
-                        this.state.servicio != undefined &&
-                        this.state.motivo != undefined &&
-                        this.state.descripcion != undefined && this.state.descripcion.trim() != "" &&
-                        this.state.ubicacion != undefined) {
-                        this.mostrarPaso(6);
-                      } else {
-                        Alert.alert('', 'Debe completar los pasos anteriores');
-                      }
-                    }
-
-
-                  }} />
-
-                {/* Contenido */}
-                <Animated.View style={{
-                  overflow: 'hidden',
-                  opacity: this.animPaso6,
-                  maxHeight: this.animPaso6.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1000]
-                  })
-                }} >
-                  <PasoConfirmacion
-                    servicio={this.state.servicio}
-                    motivo={this.state.motivo}
-                    descripcion={this.state.descripcion}
-                    ubicacion={this.state.ubicacion}
-                    onReady={() => {
-                      this.registrar();
-                    }}>
-                  </PasoConfirmacion>
-                </Animated.View>
-              </CardContent>
-            </Card>
           </ScrollView>
 
 
+          {/* Sombra del toolbar */}
           <LinearGradient
             colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
             backgroundColor="transparent"

@@ -8,7 +8,7 @@ import { Card, CardContent } from "react-native-paper";
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default class ServicioCardItem extends React.Component {
+export default class CardCirculo extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -58,9 +58,13 @@ export default class ServicioCardItem extends React.Component {
                 style={
                   [
                     {
+                      position: 'absolute',
+                      left: 0,
+                      right: 0,
+                      textAlign: 'center',
+                      fontSize:24,
                       backgroundColor: 'transparent',
-                      color: 'black',
-                      fontSize: 48
+                      color: 'black'
                     },
                     this.props.iconoStyle
                   ]

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Animated, Dimensions } from "react-native";
+import { View, Animated, Dimensions, Alert } from "react-native";
 
 //Mis compontentes
 import App from "@UI/App";
@@ -10,16 +10,29 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import color from "color";
 
+import Rules_Ajustes from "@Rules/Rules_Ajustes";
+
 export default class ServicioCardItem extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      tipo: undefined
+    };
+
+  }
+
+  componentDidMount() {
+    Rules_Ajustes.getListadoRequerimientoInterfaz().then((result) => {
+      this.setState({
+        tipo: result
+      });
+    });
   }
 
   render() {
-
+    if (this.state.tipo == undefined) return null;
     const initData = global.initData.inicio.paginas.requerimientos;
-
-  
 
     return (
       <Card
@@ -31,11 +44,13 @@ export default class ServicioCardItem extends React.Component {
         }}>
 
         <View style={[initData.styles.cardItemHeader, { backgroundColor: this.props.estadoColor }]}>
-          <LinearGradient
-            colors={["rgba(255,255,255,0.5)", "rgba(255,255,255,0)"]}
-            backgroundColor="transparent"
-            style={initData.styles.cardItemHeaderGradiente}
-            pointerEvents="none" />
+          {this.state.tipo == 1 && (
+            <LinearGradient
+              colors={["rgba(255,255,255,0.5)", "rgba(255,255,255,0)"]}
+              backgroundColor="transparent"
+              style={initData.styles.cardItemHeaderGradiente}
+              pointerEvents="none" />
+          )}
 
           <View style={{ flex: 1 }}>
             <Text style={{ fontWeight: "bold", fontSize: 24, backgroundColor: 'transparent', color: 'white' }}>{this.props.numero + '/' + this.props.año}</Text>

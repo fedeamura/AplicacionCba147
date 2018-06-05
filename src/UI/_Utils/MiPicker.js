@@ -11,7 +11,7 @@ import {
   Button,
   Input
 } from "native-base";
-import { Toolbar, ToolbarContent, ToolbarAction } from "react-native-paper";
+import { Toolbar, ToolbarContent, ToolbarAction, ToolbarBackAction } from "react-native-paper";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import color from "color";
@@ -55,32 +55,26 @@ export default class MiPicker extends React.Component {
     let { params } = this.props.navigation.state || {};
     if (params == undefined) params = {};
 
-    let hToolbar = 72;
-    let paddingToolbar = Platform.OS == 'ios' ? 20 : 0;
 
     return (
       <View style={styles.contenedor}>
-        {params.busqueda ? (
-          <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', paddingLeft: 16, paddingRight: 16, paddingTop: paddingToolbar, height: hToolbar }}>
+        <Toolbar style={{ backgroundColor: 'white', elevation: 0 }} elevation={0} dark={false}>
+          <ToolbarBackAction
+            onPress={() => {
+              App.goBack();
+            }}
+          />
 
-            <Icon name="magnify" style="MaterialCommunityIcons" style={{ fontSize: 32 }} />
+          {params.busqueda == true ? (
             <TextInput
               onChangeText={text => { this.onChangeBusqueda(text); }}
-              placeholder={params.placeholderBusqueda || 'Buscar'}
+              placeholder={params.placeholderBusqueda}
               underlineColorAndroid='rgba(0,0,0,0)'
-              style={{ marginLeft: 16 , fontSize:20}} />
-          </View>
-
-        ) : (
-            <Button
-              onPress={() => {
-                App.goBack();
-              }}
-              transparent
-              style={{ position: 'absolute', left: 16, top: 10 + 20 }}><Icon name="close" style={{ fontSize: 24 }} />
-            </Button>
-          )}
-
+              style={styles.inputBusqueda} />
+          ) : (
+              <ToolbarContent title={params.titulo} />
+            )}
+        </Toolbar>
 
         {/* <MiToolbar
           dark={false}
@@ -152,6 +146,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   inputBusqueda: {
+    marginLeft: 16,
     width: '100%',
     fontSize: 20
   }

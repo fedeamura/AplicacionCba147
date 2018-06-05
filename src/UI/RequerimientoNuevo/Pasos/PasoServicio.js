@@ -6,6 +6,7 @@ import {
     Alert,
     Animated,
     StatusBar,
+    FlatList,
     ScrollView,
     Keyboard,
     Dimensions
@@ -26,12 +27,9 @@ import WebImage from 'react-native-web-image'
 import LinearGradient from 'react-native-linear-gradient';
 import color from "color";
 
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-
 //Mis componentes
 import App from "@UI/App";
-import CardServicio from "@Utils/Servicio/CardItem";
+import CardCirculo from "@Utils/CardCirculo";
 import MiListado from "@Utils/MiListado";
 
 import Rules_Servicio from "@Rules/Rules_Servicio";
@@ -82,12 +80,19 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             let anims = [];
             for (var id in this.state.anims) {
                 if (this.state.anims.hasOwnProperty(id)) {
-                    anims.push(Animated.timing(this.state.anims[id], { toValue: id != servicio.id ? 0 : 1, duration: 300 }))
+                    anims.push(Animated.timing(this.state.anims[id], {
+                        toValue: id != servicio.id ? 0 : 1,
+                        duration: 300,
+                        useNativeDriver: true
+                    }))
                 }
             }
 
             //Anim no principal
-            anims.push(Animated.timing(this.state.animServicioNoPrincipal, { toValue: servicio.principal ? 0 : 1, duration: 300 }));
+            anims.push(Animated.timing(this.state.animServicioNoPrincipal, {
+                toValue: servicio.principal ? 0 : 1,
+                duration: 300
+            }));
 
             Animated.parallel(anims).start();
 
@@ -104,11 +109,19 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             let anims = [];
             for (var id in this.state.anims) {
                 if (this.state.anims.hasOwnProperty(id)) {
-                    anims.push(Animated.timing(this.state.anims[id], { toValue: id != servicio.id ? 1 : 0, duration: 300 }))
+                    anims.push(Animated.timing(this.state.anims[id], {
+                        toValue: id != servicio.id ? 1 : 0,
+                        duration: 300,
+                        useNativeDriver: true
+                    }))
                 }
             }
             //Anim no principal
-            anims.push(Animated.timing(this.state.animServicioNoPrincipal, { toValue: 0, duration: 300 }));
+            anims.push(Animated.timing(this.state.animServicioNoPrincipal, {
+                toValue: 0,
+                duration: 300
+            }));
+
 
             Animated.parallel(anims).start();
 
@@ -133,6 +146,16 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         }
         if (this.state.servicios == undefined) return null;
 
+        const wCirculo = 48;
+        const wTexto = 80;
+        const iconoFontSize = 24;
+        const textoFontSize = 16;
+        const cardColorFondo = 'white';
+        const cardColorFondoSeleccionado = 'green';
+        const iconoColor = 'black';
+        const iconoColorSeleccionado = 'white';
+
+        //Busco los servicios principales
         const serviciosPrincipales = [];
         let hayMasServicios = false;
         for (let i = 0; i < this.state.servicios.length; i++) {
@@ -144,17 +167,16 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             }
         }
 
+        //Creo las view principales
         const viewPrincipales = serviciosPrincipales.map((servicio) => {
             let seleccionado = this.state.seleccionado != undefined && this.state.seleccionado.id == servicio.id;
-            let backgroundColor = seleccionado ? 'green' : 'white';
-            let iconColor = seleccionado ? 'white' : 'black';
-            let w = 72;
-            let margin = 8;
-
+            let backgroundColor = seleccionado ? cardColorFondoSeleccionado : cardColorFondo;
+            let iconColor = seleccionado ? iconoColorSeleccionado : iconoColor;
             let anim = this.state.anims[servicio.id];
 
             return (
                 <Animated.View style={{
+                    margin: 8,
                     transform: [
                         {
                             scale: anim.interpolate({
@@ -164,34 +186,34 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                         }
                     ]
                 }}>
-                    <CardServicio
+                    <CardCirculo
                         key={servicio.id}
                         onPress={() => {
                             this.seleccionar(servicio);
                         }}
-                        icono={"flash"}
+                        icono={servicio.icono || 'flash'}
                         texto={servicio.nombre}
-                        textoLines={2}
-                        style={{ marginBottom: 16 }}
-                        iconoStyle={{ fontSize: 48, color: iconColor }}
+                        textoLines={1}
+                        iconoStyle={{ fontSize: iconoFontSize, color: iconColor }}
                         cardColor={backgroundColor}
-                        cardStyle={{ width: w, height: w, margin: margin, borderRadius: 200 }}
-                        textoStyle={{ fontSize: 16, maxWidth: 100, minWidth: 100, minHeight: 40, maxHeight: 40 }}
+                        cardStyle={{ width: wCirculo, height: wCirculo, marginBottom: 8, borderRadius: 200 }}
+                        textoStyle={{ fontSize: textoFontSize, maxWidth: wTexto, minWidth: wTexto }}
                     />
                 </Animated.View>
             );
 
         });
 
-
-
         return (
-
             <View style={{ marginTop: 32 }}>
-
                 <Animated.View
                     style={{
                         overflow: 'hidden',
+                        transform: [
+                            {
+                                scale: 1.2
+                            }
+                        ],
                         opacity: this.state.animServicioNoPrincipal.interpolate({
                             inputRange: [0, 1],
                             outputRange: [0, 1]
@@ -202,31 +224,38 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                         })
                     }}
                 >
-                    <CardServicio
+                    <CardCirculo
                         key={this.state.seleccionado == undefined ? -1 : this.state.seleccionado.id}
-                        icono={"flash"}
+                        icono={this.state.seleccionado == undefined ? '' : this.state.seleccionado.icono || 'flash'}
                         texto={this.state.seleccionado == undefined ? '' : this.state.seleccionado.nombre}
-                        textoLines={2}
-                        style={{ marginBottom: 16 }}
-                        iconoStyle={{ fontSize: 48, color: 'white' }}
-                        cardColor={'green'}
-                        cardStyle={{ width: 72, height: 72, margin: 8, borderRadius: 200 }}
-                        textoStyle={{ fontSize: 16, maxWidth: 100, minWidth: 100, minHeight: 40, maxHeight: 40 }}
+                        textoLines={1}
+                        iconoStyle={{ fontSize: textoFontSize, color: iconoColorSeleccionado }}
+                        cardColor={cardColorFondoSeleccionado}
+                        cardStyle={{ width: wCirculo, height: wCirculo, marginBottom: 8, borderRadius: 200 }}
+                        textoStyle={{ fontSize: textoFontSize, maxWidth: wTexto, minWidth: wTexto, minHeight: 40, maxHeight: 40 }}
                     />
                 </Animated.View>
-
-
 
                 <View
                     style={{
                         display: 'flex',
-                        flexDirection: 'row',
-                        marginBottom:32,
+                        flexDirection: 'column',
+                        marginBottom: 32,
                         flexWrap: 'wrap',
                         alignItems: 'flex-start',
                         justifyContent: 'center'
                     }}>
-                    {viewPrincipales}
+
+                    <View style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        width: '100%',
+                        marginBottom: 16,
+                        justifyContent: 'center',
+                        flexWrap: 'wrap'
+                    }}>
+                        {viewPrincipales}
+                    </View>
 
                     {hayMasServicios && (
                         <Button
@@ -234,6 +263,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                             onPress={() => {
                                 App.navegar('PickerListado', {
                                     busqueda: true,
+                                    placeholderBusqueda: 'Buscar servicio...',
                                     cumpleBusqueda: (item, texto) => {
                                         return item.nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
                                     },
@@ -245,6 +275,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                                 })
                             }}
                             style={{
+                                alignSelf: 'center',
                                 borderColor: 'green'
                             }}>
                             <Text style={{ color: 'green' }}>Ver todos los servicios</Text>

@@ -71,12 +71,10 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
                     return
                 }
 
-                ImageResizer.createResizedImage(response.uri, 1500, 1500, 'JPEG', 80).then((response2) => {
+                ImageResizer.createResizedImage(response.uri, 1000, 1000, 'JPEG', 80).then((response2) => {
                     RNFS.readFile(response2.uri, 'base64')
                         .then(base64 => {
                             let foto = 'data:image/jpeg;base64,' + base64;
-
-                            Alert.alert('', foto);
                             this.setState({
                                 cargando: false,
                                 error: undefined,
@@ -163,22 +161,20 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
                                 <Text>Cancelar foto</Text>
                             </Button>
                         </View>
-
-                        <Button
-                            onPress={() => {
-                                this.informarReady();
-                            }}
-                            rounded
-                            style={{
-                                alignSelf: 'flex-end',
-                                backgroundColor: 'green'
-                            }}>
-                            <Text>Siguiente</Text>
-                        </Button>
                     </View>
 
                 )}
-
+                <Button
+                    onPress={() => {
+                        this.informarReady();
+                    }}
+                    rounded
+                    style={{
+                        alignSelf: 'flex-end',
+                        backgroundColor: 'green'
+                    }}>
+                    <Text>Siguiente</Text>
+                </Button>
             </View >
         );
     }

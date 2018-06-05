@@ -28,7 +28,7 @@ import color from "color";
 
 //Mis componentes
 import App from "@UI/App";
-import CardServicio from "@Utils/Servicio/CardItem";
+import CardCirculo from "@Utils/CardCirculo";
 import MiListado from "@Utils/MiListado";
 
 import Rules_Motivo from "@Rules/Rules_Motivo";
@@ -164,6 +164,15 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
             return <Spinner color="green"></Spinner>;
         }
 
+        const wCirculo = 48;
+        const wTexto = 80;
+        const iconoFontSize = 24;
+        const textoFontSize = 16;
+        const cardColorFondo = 'white';
+        const cardColorFondoSeleccionado = 'green';
+        const iconoColor = 'black';
+        const iconoColorSeleccionado = 'white';
+
         const motivosPrincipales = [];
         let hayMasMotivos = false;
         for (let i = 0; i < this.state.motivos.length; i++) {
@@ -177,11 +186,8 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
 
         const viewPrincipales = motivosPrincipales.map((motivo) => {
             let seleccionado = this.state.seleccionado != undefined && this.state.seleccionado.id == motivo.id;
-            let backgroundColor = seleccionado ? 'green' : 'white';
-            let iconColor = seleccionado ? 'white' : 'black';
-            let w = 72;
-            let margin = 8;
-
+            let backgroundColor = seleccionado ? cardColorFondoSeleccionado : cardColorFondo;
+            let iconColor = seleccionado ? iconoColorSeleccionado : iconoColor;
             let anim = this.state.anims[motivo.id];
 
             return (
@@ -195,19 +201,18 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                         }
                     ]
                 }}>
-                    <CardServicio
+                    <CardCirculo
                         key={motivo.id}
                         onPress={() => {
                             this.seleccionar(motivo);
                         }}
                         icono={motivo.icono || 'flash'}
                         texto={motivo.nombre}
-                        textoLines={2}
-                        style={{ marginBottom: 16 }}
-                        iconoStyle={{ fontSize: 48, color: iconColor }}
+                        textoLines={1}
+                        iconoStyle={{ fontSize: iconoFontSize, color: iconColor }}
                         cardColor={backgroundColor}
-                        cardStyle={{ width: w, height: w, margin: margin, borderRadius: 200 }}
-                        textoStyle={{ fontSize: 16, maxWidth: 100, minWidth: 100, minHeight: 40, maxHeight: 40 }}
+                        cardStyle={{ width: wCirculo, height: wCirculo, marginBottom: 8, borderRadius: 200 }}
+                        textoStyle={{ fontSize: textoFontSize, maxWidth: wTexto, minWidth: wTexto }}
                     />
                 </Animated.View>
             );
@@ -217,7 +222,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
 
         return (
 
-            <View style={{ marginTop: 32 }}>
+            <View style={{ marginTop: 16 }}>
 
                 <Animated.View
                     style={{
@@ -232,30 +237,39 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                         })
                     }}
                 >
-                    <CardServicio
+                    <CardCirculo
                         key={this.state.seleccionado == undefined ? -1 : this.state.seleccionado.id}
-                        icono={this.state.seleccionado == undefined ? '' : (this.state.seleccionado.icono || 'flash')}
+                        icono={this.state.seleccionado == undefined ? '' : this.state.seleccionado.icono || 'flash'}
                         texto={this.state.seleccionado == undefined ? '' : this.state.seleccionado.nombre}
-                        textoLines={2}
-                        style={{ marginBottom: 16 }}
-                        iconoStyle={{ fontSize: 48, color: 'white' }}
-                        cardColor={'green'}
-                        cardStyle={{ width: 72, height: 72, margin: 8, borderRadius: 200 }}
-                        textoStyle={{ fontSize: 16, maxWidth: 100, minWidth: 100, minHeight: 40, maxHeight: 40 }}
+                        textoLines={1}
+                        iconoStyle={{ fontSize: textoFontSize, color: iconoColorSeleccionado }}
+                        cardColor={cardColorFondoSeleccionado}
+                        cardStyle={{ width: wCirculo, height: wCirculo, marginBottom: 8, borderRadius: 200 }}
+                        textoStyle={{ fontSize: textoFontSize, maxWidth: wTexto, minWidth: wTexto, minHeight: 40, maxHeight: 40 }}
                     />
                 </Animated.View>
 
                 <View
                     style={{
                         display: 'flex',
-                        flexDirection: 'row',
+                        flexDirection: 'column',
                         marginBottom: 32,
                         flexWrap: 'wrap',
                         alignItems: 'flex-start',
                         justifyContent: 'center'
                     }}>
 
-                    {viewPrincipales}
+                    <View style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        width: '100%',
+                        marginBottom: 16,
+                        justifyContent: 'center',
+                        flexWrap: 'wrap'
+                    }}>
+                        {viewPrincipales}
+                    </View>
+
 
                     {hayMasMotivos && (
                         <Button
@@ -263,6 +277,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                             onPress={() => {
                                 App.navegar('PickerListado', {
                                     busqueda: true,
+                                    placeholderBusqueda: 'Buscar motivo...',
                                     cumpleBusqueda: (item, texto) => {
                                         return item.nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
                                     },
@@ -274,12 +289,14 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                                 })
                             }}
                             style={{
+                                alignSelf: 'center',
                                 borderColor: 'green'
                             }}>
                             <Text style={{ color: 'green' }}>Ver todos los motivos</Text>
                         </Button>
                     )}
                 </View>
+
                 <Button
                     onPress={() => {
                         this.informarReady();

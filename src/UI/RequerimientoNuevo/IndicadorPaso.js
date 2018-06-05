@@ -38,7 +38,7 @@ export default class RequerimientoNuevo extends React.Component {
 
     };
     this.animPress = new Animated.Value(0);
-    this.animResaltado = new Animated.Value(props.resaltado ? 1 : 0);
+    // this.animResaltado = new Animated.Value(props.resaltado ? 1 : 0);
     this.animCompletado = new Animated.Value(props.completado ? 1 : 0);
 
   }
@@ -54,11 +54,11 @@ export default class RequerimientoNuevo extends React.Component {
       toValue: nextProps.completado ? 1 : 0
     }).start();
 
-    //Resaltado
-    Animated.timing(this.animResaltado, {
-      duration: 300,
-      toValue: nextProps.resaltado ? 1 : 0
-    }).start();
+    // //Resaltado
+    // Animated.timing(this.animResaltado, {
+    //   duration: 300,
+    //   toValue: nextProps.resaltado ? 1 : 0
+    // }).start();
   }
 
   onPressIn() {
@@ -76,6 +76,9 @@ export default class RequerimientoNuevo extends React.Component {
   render() {
 
     const initData = global.initData.requerimientoNuevo;
+
+    let colorCirculo = this.props.colorFondoCirculo || 'white';
+    let colorCirculoCompletado = this.props.colorFondoCirculoCompletado || 'green';
 
     return (
       <TouchableWithoutFeedback
@@ -99,73 +102,46 @@ export default class RequerimientoNuevo extends React.Component {
                   inputRange: [0, 1],
                   outputRange: [1, 0.9]
                 })
-              },
-              {
-                translateX: this.animPress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, -15]
-                })
               }
             ]
           }}
         >
 
-          <Animated.View
-            style={{
-              // opacity: this.animResaltado.interpolate({
-              //   inputRange: [0, 1],
-              //   outputRange: [0.7, 1]
-              // }),
-              transform: [
-                {
-                  scale: this.animResaltado.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.8, 1]
-                  })
-                },
-                {
-                  translateX: this.animResaltado.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [-33, 0]
-                  })
-                }
-              ]
-            }}
-          >
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <Animated.View style={{
-                shadowColor: 'rgba(0,0,0,0.2)',
-                shadowRadius: 10,
-                shadowOpacity: 1,
-                width: 48,
-                height: 48,
-                backgroundColor: this.animCompletado.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [this.props.colorFondoCirculo || 'white', this.props.colorFondoCirculoCompletado || 'green']
-                }),
-                // borderWidth: this.props.anchoBordeCirculo || 2,
-                // borderColor: this.props.colorBordeCirculo || 'green',
-                borderRadius: 32,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
-                <Animated.Text
-                  style={{
-                    backgroundColor: 'transparent',
-                    color: this.animCompletado.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [this.props.colorTextoCirculo || 'green', this.props.colorTextoCirculoCompletado || 'white']
-                    }),
-                    fontSize: this.props.fontSizeCirculo || 32
-                  }}>
-                  {this.props.numero || '1º'}
-                </Animated.Text>
-              </Animated.View>
-              <Text style={{ fontSize: 26, marginLeft: 8 }}>{this.props.texto || 'paso'}</Text>
 
-            </View >
-          </Animated.View>
+          <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            <Animated.View style={{
+              width: 48,
+              height: 48,
+              backgroundColor: this.animCompletado.interpolate({
+                inputRange: [0, 1],
+                outputRange: [colorCirculo, colorCirculoCompletado]
+              }),
+              borderWidth: this.props.anchoBordeCirculo || 2,
+              borderColor: this.props.colorBordeCirculo || 'green',
+              borderRadius: 32,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              <Animated.Text
+                style={{
+                  backgroundColor: 'transparent',
+                  color: this.animCompletado.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [this.props.colorTextoCirculo || 'green', this.props.colorTextoCirculoCompletado || 'white']
+                  }),
+                  fontSize: this.props.fontSizeCirculo || 32
+                }}>
+                {this.props.numero || '1º'}
+              </Animated.Text>
+            </Animated.View>
+            <Text style={{
+              flex: 1,
+              fontSize: 22,
+              marginLeft: 16
+            }}>{this.props.texto || 'paso'}</Text>
+
+          </View >
         </Animated.View>
 
       </TouchableWithoutFeedback >
