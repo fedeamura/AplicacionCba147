@@ -59,7 +59,9 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
         return (
 
             <View>
-                <View style={{ marginTop: 32 }}>
+                <View style={{
+                    marginTop: 32, marginBottom: 32
+                }}>
                     <Textarea
                         onChangeText={(text) => {
                             this.setState({ descripcion: text }, () => {
@@ -77,7 +79,10 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
                     }}
                     rounded
                     disabled={this.state.descripcion == undefined || this.state.descripcion.trim() == ""}
-                    style={{ alignSelf: 'flex-end' }}>
+                    style={{
+                        alignSelf: 'flex-end',
+                        backgroundColor: this.state.descripcion == undefined || this.state.descripcion.trim() == "" ? 'rgba(150,150,150,1)' : 'green'
+                    }}>
                     <Text>Siguiente</Text>
                 </Button>
 

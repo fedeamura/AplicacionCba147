@@ -112,10 +112,10 @@ export default class RequerimientoNuevo extends React.Component {
 
           <Animated.View
             style={{
-              opacity: this.animResaltado.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0.7, 1]
-              }),
+              // opacity: this.animResaltado.interpolate({
+              //   inputRange: [0, 1],
+              //   outputRange: [0.7, 1]
+              // }),
               transform: [
                 {
                   scale: this.animResaltado.interpolate({
@@ -134,14 +134,17 @@ export default class RequerimientoNuevo extends React.Component {
           >
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
               <Animated.View style={{
+                shadowColor: 'rgba(0,0,0,0.2)',
+                shadowRadius: 10,
+                shadowOpacity: 1,
                 width: 48,
                 height: 48,
                 backgroundColor: this.animCompletado.interpolate({
                   inputRange: [0, 1],
                   outputRange: [this.props.colorFondoCirculo || 'white', this.props.colorFondoCirculoCompletado || 'green']
                 }),
-                borderWidth: this.props.anchoBordeCirculo || 2,
-                borderColor: this.props.colorBordeCirculo || 'green',
+                // borderWidth: this.props.anchoBordeCirculo || 2,
+                // borderColor: this.props.colorBordeCirculo || 'green',
                 borderRadius: 32,
                 display: 'flex',
                 justifyContent: 'center',

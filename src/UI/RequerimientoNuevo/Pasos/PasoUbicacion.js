@@ -64,6 +64,7 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
             <View>
                 {this.state.ubicacion == undefined && (
                     <Button
+                        bordered
                         onPress={() => {
                             App.navegar('PickerUbicacion', {
                                 onUbicacionSeleccionada: (data) => {
@@ -73,48 +74,52 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
                                 }
                             });
                         }}
-                        style={{ alignSelf: 'center', margin: 32 }}><Text>Seleccionar ubicacion</Text></Button>
+                        style={{
+                            borderColor: 'green',
+                            alignSelf: 'center',
+                            margin: 32
+                        }}><Text style={{ color: 'green' }}>Seleccionar ubicacion</Text></Button>
                 )}
 
                 {this.state.ubicacion != undefined && (
                     <View>
-                        <Card style={{ alignSelf: 'center', height: 256, width: '100%', padding: 0, marginTop: 32 }}>
-                            <WebImage
-                                resizeMode='cover'
-                                style={{
-                                    width: '100%', height: '100%'
-                                }}
-                                source={{ uri: 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=1&size=600x300&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:1%7Ccordoba+argentina' }}></WebImage>
+                        <View style={{ marginTop: 16, marginBottom: 32 }}>
+                            <View>
+                                <WebImage
+                                    resizeMode='cover'
+                                    style={{
+                                        width: '100%', height: 256
+                                    }}
+                                    source={{ uri: 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=1&size=600x300&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:1%7Ccordoba+argentina' }}></WebImage>
 
-                            <View style={{ position: 'absolute', backgroundColor: 'transparent', bottom: 0, left: 0, right: 0 }}>
-                                <LinearGradient
-                                    colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.8)','rgba(255,255,255,0.8)']}
-                                    style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}></LinearGradient>
-                                <View style={{ padding: 8 }}>
+                                <View style={{ position: 'absolute', backgroundColor: 'transparent', bottom: 0, left: 0, right: 0 }}>
+                                    <LinearGradient
+                                        colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.8)']}
+                                        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}></LinearGradient>
+                                    <View style={{ padding: 8 }}>
+                                        <Text>Direccion: 27 de Abril 464, Córdoba, Argentina</Text>
+                                        <Text>Descripcioón: 13º B</Text>
+                                        <Text>CPC: Nº 10 - Central</Text>
+                                        <Text>Barrio: Nueva córdoba</Text>
+                                    </View>
 
-                                    <Text>Direccion: 27 de Abril 464, Córdoba, Argentina</Text>
-                                    <Text>Descripcioón: 13º B</Text>
-                                    <Text>CPC: Nº 10 - Central</Text>
-                                    <Text>Barrio: Nueva córdoba</Text>
                                 </View>
-
                             </View>
-                        </Card>
-                        <Button
-                            small
-                            danger
-                            onPress={() => {
-                                this.setState({
-                                    ubicacion: undefined
-                                }, () => {
-                                    this.informarUbicacion();
-                                });
-                            }}
-                            style={{alignSelf:'center', marginTop:8}}>
-                            <Text style={{ color: 'white' }}>Cancelar ubicacion</Text>
-                        </Button>
 
-
+                            <Button
+                                small
+                                danger
+                                onPress={() => {
+                                    this.setState({
+                                        ubicacion: undefined
+                                    }, () => {
+                                        this.informarUbicacion();
+                                    });
+                                }}
+                                style={{ alignSelf: 'center', marginTop: 8 }}>
+                                <Text style={{ color: 'white' }}>Cancelar ubicacion</Text>
+                            </Button>
+                        </View>
 
                         <Button
                             onPress={() => {
@@ -124,7 +129,7 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
                             disabled={this.state.ubicacion == undefined}
                             style={{
                                 alignSelf: 'flex-end',
-                                marginTop: 32
+                                backgroundColor: this.state.ubicacion == undefined ? 'rgba(150,150,150,1)' : 'green'
                             }}
                         ><Text>Siguiente</Text></Button>
                     </View>

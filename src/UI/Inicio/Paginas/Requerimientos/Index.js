@@ -50,14 +50,16 @@ export default class PaginaInicio extends React.Component {
   }
 
   mostrarBotonNuevo() {
-    Animated.spring(this.animBoton, {
-      toValue: 1
+    Animated.timing(this.animBoton, {
+      toValue: 1,
+      duration: 300
     }).start();
   }
 
   ocultarBotonNuevo() {
-    Animated.spring(this.animBoton, {
-      toValue: 0
+    Animated.timing(this.animBoton, {
+      toValue: 0,
+      duration: 300
     }).start();
   }
 
@@ -170,8 +172,13 @@ export default class PaginaInicio extends React.Component {
         />
 
         <Animated.View
-          pointerEvents={(this.state.cargando || this.state.error || (this.state.data != undefined && this.state.data.length == 0)) ? "none" : "auto"}
+          pointerEvents={this.state.cargando == true || this.state.error != undefined || this.state.requerimientos == undefined || this.state.requerimientos.length == 0 ? 'none' : 'auto'}
           style={{
+            minHeight: 72,
+            position: 'absolute',
+            alignSelf: 'center',
+            bottom: 0,
+            left: 0, right: 0,
             opacity: this.animBoton.interpolate({
               inputRange: [0, 1],
               outputRange: [0, 1]
@@ -189,10 +196,10 @@ export default class PaginaInicio extends React.Component {
               this.abrirNuevoRequerimiento();
             }}
           >
-            <Icon
+            {/* <Icon
               style={initData.styles.botonNuevoRequerimiento_Icono}
               type={initData.botonNuevoRequerimiento_IconoFontFamily}
-              name={initData.botonNuevoRequerimiento_Icono} />
+              name={initData.botonNuevoRequerimiento_Icono} /> */}
             <Text style={initData.styles.botonNuevoRequerimiento_Texto}>
               {initData.botonNuevoRequerimiento_Texto}
             </Text>

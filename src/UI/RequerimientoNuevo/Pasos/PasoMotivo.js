@@ -249,6 +249,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
+                        marginBottom: 32,
                         flexWrap: 'wrap',
                         alignItems: 'flex-start',
                         justifyContent: 'center'
@@ -258,6 +259,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
 
                     {hayMasMotivos && (
                         <Button
+                            bordered
                             onPress={() => {
                                 App.navegar('PickerListado', {
                                     busqueda: true,
@@ -271,8 +273,10 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                                     }
                                 })
                             }}
-                            style={{ marginBottom: 32 }}>
-                            <Text>Ver todos los motivos</Text>
+                            style={{
+                                borderColor: 'green'
+                            }}>
+                            <Text style={{ color: 'green' }}>Ver todos los motivos</Text>
                         </Button>
                     )}
                 </View>
@@ -281,7 +285,13 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                         this.informarReady();
                     }}
                     rounded
-                    disabled={this.state.seleccionado == undefined} style={{ alignSelf: 'flex-end' }}><Text>Siguiente</Text></Button>
+                    disabled={this.state.seleccionado == undefined}
+                    style={{
+                        alignSelf: 'flex-end',
+                        backgroundColor: this.state.seleccionado == undefined ? 'rgba(150,150,150,1)' : 'green'
+                    }}>
+                    <Text>Siguiente</Text>
+                </Button>
 
             </View >
         );

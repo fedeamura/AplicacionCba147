@@ -8,7 +8,8 @@ import {
     StatusBar,
     ScrollView,
     Keyboard,
-    Dimensions
+    Dimensions,
+    Image
 } from "react-native";
 import {
     Container,
@@ -41,6 +42,7 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
 
         this.state = {
             error: undefined,
+            cargando: false,
             foto: undefined
         };
     }
@@ -73,6 +75,8 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
                     RNFS.readFile(response2.uri, 'base64')
                         .then(base64 => {
                             let foto = 'data:image/jpeg;base64,' + base64;
+
+                            Alert.alert('', foto);
                             this.setState({
                                 cargando: false,
                                 error: undefined,
@@ -121,45 +125,54 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
                     </View>
                 )}
 
-                {this.state.foto == undefined && (
+                {this.state.cargando == false && this.state.foto == undefined && (
                     <View style={{ padding: 32 }}>
                         <Button
+                            bordered
                             onPress={() => { this.agregarFoto(); }}
-                            style={{ alignSelf: 'center' }}>
-                            <Text>Agregar foto</Text>
+                            style={{
+                                alignSelf: 'center',
+                                borderColor: 'green'
+                            }}>
+                            <Text style={{ color: 'green' }}>Agregar foto</Text>
                         </Button>
                     </View>
                 )}
                 {this.state.foto != undefined && (
-                    <View style={{ marginTop: 16 }}>
-                        <Card style={{ alignSelf: 'center', height: 156, width: 156 }}>
-                            <WebImage
+                    <View>
+                        <View style={{ marginTop: 16, marginBottom: 32 }}>
+
+                            <Image
                                 resizeMode="cover"
-                                style={{ width: '100%', height: '100%' }}
+                                style={{ width: 156, height: 156, alignSelf: 'center' }}
                                 source={{ uri: this.state.foto }}
-                            ></WebImage>
-                        </Card>
+                            />
 
-                        <Button
-                            danger
-                            small
-                            style={{ alignSelf: 'center' }}
-                            onPress={() => {
-                                this.setState({
-                                    foto: undefined
-                                }, () => {
-                                    this.informarFoto();
 
-                                });
-                            }}>
-                            <Text>Cancelar foto</Text>
-                        </Button>
+                            <Button
+                                danger
+                                small
+                                style={{ alignSelf: 'center', marginTop: 8 }}
+                                onPress={() => {
+                                    this.setState({
+                                        foto: undefined
+                                    }, () => {
+                                        this.informarFoto();
+                                    });
+                                }}>
+                                <Text>Cancelar foto</Text>
+                            </Button>
+                        </View>
+
                         <Button
                             onPress={() => {
                                 this.informarReady();
                             }}
                             rounded
-                            style={{ alignSelf: 'flex-end', marginTop: 32 }}>
+                            style={{
+                                alignSelf: 'flex-end',
+                                backgroundColor: 'green'
+                            }}>
                             <Text>Siguiente</Text>
                         </Button>
                     </View>

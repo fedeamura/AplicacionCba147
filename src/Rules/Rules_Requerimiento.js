@@ -5,11 +5,11 @@ export default class Rules_Requerimiento extends React.Component {
   static get() {
     return new Promise((resolve, reject) => {
       let rqs = [];
-      rqs.push({ id: 1, estadoKeyValue: 1, estadoColor: '#E53935', estadoNombre: 'Nuevo', numero: "QAZWSX", año: 2017, fechaAlta:'10/10/2018' });
-      rqs.push({ id: 2, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta:'10/10/2018' })
-      rqs.push({ id: 3, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta:'10/10/2018' })
-      rqs.push({ id: 4, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta:'10/10/2018' })
-      rqs.push({ id: 5, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta:'10/10/2018' })
+      rqs.push({ id: 1, estadoKeyValue: 1, estadoColor: '#E53935', estadoNombre: 'Nuevo', numero: "QAZWSX", año: 2017, fechaAlta: '10/10/2018' });
+      rqs.push({ id: 2, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta: '10/10/2018' })
+      rqs.push({ id: 3, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta: '10/10/2018' })
+      rqs.push({ id: 4, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta: '10/10/2018' })
+      rqs.push({ id: 5, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta: '10/10/2018' })
 
       setTimeout(() => {
         // reject('ouchilas');
@@ -51,5 +51,13 @@ export default class Rules_Requerimiento extends React.Component {
       // });
     });
 
+  }
+
+  static insertar(comando) {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback();
+      }, 5000);
+    });
   }
 }

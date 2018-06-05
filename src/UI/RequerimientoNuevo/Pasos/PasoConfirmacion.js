@@ -50,8 +50,38 @@ export default class RequerimientoNuevo_PasoConfirmacion extends React.Component
 
             <View>
 
-                <View style={{ padding: 32 }}>
-                    <Text>Detalle del rq</Text>
+                <View style={{ marginTop: 16, marginBottom: 32 }}>
+                    {this.props.servicio != undefined && (
+                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                            <Text style={{ flex: 1, textAlign: 'right', marginRight: 8, fontWeight: 'bold' }}>Servicio</Text>
+                            <Text style={{ flex: 2 }}>{this.props.servicio.nombre}</Text>
+                        </View>
+                    )}
+                    {this.props.motivo != undefined && (
+                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                            <Text style={{ flex: 1, textAlign: 'right', marginRight: 8, fontWeight: 'bold' }}>Motivo</Text>
+                            <Text style={{ flex: 2 }}>{this.props.motivo.nombre}</Text>
+                        </View>
+                    )}
+                    {this.props.descripcion != undefined && (
+                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                            <Text style={{ flex: 1, textAlign: 'right', marginRight: 8, fontWeight: 'bold' }}>Descripción</Text>
+                            <Text style={{ flex: 2 }}>{this.props.descripcion}</Text>
+                        </View>
+                    )}
+                    {this.props.ubicacion != undefined && (
+                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                            <Text style={{ flex: 1, textAlign: 'right', marginRight: 8, fontWeight: 'bold' }}>Ubicación</Text>
+                            <View style={{ flex: 2 }}>
+                                <Text>Independencia 710</Text>
+                                <Text>Piso 13 depto B</Text>
+                                <Text>CPC Nº 10 - Central</Text>
+                                <Text>Barrio Nueva Cordoba</Text>
+                            </View>
+                        </View>
+                    )}
+
+
                 </View>
 
                 <Button
@@ -59,7 +89,7 @@ export default class RequerimientoNuevo_PasoConfirmacion extends React.Component
                         this.informarReady();
                     }}
                     rounded
-                    style={{ alignSelf: 'flex-end' }}>
+                    style={{ alignSelf: 'flex-end', backgroundColor: 'green' }}>
                     <Text>Registrar</Text>
                 </Button>
 
