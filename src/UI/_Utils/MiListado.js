@@ -240,10 +240,11 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     flex: 1,
-    display: 'flex'
+    display: 'flex',
+    backgroundColor: "rgba(230,230,230,1)"
   },
   listado: {
-    backgroundColor: 'white',
+    backgroundColor: "rgba(230,230,230,1)",
     width: '100%',
     top: 0,
     bottom: 0,

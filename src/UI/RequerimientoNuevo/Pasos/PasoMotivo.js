@@ -168,7 +168,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
         const wTexto = 80;
         const iconoFontSize = 24;
         const textoFontSize = 16;
-        const cardColorFondo = 'white';
+        const cardColorFondo = 'rgba(230,230,230,1)';
         const cardColorFondoSeleccionado = 'green';
         const iconoColor = 'black';
         const iconoColorSeleccionado = 'white';
@@ -192,6 +192,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
 
             return (
                 <Animated.View style={{
+                    margin: 8,
                     transform: [
                         {
                             scale: anim.interpolate({

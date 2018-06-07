@@ -107,9 +107,13 @@ export default class PaginaInicio extends React.Component {
     const initData = global.initData.inicio.paginas.requerimientos;
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{
+        flex: 1, backgroundColor: "rgba(230,230,230,1)"
+      }}>
         <MiListado
-          style={{ padding: 16, paddingBottom: 72 }}
+          style={{
+            padding: 16, paddingBottom: 72, backgroundColor: "rgba(230,230,230,1)"
+          }}
           // cargando={this.state.cargando}
           error={this.state.error}
           data={this.state.requerimientos}

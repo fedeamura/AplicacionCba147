@@ -150,7 +150,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         const wTexto = 80;
         const iconoFontSize = 24;
         const textoFontSize = 16;
-        const cardColorFondo = 'white';
+        const cardColorFondo = 'rgba(230,230,230,1)';
         const cardColorFondoSeleccionado = 'green';
         const iconoColor = 'black';
         const iconoColorSeleccionado = 'white';

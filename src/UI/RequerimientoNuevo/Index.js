@@ -196,7 +196,9 @@ export default class RequerimientoNuevo extends React.Component {
           <ToolbarContent title="Nuevo requerimiento" />
         </Toolbar>
 
-        <View style={{ flex: 1 }}>
+        <View style={{
+          flex: 1, backgroundColor: "rgba(230,230,230,1)",
+        }}>
 
           <ScrollView contentContainerStyle={{ padding: 16 }}>
 

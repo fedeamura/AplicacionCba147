@@ -45,9 +45,13 @@ export default class PaginaPerfil extends React.Component {
     const initData = global.initData.inicio.paginas.perfil;
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{
+        flex: 1, backgroundColor: "rgba(230,230,230,1)"
+      }}>
         <ScrollView>
-          <View style={{ width: '100%', padding: 16 }}>
+          <View style={{
+            width: '100%', padding: 16
+          }}>
 
             <View style={{
               width: 156,
@@ -118,7 +122,7 @@ export default class PaginaPerfil extends React.Component {
                 </View>
               </View>
 
-          
+
 
             </Card>
 

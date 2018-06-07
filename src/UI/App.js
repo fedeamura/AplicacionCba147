@@ -8,11 +8,11 @@ import {
   BackHandler,
   Animated,
   Easing,
-  StatusBar
+  StatusBar,
+  Alert
 } from "react-native";
 import {
   StackNavigator,
-  DrawerNavigator,
   NavigationActions
 } from "react-navigation";
 import color from "color";
@@ -20,6 +20,7 @@ import {
   Provider as PaperProvider,
   Button
 } from "react-native-paper";
+import codePush from "react-native-code-push";
 
 //Mis Componentes
 import Login from "@UI/Login/Index";
@@ -27,13 +28,15 @@ import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
 import RecuperarCuenta from "@UI/RecuperarCuenta/Index";
 import Inicio from "@UI/Inicio/Index";
 import RequerimientoNuevo from "@UI/RequerimientoNuevo/Index";
-
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
 import Rules_Init from "@Rules/Rules_Init";
+
+import AppCargando from "./AppCargando";
+import AppMantenimiento from "./AppMantenimiento";
 
 //Defino el las screens de la app
 const RootStack = StackNavigator(
@@ -86,10 +89,87 @@ export default class App extends React.Component {
     console.disableYellowBox = true;
 
     this.state = {
+      cargando: true,
       initData: undefined,
       error: undefined
     };
 
+  }
+
+  componentDidMount() {
+    this.actualizarApp()
+      .then(() => {
+
+        //Busco la data inicial
+        Rules_Init.getInitData()
+          .then((initData) => {
+            global.initData = initData;
+            this.setState({
+              cargando: false,
+              initData: initData,
+              error: undefined
+            });
+          })
+          .catch((error) => {
+            global.initData = undefined;
+            this.setState({
+              cargando: false,
+              initData: undefined,
+              error: 'Error procesando la solicitud'
+            });
+          });
+
+      }).catch((error) => {
+        global.initData = undefined;
+        this.setState({
+          cargando: false,
+          initData: undefined,
+          error: 'Error procesando la solicitud'
+        });
+      });
+  }
+
+  actualizarApp() {
+    return new Promise((callback, callbackError) => {
+      // Alert.alert('', 'Codepush');
+      codePush.sync(
+        {
+          deploymentKey: Platform.OS == 'ios' ? 'PfHTHuI72bZjyvJHN7-1mPEBLFxsrkFMKlHdf' : 'yRjO-uUfAoarYJSJWHdTV1P5LYXmHyiWzMHdf',
+          installMode: codePush.InstallMode.IMMEDIATE
+        },
+        //Status change
+        (syncStatus) => {
+          switch (syncStatus) {
+            case codePush.SyncStatus.CHECKING_FOR_UPDATE:
+              // Alert.alert('', 'Checking update');
+              break;
+            case codePush.SyncStatus.DOWNLOADING_PACKAGE:
+              // Alert.alert('', 'Bajando');
+              break;
+            case codePush.SyncStatus.INSTALLING_UPDATE:
+              // Alert.alert('', 'Instalando');
+              break;
+            case codePush.SyncStatus.UP_TO_DATE:
+              // Alert.alert('', 'Actualizado');
+              callback();
+              break;
+            case codePush.SyncStatus.UPDATE_IGNORED:
+              // Alert.alert('', 'Ignorada');
+              callback();
+              break;
+            case codePush.SyncStatus.UPDATE_INSTALLED:
+              // Alert.alert('', 'Instalada');
+              callback();
+              break;
+            case codePush.SyncStatus.UNKNOWN_ERROR:
+              // Alert.alert('', 'Error');
+              callbackError('Error procesando la solicitud');
+              break;
+          }
+        },
+        (progress) => { }
+      );
+    });
   }
 
   static Navigation;
@@ -131,30 +211,23 @@ export default class App extends React.Component {
     }
   }
 
-  componentDidMount() {
-
-    //Busco la data inicial
-    Rules_Init.getInitData()
-      .then((initData) => {
-        global.initData = initData;
-
-        this.setState({
-          initData: initData,
-          error: undefined
-        });
-
-      })
-      .catch((error) => {
-        global.initData = undefined;
-        this.setState({
-          initData: undefined,
-          error: 'Error procesando la solicitud'
-        });
-      });
-  }
 
   render() {
-    if (this.state.initData == undefined) return null;
+    //Cargando
+    if (this.state.cargando == true) {
+      return <AppCargando />;
+    }
+
+    //Error
+    if (this.state.initData == undefined || this.state.error != undefined) {
+      return <AppError error={this.state.error || 'Error procesando la solicitud'} />
+    }
+
+    //Mantenimiento
+    if (this.state.initData.mantenimiento == true) {
+      return <AppMantenimiento />;
+    }
+
     return (
       <PaperProvider>
         <View

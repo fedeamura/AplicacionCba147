@@ -10,7 +10,6 @@ export default class Rules_Usuario extends React.Component {
 
   static login(user, pass) {
     return new Promise((resolve, reject) => {
-      console.log('Rules_Usuario - Login');
       resolve();
 
       // const url =
@@ -62,8 +61,7 @@ export default class Rules_Usuario extends React.Component {
 
   static isLogin() {
     return new Promise((resolve, reject) => {
-      console.log('Rules_Usuario - Is Login');
-      resolve(true);
+      resolve(false);
 
       // DB.getItem("token")
       //   .then(response => {
@@ -144,11 +142,8 @@ export default class Rules_Usuario extends React.Component {
   static cerrarSesion() {
     return new Promise((resolve, reject) => {
 
-      console.log('Rules_Usuario - CerrarSesion');
-
       try {
         DB.removeItem("token");
-        console.log("borrado");
         App.Variables.Token = undefined;
         resolve();
       } catch (error) {
@@ -159,7 +154,6 @@ export default class Rules_Usuario extends React.Component {
 
   static getDatosUsuario() {
     return new Promise((resolve, reject) => {
-      console.log('Rules_Usuario - Get Datos Usuario');
       const url =
         "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/GetDatosUsuario";
 
@@ -207,6 +201,7 @@ export default class Rules_Usuario extends React.Component {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
+        // callbackError('Error procesando la solicitud');
       }, 2000);
     });
   }
