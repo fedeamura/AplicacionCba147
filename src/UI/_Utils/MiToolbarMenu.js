@@ -1,51 +1,26 @@
-import React, {
-  Component
-} from "react";
+import React from "react";
 import {
   Platform,
   StyleSheet,
   View,
-  UIManager,
-  Alert,
   Animated,
   Easing,
-  StatusBar,
-  ScrollView,
   Keyboard,
   Dimensions,
-  NativeModules,
   TouchableWithoutFeedback
 } from "react-native";
 import {
-  Container,
   Button,
-  Text,
-  Input,
-  Item,
-  Icon,
-  Spinner,
-  Content
 } from "native-base";
-const { StatusBarManager } = NativeModules;
 import ExtraDimensions from 'react-native-extra-dimensions-android';
-import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
-import MyText from 'react-native-letter-spacing';
-
-import * as Animatable from 'react-native-animatable';
-
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-
-//Mis componentes
-import App from "Cordoba/src/UI/App";
 
 const tAnim = 500;
 const marginIcon = 16;
 const zIndexFront = 20;
-const hSolapamiento = 32;
-let hToolbarDefault = 72;
+let hToolbarDefault;
 const hSombra = 16;
 
 export default class MiToolbarMenu extends React.Component {
@@ -53,8 +28,7 @@ export default class MiToolbarMenu extends React.Component {
   constructor(props) {
     super(props);
 
-
-    hToolbarDefault = global.initData.inicio.toolbar_Height;
+    hToolbarDefault = this.props.toolbarHeight || 72;
 
     //Init
     this.initOpciones(props);
@@ -74,17 +48,17 @@ export default class MiToolbarMenu extends React.Component {
       expandido: this.props.expandido || false,
       animando: false,
       animandoExpandir: false,
-      animandoSeleccionar:false,
+      animandoSeleccionar: false,
       opciones: props.opciones || [],
       hOpcion: this.hOpcion,
-      hToolbar: props.toolbar_height || this.hToolbar,
+      hToolbar: this.hToolbar,
       yCollapse: this.yCollapse,
       ySombraCollapse: this.hToolbar,
       ySombraExpandido: Dimensions.get('window').height
     };
   }
 
-  initOpciones(props) {
+  initOpciones = (props) => {
     this.anims = [];
     this.animsBackground = [];
     this.animsSombras = [];
@@ -107,14 +81,14 @@ export default class MiToolbarMenu extends React.Component {
     if (this.hToolbar > this.hOpcion) {
       this.hToolbar = this.hOpcion;
     }
-    if(Platform.OS=='ios'){
-      this.hToolbar+=20;
+    if (Platform.OS == 'ios') {
+      this.hToolbar += 20;
     }
 
     //Calculo la posicion del toolbar minimizado
     this.yCollapse = -(this.hOpcion - this.hToolbar);
-    if(Platform.OS=='ios'){
-      this.yCollapse-=20;
+    if (Platform.OS == 'ios') {
+      this.yCollapse -= 20;
     }
   }
 
@@ -127,9 +101,8 @@ export default class MiToolbarMenu extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return JSON.stringify(this.state) != JSON.stringify(this.nextState)
+    return JSON.stringify(this.state) != JSON.stringify(nextState)
   }
-
 
   keyboardWillShow = (event) => {
     this.teclado = true;
@@ -140,7 +113,7 @@ export default class MiToolbarMenu extends React.Component {
     }).start();
   }
 
-  seleccionar(opcion) {
+  seleccionar = (opcion) => {
     let index = undefined;
 
     for (let i = 0; i < this.props.opciones.length; i++) {
@@ -152,7 +125,7 @@ export default class MiToolbarMenu extends React.Component {
 
     this.setState({
       animando: true,
-      animandoSeleccionar:true,
+      animandoSeleccionar: true,
       animandoExpandir: false,
       opcion: opcion,
       index: index,
@@ -182,17 +155,20 @@ export default class MiToolbarMenu extends React.Component {
 
       Animated.parallel(animsPendientes).start(() => {
         this.setState({
-          animandoSeleccionar:false,
+          animandoSeleccionar: false,
           animando: false
         });
       });
     });
   }
 
-  expandir() {
+  expandir = () => {
+
+    Keyboard.dismiss();
+
     this.setState({
       animando: true,
-      animandoSeleccionar:false,
+      animandoSeleccionar: false,
       animandoExpandir: true,
       expandido: true
     }, () => {
@@ -227,7 +203,7 @@ export default class MiToolbarMenu extends React.Component {
     });
   }
 
-  actualizarSombras() {
+  actualizarSombras = () => {
     let animsPendientes = [];
 
     for (let i = 0; i < this.state.opciones.length; i++) {
@@ -247,7 +223,7 @@ export default class MiToolbarMenu extends React.Component {
     Animated.parallel(animsPendientes).start();
   }
 
-  onPressOpcion(opcion, index) {
+  onPressOpcion = (opcion, index) => {
     if (this.state.opciones.length == 0) return;
 
     if (!this.state.expandido) {
@@ -270,8 +246,6 @@ export default class MiToolbarMenu extends React.Component {
       });
     }
 
-    const toolbarColor = this.props.toolbarBackgroundColor || 'white';
-
     return (
       <View style={styles.contenedor}>
 
@@ -287,16 +261,18 @@ export default class MiToolbarMenu extends React.Component {
             }
 
             let yExpandido = this.state.hOpcion * index;
-            if(Platform.OS=='ios'){
-              yExpandido-=20;
+            if (Platform.OS == 'ios') {
+              yExpandido -= 20;
             }
+            let solapamiento = 0;
+            yExpandido -= solapamiento;
 
             let yTextoCollapse = (-(opcion.iconoFontSize + marginIcon) / 2) + ((this.state.hOpcion - this.state.hToolbar) / 2) - (25 / 2);
             if (Platform.OS === 'ios') {
               yTextoCollapse = yTextoCollapse + 10;
             }
             yTextoCollapse = 'icono' in opcion && opcion.icono != undefined ? yTextoCollapse : yTextoCollapse + ((opcion.iconoFontSize + marginIcon) / 2);
-            if(Platform.OS=='ios'){
+            if (Platform.OS == 'ios') {
               // yTextoCollapse-=20;
             }
 
@@ -312,7 +288,7 @@ export default class MiToolbarMenu extends React.Component {
                   [
                     styles.encabezado_Opcion,
                     {
-                      maxHeight: this.state.hOpcion,
+                      maxHeight: this.state.hOpcion + (index == this.state.opciones.length - 1 ? this.state.opciones.length * solapamiento : 0),
                       zIndex: zIndex,
                       transform: [
                         {
@@ -324,9 +300,7 @@ export default class MiToolbarMenu extends React.Component {
                       ]
 
                     }]}>
-                <View style={styles.encabezado_Opcion}
-                  // pointerEvents={this.state.animando == true ? "none" : "auto"}
-                >
+                <View style={styles.encabezado_Opcion}>
                   <TouchableWithoutFeedback
                     onPress={() => { this.onPressOpcion(opcion, index); }}>
                     <Animated.View style={
@@ -335,7 +309,7 @@ export default class MiToolbarMenu extends React.Component {
                         {
                           backgroundColor: this.props.toolbarBackgroundColor == undefined ? opcion.backgroundColor : animBackground.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [this.props.toolbarBackgroundColor, opcion.backgroundColor]
+                            outputRange: [this.props.toolbarBackgroundColor || opcion.backgroundColor, opcion.backgroundColor]
                           })
                         }
                       ]}>
@@ -367,7 +341,7 @@ export default class MiToolbarMenu extends React.Component {
                             }
                           ]
                         }}>
-                          <Icon style={[styles.encabezado_OpcionIcono, { fontSize: opcion.iconoFontSize, marginBottom: marginIcon, color: opcion.iconoColor }]} type={opcion.iconoFontFamily} name={opcion.icono} />
+                          <Icon style={[styles.encabezado_OpcionIcono, { fontSize: opcion.iconoFontSize, marginBottom: marginIcon, color: opcion.iconoColor }]} type={'MaterialCommunityIcons'} name={opcion.icono} />
                         </Animated.View>
                       )}
 
@@ -427,7 +401,7 @@ export default class MiToolbarMenu extends React.Component {
                   transform: [{
                     translateY: this.state.opciones.length == 0 ? this.state.ySombraCollapse : this.anims[0].interpolate({
                       inputRange: [0, 1],
-                      outputRange: [Platform.OS == 'ios' ? ((this.hToolbar-20)/2) -20: -12, (this.state.hOpcion * (this.state.index || 0)) + (this.state.hOpcion / 2)]
+                      outputRange: [Platform.OS == 'ios' ? ((this.hToolbar - 20) / 2) - 20 : -12, (this.state.hOpcion * (this.state.index || 0)) + (this.state.hOpcion / 2)]
                     })
                   }]
                 }]}>
@@ -437,10 +411,9 @@ export default class MiToolbarMenu extends React.Component {
               }
             }}>
               <Icon
-                type={this.props.iconoIzquierdaFontFamily}
                 style={[
                   styles.btnLeftIcon, {
-                    color: this.props.iconoIzquierdaColor
+                    color: this.props.iconoIzquierdaColor || 'black'
                   }]}
                 name={this.props.iconoIzquierda} />
             </Button>
@@ -459,13 +432,16 @@ export default class MiToolbarMenu extends React.Component {
                 opacity: this.anims[0].interpolate({
                   inputRange: [0, 1],
                   outputRange: [0, 1]
-                })
+                }),
+                transform: [{
+                  translateY: Platform.OS == 'ios' ? ((this.hToolbar - 20) / 2) - 20 : -12
+                }]
               }
             ]}>
             <Button transparent onPress={() => {
               this.seleccionar(this.state.opcion);
             }}>
-              <Icon type={this.props.iconoCerrarFontFamily} style={styles.btnClose} name={this.props.iconoCerrar} />
+              <Icon style={styles.btnClose} name={this.props.iconoCerrar} color={this.props.iconoCerrarColor || 'white'} />
             </Button>
           </Animated.View>
 
@@ -496,8 +472,7 @@ export default class MiToolbarMenu extends React.Component {
             styles.content,
             {
               marginTop: this.state.hToolbar,
-              // zIndex:-1
-              zIndex: this.state.animandoSeleccionar==false && this.state.expandido==false ? 100 : -1
+              zIndex: this.state.animandoSeleccionar == false && this.state.expandido == false ? 100 : -1
             }]}
           key={this.state.opcion}>
           {content}
@@ -562,15 +537,15 @@ const styles = StyleSheet.create({
   },
   btnLeft: {
     position: 'absolute',
-    left: 8,
+    left: 16,
     height: 48,
     zIndex: 100,
     top: 16
   },
   btnLeftIcon: {
-    color: 'white'
+    fontSize: 24
   },
   btnClose: {
-    color: 'white'
+    fontSize: 24
   }
 });

@@ -231,7 +231,7 @@ export default class App extends React.Component {
     return (
       <PaperProvider>
         <View
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled"
           style={{ height: '100%', width: '100%' }}>
           <StatusBar backgroundColor={'white'} barStyle="dark-content" />
           <RootStack ref={(ref) => { global.navigator = ref; }} />

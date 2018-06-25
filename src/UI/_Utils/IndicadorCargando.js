@@ -1,6 +1,5 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  View,
   Animated,
   StyleSheet
 } from "react-native";
@@ -19,7 +18,6 @@ export default class indicadorCargando extends React.Component {
     };
 
     this.anim = new Animated.Value(0);
-
   }
 
   componentWillReceiveProps(nextProps) {
@@ -37,7 +35,7 @@ export default class indicadorCargando extends React.Component {
       this.ocultar();
     }
   }
-  mostrar() {
+  mostrar = () => {
     this.setState({
       animando: true,
       visible: true
@@ -55,7 +53,7 @@ export default class indicadorCargando extends React.Component {
     });
   }
 
-  ocultar() {
+  ocultar = () => {
     this.setState(
       {
         animando: true,

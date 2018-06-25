@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -6,8 +6,6 @@ import {
   Animated,
   StatusBar
 } from "react-native";
-import color from "color";
-import WebImage from 'react-native-web-image'
 import LottieView from 'lottie-react-native';
 
 // const url_ImagenLogo = "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw";

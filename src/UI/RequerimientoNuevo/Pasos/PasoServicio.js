@@ -1,41 +1,20 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-    Platform,
     View,
-    UIManager,
-    Alert,
-    Animated,
-    StatusBar,
-    FlatList,
-    ScrollView,
-    Keyboard,
-    Dimensions
+    Animated
 } from "react-native";
 import {
-    Container,
     Button,
     Text,
-    Input,
-    ListItem,
-    Content,
-    CardItem,
     Spinner
 } from "native-base";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import WebImage from 'react-native-web-image'
-import LinearGradient from 'react-native-linear-gradient';
-import color from "color";
 
 //Mis componentes
 import App from "@UI/App";
 import CardCirculo from "@Utils/CardCirculo";
-import MiListado from "@Utils/MiListado";
-
 import Rules_Servicio from "@Rules/Rules_Servicio";
 
 export default class RequerimientoNuevo_PasoServicio extends React.Component {
-
 
     constructor(props) {
         super(props);
@@ -72,7 +51,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
         });
     }
-    seleccionar(servicio) {
+    seleccionar = (servicio) => {
         this.setState({
             seleccionado: servicio
         }, () => {
@@ -101,7 +80,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         });
     }
 
-    deseleccionar() {
+    deseleccionar = () => {
         this.setState({
             seleccionado: undefined
         }, () => {
@@ -130,17 +109,19 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         });
     }
 
-    informarServicio() {
+    informarServicio = () => {
         if (this.props.onServicio == undefined) return;
         this.props.onServicio(this.state.seleccionado);
     }
 
-    informarReady() {
+    informarReady = () => {
         if (this.props.onReady == undefined) return;
         this.props.onReady(this.state.seleccionado);
     }
 
     render() {
+        const initData = global.initData;
+
         if (this.state.cargando) {
             return <Spinner color="green"></Spinner>;
         }
@@ -188,9 +169,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                 }}>
                     <CardCirculo
                         key={servicio.id}
-                        onPress={() => {
-                            this.seleccionar(servicio);
-                        }}
+                        onPress={() => this.seleccionar(servicio)}
                         icono={servicio.icono || 'flash'}
                         texto={servicio.nombre}
                         textoLines={1}
@@ -263,15 +242,14 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                             onPress={() => {
                                 App.navegar('PickerListado', {
                                     busqueda: true,
+                                    backgroundColor: initData.backgroundColor,
                                     placeholderBusqueda: 'Buscar servicio...',
                                     cumpleBusqueda: (item, texto) => {
                                         return item.nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
                                     },
                                     data: this.state.servicios,
                                     title: (item) => { return item.nombre },
-                                    onPress: (item) => {
-                                        this.seleccionar(item);
-                                    }
+                                    onPress: this.seleccionar
                                 })
                             }}
                             style={{
@@ -283,9 +261,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                     )}
                 </View>
                 <Button
-                    onPress={() => {
-                        this.informarReady();
-                    }}
+                    onPress={this.informarReady}
                     rounded
                     disabled={this.state.seleccionado == undefined}
                     style={{

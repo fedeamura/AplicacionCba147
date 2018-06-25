@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "lottie-react-native": "2.3.2",
+    "moment": "^2.22.2",
     "native-base": "2.4.3",
     "react": "16.0.0",
     "react-native": "0.51.1",
@@ -21,6 +22,7 @@
     "react-native-letter-spacing": "0.0.6",
     "react-native-linear-gradient": "2.4.0",
     "react-native-maps": "0.20.1",
+    "react-native-modal-datetime-picker": "^5.1.0",
     "react-native-paper": "1.2.4",
     "react-native-sensitive-info": "5.1.0",
     "react-native-textinput-effects": "0.4.2",

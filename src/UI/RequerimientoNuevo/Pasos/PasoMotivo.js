@@ -1,40 +1,20 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-    Platform,
     View,
-    UIManager,
-    Alert,
     Animated,
-    StatusBar,
-    ScrollView,
-    Keyboard,
-    Dimensions
 } from "react-native";
 import {
-    Container,
     Button,
     Text,
-    Input,
-    ListItem,
-    Content,
-    CardItem,
     Spinner
 } from "native-base";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import WebImage from 'react-native-web-image'
-import LinearGradient from 'react-native-linear-gradient';
-import color from "color";
 
 //Mis componentes
 import App from "@UI/App";
 import CardCirculo from "@Utils/CardCirculo";
-import MiListado from "@Utils/MiListado";
-
 import Rules_Motivo from "@Rules/Rules_Motivo";
 
 export default class RequerimientoNuevo_PasoMotivo extends React.Component {
-
 
     constructor(props) {
         super(props);
@@ -71,7 +51,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
         }
     }
 
-    buscarMotivos() {
+    buscarMotivos = () => {
         this.setState({
             motivos: undefined,
             cargando: true,
@@ -100,7 +80,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
         })
     }
 
-    seleccionar(motivo) {
+    seleccionar = (motivo) => {
         this.setState({
             seleccionado: motivo
         }, () => {
@@ -124,7 +104,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
         });
     }
 
-    deseleccionar() {
+    deseleccionar = () => {
         this.setState({
             seleccionado: undefined
         }, () => {
@@ -148,17 +128,19 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
         });
     }
 
-    informarMotivo() {
+    informarMotivo = () => {
         if (this.props.onMotivo == undefined) return;
         this.props.onMotivo(this.state.seleccionado);
     }
 
-    informarReady() {
+    informarReady = () => {
         if (this.props.onReady == undefined) return;
         this.props.onReady();
     }
 
     render() {
+        const initData = global.initData;
+
         if (this.state.servicio == undefined) return null;
         if (this.state.cargando || this.state.motivos == undefined) {
             return <Spinner color="green"></Spinner>;
@@ -204,9 +186,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                 }}>
                     <CardCirculo
                         key={motivo.id}
-                        onPress={() => {
-                            this.seleccionar(motivo);
-                        }}
+                        onPress={() => this.seleccionar(motivo)}
                         icono={motivo.icono || 'flash'}
                         texto={motivo.nombre}
                         textoLines={1}
@@ -278,15 +258,14 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                             onPress={() => {
                                 App.navegar('PickerListado', {
                                     busqueda: true,
+                                    backgroundColor: initData.backgroundColor,
                                     placeholderBusqueda: 'Buscar motivo...',
                                     cumpleBusqueda: (item, texto) => {
                                         return item.nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
                                     },
                                     data: this.state.motivos,
                                     title: (item) => { return item.nombre },
-                                    onPress: (item) => {
-                                        this.seleccionar(item);
-                                    }
+                                    onPress: this.seleccionar
                                 })
                             }}
                             style={{
@@ -299,9 +278,7 @@ export default class RequerimientoNuevo_PasoMotivo extends React.Component {
                 </View>
 
                 <Button
-                    onPress={() => {
-                        this.informarReady();
-                    }}
+                    onPress={this.informarReady}
                     rounded
                     disabled={this.state.seleccionado == undefined}
                     style={{

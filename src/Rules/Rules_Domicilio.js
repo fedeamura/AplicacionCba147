@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import App from "Cordoba/src/UI/App";
 
 export default class Rules_Domicilio extends React.Component {
@@ -52,7 +52,7 @@ export default class Rules_Domicilio extends React.Component {
       })
         .then(response => response.json())
         .then(responseJson => {
-          if(responseJson.status!="OK"){
+          if (responseJson.status != "OK") {
             callbackError('Error procesando la solicitud');
             return;
           }

@@ -1,34 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  Platform,
   View,
-  UIManager,
-  Alert,
   Animated,
-  StatusBar,
-  ScrollView,
-  Keyboard,
-  Dimensions,
   TouchableWithoutFeedback
 } from "react-native";
 import {
-  Container,
-  Button,
   Text,
-  Input,
-  Content
 } from "native-base";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import WebImage from 'react-native-web-image'
-import LinearGradient from 'react-native-linear-gradient';
-import color from "color";
-
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-
-//Mis componentes
-import App from "@UI/App";
 
 export default class RequerimientoNuevo extends React.Component {
   constructor(props) {
@@ -37,10 +15,9 @@ export default class RequerimientoNuevo extends React.Component {
     this.state = {
 
     };
-    this.animPress = new Animated.Value(0);
-    // this.animResaltado = new Animated.Value(props.resaltado ? 1 : 0);
-    this.animCompletado = new Animated.Value(props.completado ? 1 : 0);
 
+    this.animPress = new Animated.Value(0);
+    this.animCompletado = new Animated.Value(props.completado ? 1 : 0);
   }
 
   componentDidMount() {
@@ -53,21 +30,15 @@ export default class RequerimientoNuevo extends React.Component {
       duration: 300,
       toValue: nextProps.completado ? 1 : 0
     }).start();
-
-    // //Resaltado
-    // Animated.timing(this.animResaltado, {
-    //   duration: 300,
-    //   toValue: nextProps.resaltado ? 1 : 0
-    // }).start();
   }
 
-  onPressIn() {
+  onPressIn = () => {
     Animated.spring(this.animPress, {
       toValue: 1
     }).start();
   }
 
-  onPressOut() {
+  onPressOut = () => {
     Animated.spring(this.animPress, {
       toValue: 0
     }).start();
@@ -94,19 +65,10 @@ export default class RequerimientoNuevo extends React.Component {
           style={{
             opacity: this.animPress.interpolate({
               inputRange: [0, 1],
-              outputRange: [1, 0.7]
-            }),
-            transform: [
-              {
-                scale: this.animPress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [1, 0.9]
-                })
-              }
-            ]
+              outputRange: [1, 0.5]
+            })
           }}
         >
-
 
           <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
             <Animated.View style={{

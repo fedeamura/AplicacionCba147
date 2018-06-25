@@ -8,13 +8,11 @@ import {
 } from "react-native";
 import color from "color";
 
-
 export default class AppError extends React.Component {
 
   constructor(props) {
     super(props);
   }
-
 
   render() {
     return (

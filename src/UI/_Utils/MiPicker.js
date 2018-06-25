@@ -1,20 +1,14 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
   TextInput,
-  Platform
 } from "react-native";
 import {
   ListItem,
-  Text,
-  Button,
-  Input
+  Text
 } from "native-base";
-import { Toolbar, ToolbarContent, ToolbarAction, ToolbarBackAction } from "react-native-paper";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
-import color from "color";
 
 //Mis compontenes
 import App from "@UI/App";
@@ -41,7 +35,7 @@ export default class MiPicker extends React.Component {
     }
   }
 
-  onChangeBusqueda(text) {
+  onChangeBusqueda = (text) => {
     let { params } = this.props.navigation.state || {};
     if (params == undefined) params = {};
 
@@ -55,57 +49,30 @@ export default class MiPicker extends React.Component {
     let { params } = this.props.navigation.state || {};
     if (params == undefined) params = {};
 
+    const colorFondo = params.backgroundColor || 'white';
 
     return (
-      <View style={styles.contenedor}>
-        <Toolbar style={{ backgroundColor: 'white', elevation: 0 }} elevation={0} dark={false}>
-          <ToolbarBackAction
-            onPress={() => {
-              App.goBack();
-            }}
-          />
+      <View style={[styles.contenedor, { backgroundColor: colorFondo }]}>
 
-          {params.busqueda == true ? (
+        {/* Toolbar */}
+        <MiToolbar customContent onBackPress={() => App.goBack()}>
+          {params.busqueda == true && (
             <TextInput
-              onChangeText={text => { this.onChangeBusqueda(text); }}
+              onChangeText={this.onChangeBusqueda}
               placeholder={params.placeholderBusqueda}
               underlineColorAndroid='rgba(0,0,0,0)'
-              style={styles.inputBusqueda} />
-          ) : (
-              <ToolbarContent title={params.titulo} />
-            )}
-        </Toolbar>
-
-        {/* <MiToolbar
-          dark={false}
-          style={{ backgroundColor: 'white' }}
-          left={{
-            icon: "arrow-back",
-            onClick: () => {
-              App.goBack();
-            }
-          }}
-        >
-
-          {params.busqueda && (
-            <View style={styles.contenedorBusqueda}>
-              <TextInput
-                onChangeText={text => { this.onChangeBusqueda(text); }}
-                placeholder={params.placeholderBusqueda}
-                underlineColorAndroid='rgba(0,0,0,0)'
-                style={styles.inputBusqueda} />
-            </View>
-
+              style={[styles.inputBusqueda]} />
           )}
+        </MiToolbar>
 
-        </MiToolbar> */}
-        <View style={{ width: '100%', flex: 1 }}>
+        {/* Content */}
+        <View style={styles.contenido}>
           <MiListado
+            backgroundColor={colorFondo}
             data={this.state.busqueda != undefined && this.state.busqueda != "" ? this.state.dataFiltrada : params.data}
             keyExtractor={params.keyExtractor}
-            cargando={false}
             renderEmpty={() => {
-              return <View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Text>Servicio no encontrado</Text></View>;
+              return <Text>Servicio no encontrado</Text>;
             }}
             renderItem={({ item }) => (
               <ListItem
@@ -135,7 +102,6 @@ const styles = StyleSheet.create({
   contenedor: {
     height: "100%",
     width: "100%",
-    backgroundColor: "white"
   },
   contenedorBusqueda: {
     width: '100%',
@@ -149,5 +115,8 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     width: '100%',
     fontSize: 20
+  },
+  contenido: {
+    flex: 1
   }
 });

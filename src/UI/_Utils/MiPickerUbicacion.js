@@ -1,20 +1,13 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   View,
   UIManager,
   StyleSheet,
-  Animated,
-  Alert
+  Animated
 } from "react-native";
-import { Text } from "native-base";
 import {
-  Toolbar,
-  ToolbarContent,
-  ToolbarAction,
   Button,
   SearchBar,
-  Card,
-  CardContent
 } from "react-native-paper";
 
 import MapView from 'react-native-maps';
@@ -22,11 +15,6 @@ import { Marker } from 'react-native-maps';
 
 //Mis compontenes
 import App from "@UI/App";
-import MiToolbar from "@Utils/MiToolbar";
-import Rules_Domicilio from "../../Rules/Rules_Domicilio";
-
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 export default class MiPickerUbicacion extends React.Component {
   constructor(props) {

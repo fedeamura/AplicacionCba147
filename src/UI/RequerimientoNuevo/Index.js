@@ -1,35 +1,19 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  Platform,
   View,
-  UIManager,
   Alert,
   Animated,
-  Easing,
-  StatusBar,
+  StyleSheet,
   ScrollView,
   Keyboard,
-  Dimensions,
-  TouchableWithoutFeedback
+  BackHandler
 } from "react-native";
-import {
-  Container,
-  Button,
-  Text,
-  Input,
-  Content
-} from "native-base";
-import { Card, CardContent, Toolbar, ToolbarBackAction, ToolbarContent, ToolbarAction } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import WebImage from 'react-native-web-image'
 import LinearGradient from 'react-native-linear-gradient';
-import color from "color";
-import LottieView from 'lottie-react-native';
 
 //Mis componentes
 import App from "@UI/App";
-
+import MiStatusBar from "@Utils/MiStatusBar";
+import MiToolbar from "@Utils/MiToolbar";
 import Paso from "./Paso";
 import PasoServicio from "@RequerimientoNuevoPasos/PasoServicio";
 import PasoMotivo from "@RequerimientoNuevoPasos/PasoMotivo";
@@ -37,7 +21,7 @@ import PasoDescripcion from "@RequerimientoNuevoPasos/PasoDescripcion";
 import PasoUbicacion from "@RequerimientoNuevoPasos/PasoUbicacion";
 import PasoFoto from "@RequerimientoNuevoPasos/PasoFoto";
 import PasoConfirmacion from "@RequerimientoNuevoPasos/PasoConfirmacion";
-import IndicadorPaso from "./IndicadorPaso";
+import Resultado from "./Resultado";
 
 import Rules_Requerimiento from '@Rules/Rules_Requerimiento';
 
@@ -58,10 +42,9 @@ export default class RequerimientoNuevo extends React.Component {
       descripcion: undefined,
       ubicacion: undefined,
       foto: undefined,
+      mostrarPanelResultado: false,
       registrando: false,
-      registrado: false,
-      errorRegistrando: undefined,
-      animRegistrado: new Animated.Value(0)
+      numero: undefined
     };
 
     this.keyboardHeight = new Animated.Value(0);
@@ -77,38 +60,32 @@ export default class RequerimientoNuevo extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
-  registrar() {
+  componentDidMount() {
+    // BackHandler.addEventListener('hardwareBackPress', () => {
+    //   if (this.state.registrando == true) return true;
+    //   return false;
+    // });
+  }
+
+  registrar = () => {
     this.setState({
-      errorRegistrando: undefined,
+      mostrarPanelResultado: true,
       registrando: true
     }, () => {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(this.state.animRegistrado, {
-            toValue: 0.5,
-            duration: 1000
-          }),
-          Animated.timing(this.state.animRegistrado, {
-            toValue: 0,
-            duration: 1000
-          })
-        ])).start();
-
       let comando = { param: 1 };
       Rules_Requerimiento.insertar(comando)
         .then(() => {
-          Animated.timing(this.state.animRegistrado, {
-            toValue: 1,
-            duration: 1500
-          }).start();
-
           this.setState({
-            registrado: true
+            numero: 'QWSTGH/2018',
+            registrando: false
           });
         })
         .catch((error) => {
+          Alert.alert('', error);
+
           this.setState({
-            errorRegistrando: error
+            mostrarPanelResultado: false,
+            registrando: false
           })
         });
 
@@ -133,13 +110,13 @@ export default class RequerimientoNuevo extends React.Component {
     }).start();
   }
 
-  mostrarPaso(paso) {
+  mostrarPaso = (paso) => {
     this.setState({
       pasoActual: paso
     });
   }
 
-  onPasoClick(paso) {
+  onPasoClick = (paso) => {
     if (this.state.pasoActual == paso) {
       this.mostrarPaso(-1);
       return;
@@ -181,34 +158,27 @@ export default class RequerimientoNuevo extends React.Component {
   }
 
   render() {
-    const initData = global.initData.requerimientoNuevo;
+    const { params } = this.props.navigation.state;
+    const initData = global.initData;
 
     return (
-      <View style={{ flex: 1 }}>
+      <View style={style.contenedor}>
 
+        <MiStatusBar />
 
-        <Toolbar style={{ backgroundColor: 'white', elevation: 0 }} elevation={0} dark={false}>
-          <ToolbarBackAction
-            onPress={() => {
-              App.goBack();
-            }}
-          />
-          <ToolbarContent title="Nuevo requerimiento" />
-        </Toolbar>
+        {/* Toolbar */}
+        <MiToolbar titulo={texto_Titulo} onBackPress={() => { App.goBack(); }} />
 
-        <View style={{
-          flex: 1, backgroundColor: "rgba(230,230,230,1)",
-        }}>
+        {/* Contenido */}
+        <View style={[style.contenido, { backgroundColor: initData.backgroundColor }]} >
 
           <ScrollView contentContainerStyle={{ padding: 16 }}>
 
             {/* Paso 1 */}
             <Paso
               numero={1}
-              titulo="Servicio"
-              onPress={(paso) => {
-                this.onPasoClick(paso);
-              }}
+              titulo={texto_Titulo_Servicio}
+              onPress={this.onPasoClick}
               expandido={this.state.pasoActual == 1 ? true : false}
               completado={this.state.servicio != undefined}
             >
@@ -229,10 +199,8 @@ export default class RequerimientoNuevo extends React.Component {
             {/* Paso 2 */}
             <Paso
               numero={2}
-              titulo="Motivo"
-              onPress={(paso) => {
-                this.onPasoClick(paso);
-              }}
+              titulo={texto_Titulo_Motivo}
+              onPress={this.onPasoClick}
               expandido={this.state.pasoActual == 2}
               completado={this.state.motivo != undefined}
             >
@@ -252,10 +220,8 @@ export default class RequerimientoNuevo extends React.Component {
             {/* Paso 3 */}
             <Paso
               numero={3}
-              titulo="Descripción"
-              onPress={(paso) => {
-                this.onPasoClick(paso);
-              }}
+              titulo={texto_Titulo_Descripcion}
+              onPress={this.onPasoClick}
               expandido={this.state.pasoActual == 3}
               completado={this.state.descripcion != undefined && this.state.descripcion.trim() != ""}
             >
@@ -272,10 +238,8 @@ export default class RequerimientoNuevo extends React.Component {
             {/* Paso 4 */}
             <Paso
               numero={4}
-              titulo="Ubicación"
-              onPress={(paso) => {
-                this.onPasoClick(paso);
-              }}
+              titulo={texto_Titulo_Ubicacion}
+              onPress={this.onPasoClick}
               expandido={this.state.pasoActual == 4}
               completado={this.state.ubicacion != undefined}
             >
@@ -294,10 +258,8 @@ export default class RequerimientoNuevo extends React.Component {
             {/* Paso 5 */}
             <Paso
               numero={5}
-              titulo="Foto"
-              onPress={(paso) => {
-                this.onPasoClick(paso);
-              }}
+              titulo={texto_Titulo_Foto}
+              onPress={this.onPasoClick}
               expandido={this.state.pasoActual == 5}
               completado={this.state.foto != undefined}
             >
@@ -316,10 +278,8 @@ export default class RequerimientoNuevo extends React.Component {
             {/* Paso 6 */}
             <Paso
               numero={6}
-              titulo="Confirmación"
-              onPress={(paso) => {
-                this.onPasoClick(paso);
-              }}
+              titulo={texto_Titulo_Confirmacion}
+              onPress={this.onPasoClick}
               expandido={this.state.pasoActual == 6}
               completado={false}
             >
@@ -345,72 +305,42 @@ export default class RequerimientoNuevo extends React.Component {
             pointerEvents="none" />
         </View>
 
+        {/* Keyboard */}
         <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
 
-        {this.state.registrando && (
-          <View style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            backgroundColor: 'white',
-            display: 'flex',
-            justifyContent: 'center'
-          }}>
-            <View style={{ width: 200, height: 200, alignSelf: 'center' }}>
-              <LottieView
-                style={{ width: '100%', height: '100%' }}
-                resizeMode='contain'
-                source={require('@Resources/animacion_exito.json')}
-                progress={this.state.animRegistrado} />
-
-            </View>
-
-            {this.state.registrado == false && (
-              <Text style={{ fontSize: 24, textAlign: 'center', maxWidth: 300, alignSelf: 'center' }}>Registrando su requerimiento...</Text>
-            )}
-
-            {this.state.registrado == true && (
-              <View>
-                <Text style={{ fontSize: 24, textAlign: 'center', alignSelf: 'center', maxWidth: 300 }}>Su requerimiento se ha registrado correctamente</Text>
-                <Text style={{ fontSize: 20, textAlign: 'center', alignSelf: 'center', marginTop: 32 }}>Requerimiento número:</Text>
-                <Text style={{ fontSize: 32, alignSelf: 'center' }}>XWSQWS/2017</Text>
-
-                <View style={{ marginTop: 16 }}>
-
-                  <Button
-                    bordered
-                    rounded
-                    style={{ alignSelf: 'center', borderColor: 'green' }}
-                    onPress={() => {
-
-                    }}><Text style={{ color: 'green' }}>Ver detalle</Text></Button>
-
-                </View>
-
-
-
-              </View>
-
-            )}
-
-            {this.state.registrando == true && this.state.registrado && (
-              <Button
-                transparent
-                onPress={() => {
-                  App.goBack();
-                }}
-                style={{ paddingLeft: 8, paddingRight: 8, position: 'absolute', top: 20 + 16, left: 16 }}
-              ><Icon name="close" style="MaterialCommunityIcons" style={{ fontSize: 32 }}></Icon></Button>
-
-            )}
-
-          </View>
-        )}
+        {/* Resultado */}
+        <Resultado
+          numero={this.state.numero}
+          visible={this.state.mostrarPanelResultado}
+          cargando={this.state.registrando}
+          onPressVerDetalle={(id) => {
+            App.goBack();
+            if (params != undefined && 'verDetalleRequerimiento' in params && params.verDetalleRequerimiento != undefined) {
+              params.verDetalleRequerimiento(id);
+            }
+          }} />
 
       </View >
 
     );
   }
 }
+
+const style = StyleSheet.create({
+  contenedor: {
+    width: '100%',
+    height: '100%'
+  },
+  contenido: {
+    flex: 1
+  }
+});
+
+const texto_Titulo = 'Nuevo requerimiento';
+const texto_Titulo_Servicio = 'Servicio';
+const texto_Titulo_Motivo = 'Motivo';
+const texto_Titulo_Descripcion = 'Descripción';
+const texto_Titulo_Ubicacion = 'Ubicación';
+const texto_Titulo_Foto = 'Foto';
+const texto_Titulo_Confirmacion = 'Confirmación';
+

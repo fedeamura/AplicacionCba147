@@ -1,40 +1,25 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  Platform,
   View,
-  UIManager,
-  Alert,
-  Animated,
-  StatusBar,
-  ScrollView,
-  Keyboard,
-  Dimensions
+  BackHandler,
+  StyleSheet,
+  Alert
 } from "react-native";
-import {
-  Container,
-  Button,
-  Text,
-  Input,
-  Icon,
-  Content
-} from "native-base";
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
 import MiToolbarMenu from "@Utils/MiToolbarMenu";
 import PaginaInicio from "@Paginas/Requerimientos/Index";
 import PaginaPerfil from "@Paginas/Perfil/Index";
 import PaginaAjustes from "@Paginas/Ajustes/Index";
+import MiStatusBar from "@Utils/MiStatusBar";
+import App from "@UI/App"
 
-
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-
-//Mis componentes
-import App from "@UI/App";
+const texto_Titulo = 'Inicio';
+const texto_Menu_MisRequerimientos = 'Mis requerimientos';
+const texto_Menu_MiPerfil = 'Mi perfil';
+const texto_Menu_Ajustes = 'Ajustes';
 
 export default class Login extends React.Component {
   static navigationOptions = {
-    title: "Inicio",
+    title: texto_Titulo,
     header: null,
     gesturesEnabled: false
   };
@@ -42,76 +27,92 @@ export default class Login extends React.Component {
   constructor(props) {
     super(props);
 
-    const initData = global.initData.inicio;
-
     this.state = {
       expandido: false,
       opciones: [
         {
-          titulo: initData.menu.requerimientos.titulo,
-          tituloColor: initData.menu.requerimientos.tituloColor,
+          backgroundColor: '#43A047',
+          titulo: texto_Menu_MisRequerimientos,
+          tituloColor: 'white',
           tituloFontSize: 18,
           tituloFontSpace: 2,
-          backgroundColor: initData.menu.requerimientos.backgroundColor,
-          icono: initData.menu.requerimientos.icono,
+          icono: 'file-document',
           iconoFontSize: 48,
-          iconoColor: initData.menu.requerimientos.iconoColor,
-          iconoFontFamily: initData.menu.requerimientos.iconoFontFamily,
+          iconoColor: 'white',
           valor: 0,
           contenido: (<PaginaInicio />)
         },
         {
-          titulo: initData.menu.perfil.titulo,
-          tituloColor: initData.menu.perfil.tituloColor,
+          backgroundColor: '#FFA726',
+          titulo: texto_Menu_MiPerfil,
+          tituloColor: 'white',
           tituloFontSize: 18,
           tituloFontSpace: 2,
-          backgroundColor: initData.menu.perfil.backgroundColor,
-          icono: initData.menu.perfil.icono,
+          icono: 'account-circle',
           iconoFontSize: 48,
-          iconoColor: initData.menu.perfil.iconoColor,
-          iconoFontFamily: initData.menu.perfil.iconoFontFamily,
+          iconoColor: 'white',
           valor: 1,
           contenido: (<PaginaPerfil />)
         },
         {
-          titulo: initData.menu.ajustes.titulo,
-          tituloColor: initData.menu.ajustes.tituloColor,
+          backgroundColor: '#9E9E9E',
+          titulo: texto_Menu_Ajustes,
+          tituloColor: 'white',
           tituloFontSize: 18,
           tituloFontSpace: 2,
-          backgroundColor: initData.menu.ajustes.backgroundColor,
-          icono: initData.menu.ajustes.icono,
+          icono: 'settings',
+          iconoColor: 'white',
           iconoFontSize: 48,
-          iconoColor: initData.menu.ajustes.iconoColor,
-          iconoFontFamily: initData.menu.ajustes.iconoFontFamily,
           valor: 2,
           contenido: (<PaginaAjustes />)
         }
       ]
     };
+  }
 
-    this.keyboardHeight = new Animated.Value(0);
+  componentDidMount() {
+    // BackHandler.addEventListener('hardwareBackPress', () => {
+    //   Alert.alert('', '¿Desea salir de #CBA147?', [
+    //     { text: 'Si', onPress: () => { BackHandler.exitApp(); } },
+    //     { text: 'No', onPress: () => { } },
+    //   ]);
+    //   return true;
+    // });
   }
 
   render() {
-    const initData = global.initData.inicio;
 
+    const initData = global.initData;
+    const colorToolbar = initData.toolbar_Dark ? 'white' : 'black';
     return (
-      <MiToolbarMenu
-        toolbarBackgroundColor="white"
-        toolbarTituloColor="black"
-        expandido={this.state.expandido}
-        opciones={this.state.opciones}
-        expandirAlHacerClick={initData.toolbarExpandirAlHacerClick}
-        mostrarBotonCerrar={initData.toolbarMostrarBotonCerrar}
-        iconoCerrar={initData.toolbarIconoCerrar}
-        iconoCerrarColor={initData.toolbarIconoCerrarColor}
-        iconoCerrarFontFamily={initData.toolbarIconoCerrarFontFamily}
-        mostrarBotonIzquierda={initData.toolbarMostrarBotonIzquierda}
-        iconoIzquierdaColor={initData.toolbarIconoIzquierdaColor}
-        iconoIzquierda={initData.toolbarIconoIzquierda}
-        iconoIzquierdaFontFamily={initData.toolbarIconoIzquierdaFontFamily}
-        iconoIzquierdaOnPress={() => { this.setState({ expandido: true }) }}
-      />
+      <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
+
+        <MiStatusBar />
+
+        <MiToolbarMenu
+          toolbarHeight={initData.toolbar_Height}
+          toolbarBackgroundColor={initData.toolbar_BackgroundColor}
+          toolbarTituloColor={colorToolbar}
+          expandido={this.state.expandido}
+          opciones={this.state.opciones}
+          expandirAlHacerClick={false}
+          mostrarBotonCerrar={true}
+          iconoCerrar='close'
+          iconoCerrarColor='white'
+          mostrarBotonIzquierda={true}
+          iconoIzquierdaColor={colorToolbar}
+          iconoIzquierda='menu'
+          iconoIzquierdaOnPress={() => { this.setState({ expandido: true }) }}
+        />
+      </View>
+
     );
   }
 }
+
+const styles = StyleSheet.create({
+  contenedor: {
+    width: '100%',
+    height: '100%'
+  }
+})

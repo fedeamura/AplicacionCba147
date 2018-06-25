@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import App from "Cordoba/src/UI/App";
+import React from "react";
 
 export default class Rules_Motivo extends React.Component {
-  static get(idServicio) {
+
+  static get = (idServicio) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([
@@ -83,4 +83,5 @@ export default class Rules_Motivo extends React.Component {
       //   });
     });
   }
+
 }

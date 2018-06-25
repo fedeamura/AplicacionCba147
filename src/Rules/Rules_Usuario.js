@@ -1,17 +1,18 @@
-import React, { Component } from "react";
+import React from "react";
 import App from "Cordoba/src/UI/App";
 import DB from "Cordoba/src/DAO/DB";
 
 export default class Rules_Usuario extends React.Component {
+
   constructor() {
     super();
     this.key_token = "token";
   }
 
-  static login(user, pass) {
+  static login = (user, pass) => {
     return new Promise((resolve, reject) => {
       resolve();
-
+      // reject('Error procesando la solicitud');
       // const url =
       //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/IniciarSesion";
 
@@ -59,7 +60,7 @@ export default class Rules_Usuario extends React.Component {
     });
   }
 
-  static isLogin() {
+  static isLogin = () => {
     return new Promise((resolve, reject) => {
       resolve(false);
 
@@ -139,7 +140,7 @@ export default class Rules_Usuario extends React.Component {
     });
   }
 
-  static cerrarSesion() {
+  static cerrarSesion = () => {
     return new Promise((resolve, reject) => {
 
       try {
@@ -152,7 +153,7 @@ export default class Rules_Usuario extends React.Component {
     });
   }
 
-  static getDatosUsuario() {
+  static getDatosUsuario = () => {
     return new Promise((resolve, reject) => {
       const url =
         "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/GetDatosUsuario";
@@ -197,7 +198,16 @@ export default class Rules_Usuario extends React.Component {
     });
   }
 
-  static crearUsuario(usuario) {
+  static validarDatos = (usuario) => {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback(usuario);
+        // callbackError('El usuario ya existe');
+      }, 1000);
+    });
+  }
+
+  static crearUsuario = (usuario) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
@@ -206,15 +216,7 @@ export default class Rules_Usuario extends React.Component {
     });
   }
 
-  static getUsuariosConEmail(email) {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback(['amura_f', 'fedeamura']);
-      }, 2000);
-    });
-  }
-
-  static recuperarCuenta(email, username) {
+  static recuperarCuenta = (username, email) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();

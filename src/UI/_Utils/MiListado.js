@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   View,
   StyleSheet,
@@ -6,14 +6,6 @@ import {
   Animated,
   Text
 } from "react-native";
-import { Spinner } from "native-base";
-import {
-  Card,
-  CardContent
-} from "react-native-paper";
-
-//Mis compontentes
-import App from "@UI/App";
 
 export default class MiListado extends React.Component {
   constructor(props) {
@@ -22,7 +14,6 @@ export default class MiListado extends React.Component {
     this.state = {
       mostrandoError: false,
       mostrandoEmpty: false,
-      // mostrandoCargando: false
     };
 
     // this.anim_Cargando = new Animated.Value(0);
@@ -31,12 +22,10 @@ export default class MiListado extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // let cargando = false;
     let empty = false;
     let error = false;
 
-
-    if ('error' in nextProps && nextProps.error != undefined) {
+    if ('error' in nextProps && nextProps.error == true) {
       error = true;
       this.mostrarError();
     } else {
@@ -62,42 +51,28 @@ export default class MiListado extends React.Component {
     });
   }
 
-  // mostrarCargando() {
-  //   Animated.timing(this.anim_Cargando, {
-  //     duration: 500,
-  //     toValue: 1
-  //   }).start();
-  // }
-
-  // ocultarCargando() {
-  //   Animated.timing(this.anim_Cargando, {
-  //     duration: 500,
-  //     toValue: 0
-  //   }).start();
-  // }
-
-  mostrarError() {
+  mostrarError = () => {
     Animated.timing(this.anim_Error, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  ocultarError() {
+  ocultarError = () => {
     Animated.timing(this.anim_Error, {
       duration: 500,
       toValue: 0
     }).start();
   }
 
-  mostrarEmpty() {
+  mostrarEmpty = () => {
     Animated.timing(this.anim_Empty, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  ocultarEmpty() {
+  ocultarEmpty = () => {
     Animated.timing(this.anim_Empty, {
       duration: 500,
       toValue: 0
@@ -107,30 +82,15 @@ export default class MiListado extends React.Component {
 
   render() {
 
-    // //Cargando
-    // let viewCargando;
-    // if (this.props.renderCargando != undefined) {
-    //   viewCargando = this.props.renderCargando();
-    // } else {
-    //   viewCargando = (
-    //     <View style={{
-    //       width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white',
-    //     }}>
-    //       <Spinner color="black" />
-    //     </View>
-
-    //   );
-    // }
+    const colorFondo = this.props.backgroundColor || 'white';
 
     //Empty
     let viewEmpty;
-    if (this.props.renderEmpty != undefined) {
+    if ('renderEmpty' in this.props && this.props.renderEmpty != undefined) {
       viewEmpty = this.props.renderEmpty();
     } else {
       viewEmpty = (
-        <View style={{
-          width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white',
-        }}>
+        <View style={[styles.contenedor_Empty, { backgroundColor: colorFondo }]}>
           <Text>Sin items</Text>
         </View>
       );
@@ -139,20 +99,18 @@ export default class MiListado extends React.Component {
 
     //Error
     let viewError;
-    if (this.props.renderError != undefined) {
+    if ('renderError' in this.props && this.props.renderError != undefined) {
       viewError = this.props.renderError();
     } else {
       viewError = (
-        <View style={{
-          width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white',
-        }}>
+        <View style={[styles.contenedor_Error, { backgroundColor: colorFondo }]}>
           <Text>{this.props.error}</Text>
         </View>
       );
     }
 
     return (
-      <View style={[styles.contenedor]}>
+      <View style={[styles.contenedor, { backgroundColor: colorFondo }]}>
 
         {/* Listado */}
         <FlatList
@@ -171,60 +129,27 @@ export default class MiListado extends React.Component {
           refreshing={this.props.refreshing}
         />
 
-        {/* Cargando
-        <Animated.View
-          pointerEvents={this.state.mostrandoCargando ? "auto" : "none"}
-          style={
-            [
-              {
-                width: '100%',
-                height: '100%',
-                position: 'absolute'
-              },
-              {
-                opacity: this.anim_Cargando.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1]
-                })
-              }]}>
-          {viewCargando}
-        </Animated.View> */}
-
         {/* Error */}
         <Animated.View
           pointerEvents={this.state.mostrandoError ? "auto" : "none"}
-          style={
-            [
-              {
-                width: '100%',
-                height: '100%',
-                position: 'absolute'
-              },
-              {
-                opacity: this.anim_Error.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1]
-                })
-              }]}>
+          style={[styles.contenedor_Error, {
+            opacity: this.anim_Error.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 1]
+            })
+          }]}>
           {viewError}
         </Animated.View>
 
         {/* Empty */}
         <Animated.View
           pointerEvents={this.state.mostrandoEmpty ? "auto" : "none"}
-          style={
-            [
-              {
-                width: '100%',
-                height: '100%',
-                position: 'absolute'
-              },
-              {
-                opacity: this.anim_Empty.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1]
-                })
-              }]}>
+          style={[styles.contenedor_Empty, {
+            opacity: this.anim_Empty.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 1]
+            })
+          }]}>
           {viewEmpty}
         </Animated.View>
 
@@ -240,20 +165,27 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     flex: 1,
-    display: 'flex',
-    backgroundColor: "rgba(230,230,230,1)"
+    display: 'flex'
   },
   listado: {
-    backgroundColor: "rgba(230,230,230,1)",
     width: '100%',
     top: 0,
     bottom: 0,
     position: 'absolute'
   },
-  cargando: {
+  contenedor_Empty: {
     width: '100%',
     height: '100%',
-    position: 'absolute'
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  contenedor_Error: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });
 

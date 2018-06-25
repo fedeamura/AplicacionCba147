@@ -7,10 +7,9 @@ export default class Rules_Ajustes extends React.Component {
     super();
   }
 
-  static setListadoRequerimientoInterfaz(tipo) {
+  static setListadoRequerimientoInterfaz = (tipo) => {
     return new Promise((resolve, reject) => {
-
-      DB.setItem("listadoRequerimientoInterfaz", tipo).then(() => {
+      DB.setItem("listadoRequerimientoInterfaz", tipo + '').then(() => {
         resolve();
       }).catch((error) => {
         reject('Error procesando la solicitud');
@@ -18,14 +17,14 @@ export default class Rules_Ajustes extends React.Component {
     });
   }
 
-  static getListadoRequerimientoInterfaz() {
+  static getListadoRequerimientoInterfaz = () => {
     return new Promise((resolve, reject) => {
 
       DB.getItem("listadoRequerimientoInterfaz").then((val) => {
         if (val == undefined) {
-          val = 1;
+          val = '2';
         }
-        resolve(val);
+        resolve(parseInt(val));
       }).catch((error) => {
         reject('Error procesando la solicitud');
       });

@@ -1,29 +1,15 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  Platform,
   View,
-  UIManager,
-  Alert,
-  Animated,
-  StatusBar,
   ScrollView,
-  Keyboard,
-  Dimensions
+  StyleSheet
 } from "react-native";
 import {
-  Container,
-  Button,
   Text,
-  Input,
-  Content,
-  Card
 } from "native-base";
+import { Card, CardContent } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
-
-//Mis componentes
-import App from "@UI/App";
 
 export default class PaginaPerfil extends React.Component {
 
@@ -42,27 +28,13 @@ export default class PaginaPerfil extends React.Component {
 
   render() {
 
-    const initData = global.initData.inicio.paginas.perfil;
+    const initData = global.initData;
 
     return (
-      <View style={{
-        flex: 1, backgroundColor: "rgba(230,230,230,1)"
-      }}>
+      <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
         <ScrollView>
-          <View style={{
-            width: '100%', padding: 16
-          }}>
-
-            <View style={{
-              width: 156,
-              overflow: 'hidden',
-              height: 156,
-              backgroundColor: 'rgba(0,0,0,0.2)',
-              borderRadius: (200 / 2),
-              margin: 16,
-              alignSelf: 'center'
-            }}>
-
+          <View style={styles.scrollView}>
+            <View style={styles.imagen}>
               <WebImage
                 resizeMode="cover"
                 source={{ uri: 'https://i.pinimg.com/originals/d1/1a/45/d11a452f5ce6ab534e083cdc11e8035e.png' }}
@@ -72,65 +44,128 @@ export default class PaginaPerfil extends React.Component {
                 }} />
             </View>
 
-            <Text style={{ alignSelf: 'center', fontSize: 32, marginTop: 8 }}>Federico Amura</Text>
+            <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{texto_Titulo_DatosPersonales}</Text>
+            <Card style={styles.card}>
+              <CardContent>
+                <Text style={{ fontSize: 24 }}>Federico Amura</Text>
 
-            <Card style={{ padding: 16, marginTop: 32 }}>
-
-              <View style={{ display: 'flex', flexDirection: 'row' }}>
-                <Icon name="gender-male" type="MaterialCommunityIcons" style={{ fontSize: 24, marginTop: 4 }} />
-                <View style={{ flex: 1, marginLeft: 16 }}>
-                  <Text style={{ fontSize: 20 }}>Sexo</Text>
-                  <Text>Masculino</Text>
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
+                  <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                  <View style={{ marginLeft: 16 }}>
+                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Dni}</Text>
+                    <Text>35476866</Text>
+                  </View>
                 </View>
-              </View>
 
-              <View style={{ display: 'flex', flexDirection: 'row', marginTop: 16 }}>
-
-                <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginTop: 4 }} />
-                <View style={{ flex: 1, marginLeft: 16 }}>
-                  <Text style={{ fontSize: 20 }}>DNI</Text>
-                  <Text>35476866</Text>
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
+                  <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                  <View style={{ marginLeft: 16 }}>
+                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Cuil}</Text>
+                    <Text>20354768667</Text>
+                  </View>
                 </View>
-              </View>
 
-              <View style={{ display: 'flex', flexDirection: 'row', marginTop: 16 }}>
-                <Icon name="calendar-today" type="MaterialCommunityIcons" style={{ fontSize: 24, marginTop: 4 }} />
-                <View style={{ flex: 1, marginLeft: 16 }}>
-                  <Text style={{ fontSize: 20 }}>Fecha de nacimiento</Text>
-                  <Text>01/04/1991</Text>
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
+                  <Icon name="calendar" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                  <View style={{ marginLeft: 16 }}>
+                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_FechaNacimiento}</Text>
+                    <Text>01/04/1991</Text>
+                  </View>
                 </View>
-              </View>
 
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
+                  <Icon name={"gender-male"} type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                  <View style={{ marginLeft: 16 }}>
+                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Sexo}</Text>
+                    <Text>{texto_Titulo_SexoMasculino}</Text>
+                  </View>
+                </View>
+
+
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
+                  <Icon name="map" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                  <View style={{ marginLeft: 16 }}>
+                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_DomicilioLegal}</Text>
+                    <Text>Independencia 710 4f, Cordoba, Cordoba</Text>
+                  </View>
+                </View>
+              </CardContent>
             </Card>
 
-            <Card style={{ padding: 16, marginTop: 32 }}>
+            <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{texto_Titulo_DatosContacto}</Text>
+            <Card style={[styles.card]}>
 
-              <View style={{ display: 'flex', flexDirection: 'row' }}>
-                <Icon name="email" type="MaterialCommunityIcons" style={{ fontSize: 24, marginTop: 4 }} />
-                <View style={{ flex: 1, marginLeft: 16 }}>
-                  <Text style={{ fontSize: 20 }}>E-Mail</Text>
-                  <Text>fede.amura@gmail.com</Text>
+              <CardContent>
+
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
+                  <Icon name="email" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                  <View style={{ marginLeft: 16 }}>
+                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Email}</Text>
+                    <Text>fede.amura@gmail.com</Text>
+                  </View>
                 </View>
-              </View>
 
-              <View style={{ display: 'flex', flexDirection: 'row', marginTop: 16 }}>
-
-                <Icon name="phone" type="MaterialCommunityIcons" style={{ fontSize: 24, marginTop: 4 }} />
-                <View style={{ flex: 1, marginLeft: 16 }}>
-                  <Text style={{ fontSize: 20 }}>Teléfono</Text>
-                  <Text>3517449132</Text>
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
+                  <Icon name="phone" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                  <View style={{ marginLeft: 16 }}>
+                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_TelefonoCelular}</Text>
+                    <Text>351-7449132</Text>
+                  </View>
                 </View>
-              </View>
 
+                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
+                  <Icon name="phone" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                  <View style={{ marginLeft: 16 }}>
+                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_TelefonoFijo}</Text>
+                    <Text>351-4226236</Text>
+                  </View>
+                </View>
 
-
+              </CardContent>
             </Card>
-
           </View>
-
         </ScrollView>
-
       </View >
     );
   }
 }
+
+const styles = StyleSheet.create({
+  contenedor: {
+    width: '100%',
+    height: '100%'
+  },
+  imagen: {
+    width: 156,
+    overflow: 'hidden',
+    height: 156,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: (200 / 2),
+    margin: 16,
+    alignSelf: 'center'
+  },
+  scrollView: {
+    width: '100%',
+    padding: 16
+  },
+  card: {
+    borderRadius: 16,
+    margin: 8
+  }
+});
+
+const texto_Titulo_DatosPersonales = 'Datos personales';
+const texto_Titulo_Dni = 'Nº de Documento';
+const texto_Titulo_Cuil = 'CUIL';
+const texto_Titulo_FechaNacimiento = 'Fecha de nacimiento';
+const texto_Titulo_Sexo = 'Sexo';
+const texto_Titulo_SexoMasculino = 'Masculino';
+const texto_Titulo_SexoFemenino = 'Femenino';
+const texto_Titulo_DomicilioLegal = 'Domicilio legal'
+
+const texto_Titulo_DatosContacto = 'Datos de contacto';
+const texto_Titulo_Email = 'E-Mail';
+const texto_Titulo_TelefonoFijo = 'Teléfono fijo';
+const texto_Titulo_TelefonoCelular = 'Teléfono Celular';
+
+

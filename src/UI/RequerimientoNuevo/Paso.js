@@ -1,33 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  Platform,
-  View,
-  UIManager,
-  Alert,
   Animated,
-  StatusBar,
-  ScrollView,
-  Keyboard,
-  Dimensions,
-  TouchableWithoutFeedback
 } from "react-native";
-import {
-  Container,
-  Button,
-  Text,
-  Input,
-  Content
-} from "native-base";
-import { Card, CardContent } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import WebImage from 'react-native-web-image'
-import LinearGradient from 'react-native-linear-gradient';
-import color from "color";
+import { Card } from 'react-native-paper';
 import IndicadorPaso from "./IndicadorPaso";
-
-//Mis componentes
-import App from "@UI/App";
 
 export default class RequerimientoNuevo_Paso extends React.Component {
   constructor(props) {
@@ -36,9 +12,9 @@ export default class RequerimientoNuevo_Paso extends React.Component {
     let expandido = props.expandido || false;
     this.state = {
       expandido: expandido,
-      anim: new Animated.Value(expandido ? 1 : 0)
     };
 
+    this.anim = new Animated.Value(expandido ? 1 : 0);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -51,15 +27,15 @@ export default class RequerimientoNuevo_Paso extends React.Component {
     }
   }
 
-  expandir() {
+  expandir = () => {
     this.setState({ expandido: true }, () => {
-      Animated.timing(this.state.anim, { duration: 300, toValue: 1 }).start();
+      Animated.timing(this.anim, { duration: 300, toValue: 1 }).start();
     })
   }
 
-  comprimir() {
+  comprimir = () => {
     this.setState({ expandido: false }, () => {
-      Animated.timing(this.state.anim, { duration: 300, toValue: 0 }).start();
+      Animated.timing(this.anim, { duration: 300, toValue: 0 }).start();
     });
   }
 
@@ -68,6 +44,7 @@ export default class RequerimientoNuevo_Paso extends React.Component {
     return (
       <Card
         style={{
+          borderRadius: 16,
           padding: 16,
           backgroundColor: this.state.expandido == 1 ? 'white' : 'transparent',
           elevation: this.state.expandido == 1 ? 2 : 0
@@ -88,8 +65,8 @@ export default class RequerimientoNuevo_Paso extends React.Component {
         {/* Paso  */}
         <Animated.View style={{
           overflow: 'hidden',
-          opacity: this.state.anim,
-          maxHeight: this.state.anim.interpolate({
+          opacity: this.anim,
+          maxHeight: this.anim.interpolate({
             inputRange: [0, 1],
             outputRange: [0, 1000]
           })

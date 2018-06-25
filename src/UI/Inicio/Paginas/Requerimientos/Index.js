@@ -1,35 +1,30 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  Platform,
   View,
-  UIManager,
-  Alert,
   Animated,
-  StatusBar,
-  ScrollView,
-  Keyboard,
-  Dimensions
+  StyleSheet,
+  Alert,
+  BackHandler
 } from "react-native";
 import {
-  Container,
   Button,
   Text,
-  Input,
-  Content
 } from "native-base";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
-
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 //Mis componentes
 import App from "@UI/App";
 import MiListado from "@Utils/MiListado";
 import ItemRequerimiento from "@Utils/Requerimiento/CardItem";
-import Rules_Servicio from "@Rules/Rules_Servicio";
 import Rules_Requerimiento from "@Rules/Rules_Requerimiento";
+
+const texto_BotonNuevo = 'Nuevo requerimiento';
+const url_Imagen_Error = "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png"
+const texto_Error_Consultado = 'Oops... Algo salió mal al consultar sus requerimientos';
+const texto_Boton_Reintentar = 'Reintentar';
+const url_Imagen_Empty = "https://res.cloudinary.com/dtwwgntjc/image/upload/v1526679157/0_plpdmd.png";
+const texto_Empty = "No registraste ningún requerimiento aún..."
+const texto_Boton_Empty = 'Registrar uno';
 
 export default class PaginaInicio extends React.Component {
 
@@ -46,27 +41,27 @@ export default class PaginaInicio extends React.Component {
   }
 
   componentDidMount() {
-    this.buscarRequerimientos();
+    // BackHandler.addEventListener('hardwareBackPress', () => {
+    //   if (this.state.cargando == true) return true;
+    // });
   }
 
-  mostrarBotonNuevo() {
+  mostrarBotonNuevo = () => {
     Animated.timing(this.animBoton, {
       toValue: 1,
       duration: 300
     }).start();
   }
 
-  ocultarBotonNuevo() {
+  ocultarBotonNuevo = () => {
     Animated.timing(this.animBoton, {
       toValue: 0,
       duration: 300
     }).start();
   }
 
-  buscarRequerimientos() {
+  buscarRequerimientos = () => {
     this.setState({
-      error: undefined,
-      requerimientos: [],
       cargando: true
     }, () => {
 
@@ -74,8 +69,10 @@ export default class PaginaInicio extends React.Component {
 
       Rules_Requerimiento.get()
         .then((requerimientos) => {
+
           this.setState({
             cargando: false,
+            error: undefined,
             requerimientos: requerimientos
           }, () => {
             if (requerimientos.length == 0) {
@@ -84,8 +81,8 @@ export default class PaginaInicio extends React.Component {
               this.mostrarBotonNuevo();
             }
           });
-
         }).catch((error) => {
+
           this.setState({
             cargando: false,
             requerimientos: [],
@@ -95,31 +92,43 @@ export default class PaginaInicio extends React.Component {
           });
         })
     });
-
   }
 
-  abrirNuevoRequerimiento() {
-    App.navegar('RequerimientoNuevo');
+  abrirNuevoRequerimiento = () => {
+    App.navegar('RequerimientoNuevo', {
+      callback: () => {
+        this.buscarRequerimientos();
+      },
+      verDetalleRequerimiento: (id) => {
+        this.buscarRequerimientos();
+        this.verDetalleRequerimiento(id);
+      }
+    });
+  }
+
+  verDetalleRequerimiento = (id) => {
+    Alert.alert('', 'Ver detalle');
   }
 
   render() {
-
-    const initData = global.initData.inicio.paginas.requerimientos;
+    const initData = global.initData;
 
     return (
-      <View style={{
-        flex: 1, backgroundColor: "rgba(230,230,230,1)"
-      }}>
+      <View
+        onLayout={this.buscarRequerimientos}
+        style={[styles.contenedor]}>
         <MiListado
-          style={{
-            padding: 16, paddingBottom: 72, backgroundColor: "rgba(230,230,230,1)"
-          }}
-          // cargando={this.state.cargando}
-          error={this.state.error}
-          data={this.state.requerimientos}
+          backgroundColor={initData.backgroundColor}
+          style={[styles.listado]}
           keyExtractor={(item) => { return item.id }}
+          onRefresh={this.buscarRequerimientos}
+          refreshing={this.state.cargando}
+          error={this.state.cargando == false && this.state.error != undefined}
+          data={this.state.requerimientos}
+          //Item
           renderItem={(item) => {
             return <ItemRequerimiento
+              onPress={this.verDetalleRequerimiento}
               numero={item.item.numero}
               año={item.item.año}
               estadoColor={item.item.estadoColor}
@@ -127,54 +136,50 @@ export default class PaginaInicio extends React.Component {
               fechaAlta={item.item.fechaAlta}
             />;
           }}
+          // Empty
           renderEmpty={() => {
-            return <View style={initData.styles.contenedor_Empty} >
+            return <View style={styles.contenedor_Empty} >
               <WebImage
-                resizeMode={initData.imagenEmpty_ResizeMode}
-                style={initData.styles.imagenEmpty}
-                source={{ uri: initData.imagenEmpty_Url }}
+                resizeMode="cover"
+                style={styles.imagen_Empty}
+                source={{ uri: url_Imagen_Empty }}
               />
 
-              <Text style={initData.styles.textoEmpty}>{initData.textoEmpty_Mensaje}</Text>
+              <Text style={styles.texto_Empty}>{texto_Empty}</Text>
 
               <Button
-                full={initData.botonEmpty_FullWidth}
-                transparent={initData.botonEmpty_Transparente}
-                rounded={initData.botonEmpty_Redondeado}
-                style={initData.styles.botonEmpty}>
-                <Text style={initData.styles.botonEmptyTexto}>{initData.botonEmpty_Texto}
+                rounded={true}
+                style={styles.boton_Empty}
+                onPress={this.abrirNuevoRequerimiento}>
+                <Text style={styles.boton_EmptyTexto}>{texto_Boton_Empty}
                 </Text>
               </Button>
             </View>
           }}
+          // Error
           renderError={() => {
-            return <View style={initData.styles.contenedor_Error} >
+            return <View style={styles.contenedor_Error} >
               <WebImage
-                resizeMode={initData.imagenError_ResizeMode}
-                style={initData.styles.imagenError}
-                source={{ uri: initData.imagenError_Url }}
+                resizeMode="cover"
+                style={styles.imagen_Error}
+                source={{ uri: url_Imagen_Error }}
               />
 
-              <Text style={initData.styles.textoError}>{initData.textoError_Mensaje}</Text>
+              <Text style={styles.texto_Error}>{texto_Error_Consultado}</Text>
+              <Text style={styles.texto_ErrorDetalle}>{this.state.error}</Text>
 
               <Button
-                full={initData.botonError_FullWidth}
-                transparent={initData.botonError_Transparente}
-                rounded={initData.botonError_Redondeado}
-                style={initData.styles.botonError}
-                onPress={() => {
-                  this.buscarRequerimientos();
-                }}>
-                <Text style={initData.styles.botonErrorTexto}>{initData.botonError_Texto}</Text>
+                rounded={true}
+                style={styles.boton_Error}
+                onPress={this.buscarRequerimientos}>
+                <Text style={styles.boton_ErrorTexto}>{texto_Boton_Reintentar}</Text>
               </Button>
             </View>
           }}
-          onRefresh={() => {
-            this.buscarRequerimientos();
-          }}
-          refreshing={this.state.cargando}
+
         />
 
+        {/* Boton nuevo requerimiento */}
         <Animated.View
           pointerEvents={this.state.cargando == true || this.state.error != undefined || this.state.requerimientos == undefined || this.state.requerimientos.length == 0 ? 'none' : 'auto'}
           style={{
@@ -192,20 +197,12 @@ export default class PaginaInicio extends React.Component {
 
           <Button
             iconLeft
-            rounded={initData.botonNuevoRequerimiento_Redondeado}
-            transparent={initData.botonNuevoRequerimiento_Transparent}
-            full={initData.botonNuevoRequerimiento_FullWidth}
-            style={initData.styles.botonNuevoRequerimiento}
-            onPress={() => {
-              this.abrirNuevoRequerimiento();
-            }}
+            rounded={true}
+            style={styles.btnNuevo}
+            onPress={this.abrirNuevoRequerimiento}
           >
-            {/* <Icon
-              style={initData.styles.botonNuevoRequerimiento_Icono}
-              type={initData.botonNuevoRequerimiento_IconoFontFamily}
-              name={initData.botonNuevoRequerimiento_Icono} /> */}
-            <Text style={initData.styles.botonNuevoRequerimiento_Texto}>
-              {initData.botonNuevoRequerimiento_Texto}
+            <Text style={styles.botoNuevoTexto}>
+              {texto_BotonNuevo}
             </Text>
           </Button>
 
@@ -214,3 +211,111 @@ export default class PaginaInicio extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  contenedor: {
+    width: '100%',
+    height: '100%'
+  },
+  listado: {
+    padding: 16,
+    paddingBottom: 72
+  },
+  btnNuevo: {
+    position: "absolute",
+    bottom: 16,
+    alignSelf: "center",
+    backgroundColor: "green",
+    shadowColor: 'green',
+    shadowRadius: 5,
+    shadowOpacity: 0.4,
+    backgroundColor: 'green',
+    shadowOffset: { width: 0, height: 7 }
+  },
+  botoNuevoTexto: {
+    color: 'white'
+  },
+  //Error
+  contenedor_Error: {
+    position: "absolute",
+    backgroundColor: "rgba(230,230,230,1)",
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  imagen_Error: {
+    backgroundColor: "transparent",
+    width: 250,
+    height: 250
+  },
+  texto_Error: {
+    maxWidth: 300,
+    fontSize: 20,
+    color: "black",
+    textAlign: "center",
+    marginTop: 16,
+    marginLeft: 0,
+    marginRight: 0
+  },
+  texto_ErrorDetalle: {
+    maxWidth: 300,
+    fontSize: 16,
+    color: "black",
+    textAlign: "center",
+    marginTop: 8,
+    marginBottom: 16,
+    marginLeft: 0,
+    marginRight: 0
+  },
+  boton_Error: {
+    backgroundColor: "green",
+    alignSelf: "center",
+    shadowColor: 'green',
+    shadowRadius: 5,
+    shadowOpacity: 0.4,
+    backgroundColor: 'green',
+    shadowOffset: { width: 0, height: 7 }
+  },
+  boton_ErrorTexto: {
+    color: 'white'
+  },
+  //Empty
+  contenedor_Empty: {
+    position: "absolute",
+    backgroundColor: "rgba(230,230,230,1)",
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  imagen_Empty: {
+    backgroundColor: "transparent",
+    width: 250,
+    height: 250
+  },
+  texto_Empty: {
+    maxWidth: 300,
+    fontSize: 20,
+    color: "black",
+    textAlign: "center",
+    marginTop: 16,
+    marginBottom: 16,
+    marginLeft: 0,
+    marginRight: 0
+  },
+  boton_Empty: {
+    backgroundColor: "green",
+    alignSelf: "center",
+    shadowColor: 'green',
+    shadowRadius: 5,
+    shadowOpacity: 0.4,
+    backgroundColor: 'green',
+    shadowOffset: { width: 0, height: 7 }
+  },
+  boton_Empty_Texto: {
+    color: 'white'
+  },
+})

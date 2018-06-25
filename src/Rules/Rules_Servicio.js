@@ -1,9 +1,8 @@
-import React, { Component } from "react";
-import App from "@UI/App";
+import React from "react";
 
 export default class Rules_Servicio extends React.Component {
 
-  static get() {
+  static get = () => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([
@@ -113,7 +112,7 @@ export default class Rules_Servicio extends React.Component {
     });
   }
 
-  static getPrincipales() {
+  static getPrincipales = () => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([

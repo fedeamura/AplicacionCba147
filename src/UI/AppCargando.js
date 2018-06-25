@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   Animated,
   StatusBar
 } from "react-native";
@@ -17,8 +18,8 @@ export default class AppCargando extends React.Component {
 
   render() {
     return (
-      <View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <WebImage
+      <View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+        <Image
           resizeMode="contain"
           style={{ width: '100%', height: '100%', margin: 72 }}
           source={require('@Resources/logo_muni.png')}

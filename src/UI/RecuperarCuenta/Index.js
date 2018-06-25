@@ -1,36 +1,31 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   Platform,
   StyleSheet,
   View,
-  UIManager,
   Alert,
   Animated,
   StatusBar,
   ScrollView,
   Keyboard,
-  Dimensions,
-  TouchableOpacity
 } from "react-native";
 import {
-  Container,
   Button,
   Text,
-  Input,
-  Item,
-  Spinner,
-  Content
+  Spinner
 } from "native-base";
-import { Card, CardContent } from "react-native-paper";
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import {
+  Card,
+  CardContent
+} from "react-native-paper";
+import MiInputTextValidar from '@Utils/MiInputTextValidar';
+import LinearGradient from 'react-native-linear-gradient';
 
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
-import IndicadorCargando from "@Utils/IndicadorCargando";
+import MiStatusBar from '@Utils/MiStatusBar';
+import MiToolbar from '@Utils/MiToolbar';
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -46,8 +41,12 @@ export default class Index extends React.Component {
     super(props);
 
     this.state = {
-      email: "",
-      errorEmail: false,
+      username: undefined,
+      usernameError: undefined,
+      email: undefined,
+      emailError: undefined,
+      completado: false,
+      error: true,
       cargando: false
     };
 
@@ -83,96 +82,91 @@ export default class Index extends React.Component {
     }).start();
   }
 
-  onEmailChange(val) {
-    this.setState({ email: val, errorEmail: val == "" });
-  }
+  validarCampos = () => {
+    let tieneUsername = this.state.username != undefined && this.state.username != "";
+    let tieneEmail = this.state.email != undefined && this.state.email != "";
 
-  recuperar() {
-    let errorEmail = this.state.email == "";
-    let error = errorEmail;
+    let completado = tieneUsername == true && tieneEmail == true;
+    let tieneError = this.state.usernameError == true || this.state.emailError == true;
 
     this.setState({
-      errorEmail: errorEmail
+      completado: completado,
+      error: tieneError
     });
+  }
 
-    if (error) {
-      Alert.alert(global.initData.recuperarCuenta.dialogoRevisarFormulario_Titulo || '', global.initData.recuperarCuenta.dialogoRevisarFormulario_Contenido || '');
+  onUsernameChange = (val) => {
+    this.setState({ username: val }, this.validarCampos);
+  }
+
+  onEmailChange = (val) => {
+    this.setState({ email: val }, this.validarCampos);
+  }
+
+  recuperarCuenta = () => {
+    if (this.state.username == undefined || this.state.username == "") {
+      Alert.alert('', 'Ingrese el CUIL o Nombre de Usuario',
+        [
+          {
+            text: 'Aceptar', onPress: () => {
+              this.inputUsername._root.focus();
+            }
+          }
+        ]
+      );
       return;
     }
 
+    if (this.state.email == undefined || this.state.email == "") {
+      Alert.alert('', 'Ingrese el e-mail',
+        [
+          {
+            text: 'Aceptar', onPress: () => {
+              this.inputEmail._root.focus();
+            }
+          }
+        ]
+      );
+      return;
+    }
+
+    if (this.state.completado == false) {
+      Alert.alert('', 'Complete los datos personales');
+      return;
+    }
+
+    if (this.state.error == true) {
+      Alert.alert('', 'Revise los datos ingresados');
+      return;
+    }
+
+
     this.setState({
       cargando: true
     }, () => {
-      Rules_Usuario.getUsuariosConEmail(this.state.email).then((usernames) => {
-
-        //Si no hay nada
-        if (usernames.length == 0) {
-          Alert.alert('', 'No hay ningun usuario asociado a la dirección de e-mail indicada');
-          this.setState({
-            usernames: undefined,
-            cargando: false
-          });
-          return;
-        }
-
-        //Si hay uno solo
-        if (usernames.length == 1) {
-          this.recuperarParaUsername(this.state.email, usernames[0]);
-          return;
-        }
-
-        //Si hay muchos
-        this.setState({
-          usernames: usernames,
-          cargando: false
-        });
-
-      }).catch(() => {
-        Alert.alert('', 'Error procesando la solicitud');
-
-        this.setState({
-          cargando: false
-        });
-      });
-    });
-  }
-
-  recuperarParaUsername(username) {
-    this.setState({
-      cargando: true
-    }, () => {
-      Rules_Usuario.recuperarCuenta(this.state.email, username)
-        .then(() => {
-          Alert.alert('', 'Se ha enviado un e-mail a su casilla de correo para recuperar la cuenta');
-          App.goBack();
+      Rules_Usuario.recuperarCuenta(this.state.username, this.state.email)
+        .then((data) => {
+          Alert.alert('', 'Se envió un e-mail a ' + this.state.email + ' con las instrucciones para recuperar tu contraseña', [
+            { texto: 'Aceptar', onPress: () => { App.goBack(); } }
+          ]);
         })
-        .catch(() => {
-          Alert.alert('', 'Error procesando la solicitud');
-          this.setState({
-            usernames: undefined,
-            cargando: false
+        .catch((error) => {
+          this.setState({ cargando: false }, () => {
+            Alert.alert('', error);
           });
-        });
+        })
     });
+
   }
 
-  cambiarEmail() {
-    this.setState({
-      usernames: undefined,
-      cargando: false,
-      email: ''
-    });
-  }
+  cerrar = () => {
+    if (this.state.cargando == true) return;
 
-  cerrar() {
-    if (this.state.cargando) return;
-
-    let tieneAlgo = this.state.email != "";
-    if (tieneAlgo) {
-      Alert.alert(global.initData.recuperarCuenta.dialogoCancelarFormulario_Titulo || '', global.initData.recuperarCuenta.dialogoCancelarFormulario_Contenido || '', [
-        { text: global.initData.recuperarCuenta.dialogoCancelarFormulario_OpcionSi || 'Si', onPress: () => App.goBack() },
-        { text: global.initData.recuperarCuenta.dialogoCancelarFormulario_OpcionNo || 'No', onPress: () => { } },
-
+    let preguntarCerrar = (this.state.email != undefined && this.state.email != "") || (this.state.username != undefined && this.state.username != "");
+    if (preguntarCerrar) {
+      Alert.alert('', '¿Desea cancelar la recuperación de su contraseña?', [
+        { text: 'Si', onPress: () => App.goBack() },
+        { text: 'No', onPress: () => { } }
       ]);
       return
     }
@@ -181,84 +175,130 @@ export default class Index extends React.Component {
   }
 
   render() {
-    const initData = global.initData.recuperarCuenta;
+    const initData = global.initData;
 
     return (
-      <View style={initData.styles.contenedor}>
+      <View style={styles.contenedor}>
 
         {/* StatusBar */}
-        <StatusBar backgroundColor={initData.statusBar_BackgroundColor} barStyle={initData.statusBar_Style} />
+        <MiStatusBar />
 
-        {/* Encabezado */}
-        <View style={[initData.styles.contenedor_Encabezado, {
-          paddingTop: Platform.OS == 'ios' ? 24 : 0
-        }]}>
-          <TouchableOpacity onPress={() => { this.cerrar(); }}>
-            <View style={initData.styles.botonCerrar}>
-              <Icon style={initData.styles.botonCerrarIcono} type={initData.botonCerrar_IconoFamily} name={initData.botonCerrar_Icono} />
-            </View>
-          </TouchableOpacity>
-          <Text style={initData.styles.textoTitulo}>{initData.titulo_Texto}</Text>
-        </View>
+        {/* Toolbar */}
+        <MiToolbar titulo='Recuperar cuenta' onBackPress={this.cerrar} />
 
         {/* Contenido */}
-        <View style={initData.styles.contenedor_Formulario}>
-          <ScrollView >
+        <View style={[styles.contenedor_Contenido, { backgroundColor: initData.backgroundColor }]}>
+          <ScrollView keyboardShouldPersistTaps="always">
+            <View style={styles.scrollViewContent}>
+              <Card style={styles.card}>
+                <CardContent>
 
-            <View style={initData.styles.scrollViewContent}>
+                  {/* Username */}
+                  <MiInputTextValidar
+                    onRef={(ref) => { this.inputUsername = ref; }}
+                    placeholder='CUIL o Nombre de Usuario'
+                    autoCapitalize="words"
+                    returnKeyType="done"
+                    autoCorrect={false}
+                    onSubmitEditing={() => { this.inputEmail._root.focus() }}
+                    keyboardType="default"
+                    validaciones={{ requerido: true, minLength: 2, maxLength: 70 }}
+                    onChange={(val) => { this.onUsernameChange(val); }}
+                    onError={(error) => {
+                      this.setState({ usernameError: error }, this.validarCampos)
+                    }}
+                  />
 
-              {/* Email */}
-              <Item error={this.state.errorEmail}>
-                <Input
-                  style={initData.styles.inputEmail}
-                  disabled={this.state.usernames != undefined && this.state.usernames.lenght != 0}
-                  placeholder={initData.inputEmail_Placeholder}
-                  value={this.state.email}
-                  onChangeText={(val) => { this.onEmailChange(val) }} />
-                {this.state.errorEmail == true && (
-                  <Icon type={initData.input_IconoErrorFamily} name={initData.input_IconoError} style={initData.styles.inputIconoError} />
-                )}
-              </Item>
+                  {/* Email */}
+                  <MiInputTextValidar
+                    onRef={(ref) => { this.inputEmail = ref; }}
+                    placeholder='E-Mail'
+                    autoCapitalize="words"
+                    returnKeyType="done"
+                    autoCorrect={false}
+                    onSubmitEditing={() => { }}
+                    keyboardType="default"
+                    validaciones={{ requerido: true, minLength: 2, maxLength: 70, tipo: 'email' }}
+                    onChange={(val) => { this.onEmailChange(val); }}
+                    onError={(error) => {
+                      this.setState({ emailError: error }, this.validarCampos)
+                    }}
+                  />
 
+                  {this.state.cargando == true && (
+                    <View style={styles.contenedor_Cargando}>
+                      <Spinner color="green" />
+                      <Text>Cargando</Text>
+                    </View>
+                  )}
 
-              {/* Usernames */}
-              {this.state.usernames != undefined && this.state.usernames.length != 0 && (
-                <View>
-                  <Text style={initData.styles.textoUsernames}>{initData.textoUsernamesEncontrados_Texto}</Text>
-                  <Text style={initData.styles.textoUsernamesSeleccioneUno}>{initData.textoUsernamesEncontrados_TextoSeleccioneUno}</Text>
-                  {this.state.usernames.map((username) => {
-                    return <Card style={initData.styles.cardUsername} onPress={() => {
-                      this.recuperarParaUsername(username);
-                    }}>
-                      <CardContent>
-                        <Text style={initData.styles.textoUsername}>{username}</Text>
-                      </CardContent>
-                    </Card>
-                  })}
-                  {/* <Button onPress={() => { this.cambiarEmail() }}><Text>Cambiar e-mail</Text></Button> */}
+                </CardContent>
+
+              </Card>
+
+              {/* Boton Validar datos */}
+              {this.state.cargando != true && (
+                <View style={{ marginTop: 16 }}>
+                  <Button
+                    rounded
+                    style={styles.botonRecuperar} onPress={this.recuperarCuenta}>
+                    <Text>Recuperar contraseña</Text>
+                  </Button>
                 </View>
-
-
               )}
 
             </View>
-
           </ScrollView>
 
-          {/* Boton Recuperar */}
-          {(this.state.usernames == undefined || this.state.usernames.length == 0) && (
-            <Button full style={initData.styles.botonRecuperar} onPress={() => { this.recuperar() }}>
-              <Text>{initData.botonRecuperar_Texto}</Text>
-            </Button>
-          )}
-
-          {/* Cargando */}
-          <IndicadorCargando visible={this.state.cargando} style={initData.styles.contenedor_Cargando} />
+          {/* Sombra del toolbar */}
+          <LinearGradient
+            colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
+            backgroundColor="transparent"
+            style={{ left: 0, top: 0, right: 0, height: 16, position: 'absolute' }}
+            pointerEvents="none" />
         </View>
-
-        <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
-
-      </View>
+      </View >
     );
   }
 }
+
+const styles = StyleSheet.create({
+  contenedor: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%"
+  },
+  contenedor_Contenido: {
+    flex: 1
+  },
+  scrollViewContent: {
+    paddingBottom: 16,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 16
+  },
+  contenedor_Cargando: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16
+  },
+  card: {
+    margin: 8,
+    borderRadius: 16
+  },
+  botonRecuperar: {
+    alignSelf: 'center',
+    shadowColor: 'green',
+    shadowRadius: 5,
+    shadowOpacity: 0.4,
+    backgroundColor: 'green',
+    shadowOffset: { width: 0, height: 7 }
+  }
+});

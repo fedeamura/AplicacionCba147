@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import App from "Cordoba/src/UI/App";
+import React from "react";
 
 export default class Rules_Requerimiento extends React.Component {
-  static get() {
+  
+  static get = () => {
     return new Promise((resolve, reject) => {
       let rqs = [];
       rqs.push({ id: 1, estadoKeyValue: 1, estadoColor: '#E53935', estadoNombre: 'Nuevo', numero: "QAZWSX", año: 2017, fechaAlta: '10/10/2018' });
@@ -53,7 +53,7 @@ export default class Rules_Requerimiento extends React.Component {
 
   }
 
-  static insertar(comando) {
+  static insertar = (comando) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();

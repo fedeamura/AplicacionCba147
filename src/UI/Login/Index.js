@@ -1,9 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   Platform,
   StyleSheet,
   View,
-  UIManager,
   Alert,
   Animated,
   StatusBar,
@@ -12,14 +11,9 @@ import {
   Dimensions
 } from "react-native";
 import {
-  Container,
   Button,
   Text,
-  Input,
-  Item,
-  Icon,
-  Spinner,
-  Content
+  Spinner
 } from "native-base";
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
@@ -31,20 +25,6 @@ import App from "Cordoba/src/UI/App";
 
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
-import Rules_Init from "@Rules/Rules_Init";
-
-const texto_Titulo = "Iniciar sesión";
-const url_ImagenFondo = "https://servicios2.cordoba.gov.ar/CBA147/Resources/Imagenes/fondo_login_oscura.jpg";
-const url_ImagenLogo = "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw";
-const texto_Usuario = "Usuario";
-const texto_UsuarioRequerido = "DatoRequerido";
-const texto_Password = "Contraseña";
-const texto_PasswordRequerida = "Dato requerido";
-const texto_Accediendo = "Cargando...";
-const texto_BotonAcceder = "Acceder";
-const texto_BotonOlvidoContraseña = "¿Olvidaste tu contraseña?";
-const texto_BotonCrearUsuario = "Crear usuario";
-const texto_ErrorGenerico = "Error procesando la solicitud";
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -56,15 +36,17 @@ export default class Login extends React.Component {
     super(props);
 
     this.state = {
-      escribioUsuario: false,
-      usuario: "",
-      escribioPassword: false,
-      password: "",
-      cargandoLogin: false
+      username: undefined,
+      usernameError: 'Dato requerido',
+      password: undefined,
+      passwordError: 'Dato requerido',
+      cargando: false
     };
 
     this.anim_Logo = new Animated.Value(0);
     this.anim_Form = new Animated.Value(0);
+    this.anim_ErrorUsername = new Animated.Value(0);
+    this.anim_ErrorPassword = new Animated.Value(0);
     this.keyboardHeight = new Animated.Value(0);
   }
 
@@ -90,157 +72,116 @@ export default class Login extends React.Component {
   keyboardWillHide = (event) => {
     this.teclado = false;
 
-
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
       toValue: 0,
     }).start();
   }
 
-  animarLogo() {
+  animarInicio = () => {
     Animated.spring(this.anim_Logo, {
       toValue: 1
-    }).start(() => {
-      this.consultarLogin();
-    });
+    }).start(this.consultarLogin);
   }
 
-  consultarLogin() {
-    this.setState({
-      error: undefined
-    }, () => {
-      Rules_Usuario.isLogin()
-        .then((login) => {
-          if (login) {
-            this.entrar();
-            return;
-          }
-          Animated.spring(this.anim_Form, {
-            toValue: 1
-          }).start();
-        })
-        .catch((error) => {
-          this.setState({
-            error: error
-          });
-        });
-    });
+  consultarLogin = () => {
+    Rules_Usuario.isLogin()
+      .then((login) => {
+        if (login) {
+          Animated.spring(this.anim_Logo, { toValue: 0 }).start(() => App.replace('Inicio'));
+          return;
+        }
+
+        Animated.spring(this.anim_Form, {
+          toValue: 1
+        }).start();
+      })
+      .catch((error) => {
+        Alert.alert('', error, [{ text: 'Reintentar', onPress: this.consultarLogin }]);
+      });
   }
 
-  mostrarFormulario() {
+  mostrarFormulario = () => {
     Animated.timing(this.anim_Form, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  login() {
-    this.setState({
-      error: undefined
-    });
+  onUsernameChange = (text) => {
+    this.setState({ username: text });
+    Animated.timing(this.anim_ErrorUsername, { toValue: 0, duration: 300 }).start();
+  }
 
-    if (this.state.usuario == "") {
-      App.animar();
-      this.setState({
-        escribioUsuario: true,
-        escribioPassword: true
-      }, () => {
-        this.refs.inputUsuario.focus();
-      });
-      return;
-    }
+  onPasswordChange = (text) => {
+    this.setState({ password: text });
+    Animated.timing(this.anim_ErrorPassword, { toValue: 0, duration: 300 }).start();
+  }
 
-    if (this.state.password == "") {
-      App.animar();
-      this.setState({
-        escribioUsuario: true,
-        escribioPassword: true
-      }, () => {
-        this.refs.inputPassword.focus();
-      });
+  login = () => {
 
-      return;
-    }
+    //Valido el form
+    let tieneUsername = this.state.username != undefined && this.state.username != "";
+    let tienePassword = this.state.password != undefined && this.state.password != "";
+    Animated.timing(this.anim_ErrorUsername, { toValue: tieneUsername ? 0 : 1, duration: 300 }).start();
+    Animated.timing(this.anim_ErrorPassword, { toValue: tienePassword ? 0 : 1, duration: 300 }).start();
 
-    //Logeo
-    App.animar();
-    this.setState({
-      cargandoLogin: true
-    }, () => {
-      Rules_Usuario.login(
-        this.state.usuario,
-        this.state.password
-      )
-        .then(() => {
-          this.entrar();
+    //Si es invalido cierro
+    if (tieneUsername == false || tienePassword == false) return;
+
+    //Cierro keyboard y empiezo a animar
+    Keyboard.dismiss();
+    setTimeout(() => {
+      //Achico el formulario
+      Animated.spring(this.anim_Form, { toValue: 0 }).start((() => {
+        this.setState({
+          cargando: true
+        }, () => {
+          Rules_Usuario.login(this.state.username, this.state.password)
+            .then(() => {
+              Animated.spring(this.anim_Logo, { toValue: 0 }).start(() => {
+                App.replace('Inicio');
+              });
+            })
+            .catch((error) => {
+
+              this.setState({
+                cargando: false
+              });
+
+              Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+              //Muestro el error
+              Alert.alert('', error || texto_ErrorGenerico,
+                [
+                  {
+                    text: "Aceptar",
+                    onPress: () => { }
+                  }
+                ],
+                { cancelable: true }
+              );
+            });
         })
-        .catch((error) => {
-
-          App.animar();
-          this.setState({
-            cargandoLogin: false
-          });
-
-          //Muestro el error
-          Alert.alert('', error || texto_ErrorGenerico,
-            [
-              {
-                text: "Aceptar",
-                onPress: () => { }
-              }
-            ],
-            { cancelable: true }
-          );
-        });
-    });
-
+      }));
+    }, 300);
   }
 
-  entrar() {
-    Animated.sequence([
-      Animated.spring(this.anim_Form, {
-        toValue: 0
-      }),
-      Animated.spring(this.anim_Logo, {
-        toValue: 0
-      })
-    ]).start(() => {
-      App.replace('Inicio');
-    });
-  }
-
-  nuevoUsuario() {
+  nuevoUsuario = () => {
     App.navegar('UsuarioNuevo');
   }
 
-  recuperarCuenta() {
+  recuperarCuenta = () => {
     App.navegar('RecuperarCuenta');
   }
 
-  onUsuarioChange(text) {
-    App.animar();
-    this.setState({ usuario: text, escribioUsuario: true });
-  }
-
-  onPasswordChange(text) {
-    App.animar();
-    this.setState({ password: text, escribioPassword: true });
-  }
-
   render() {
-
-    const initData = global.initData;
-
-    var errorUsuarioVisible = this.state.usuario == "" && this.state.escribioUsuario;
-    var errorPasswordVisible = this.state.password == "" && this.state.escribioPassword;
     const backgroundColor_StatusBar = Platform.OS == 'ios' ? 'transparent' : 'black';
 
     return (
       <View
         style={styles.contenedor}
-        onLayout={() => {
-          this.animarLogo();
-        }}>
+        onLayout={this.animarInicio}>
 
         <StatusBar backgroundColor={backgroundColor_StatusBar} barStyle="light-content" />
 
@@ -290,7 +231,7 @@ export default class Login extends React.Component {
                 {
                   maxHeight: this.anim_Form.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [0, 370]
+                    outputRange: [0, 400]
                   }),
                   transform: [{
                     translateY:
@@ -311,8 +252,8 @@ export default class Login extends React.Component {
                 <Kohana
                   ref="inputUsuario"
                   editable={!this.state.cargandoLogin}
-                  onChangeText={val => { this.onUsuarioChange(val); }}
-                  value={this.state.usuario}
+                  onChangeText={this.onUsernameChange}
+                  value={this.state.username}
                   style={styles.input}
                   label={texto_Usuario}
                   iconClass={MaterialsIcon}
@@ -323,9 +264,21 @@ export default class Login extends React.Component {
                   useNativeDriver
                 />
 
-                <Text
-                  style={[styles.inputTextoError, { maxHeight: errorUsuarioVisible ? 20 : 0 }]}>{texto_UsuarioRequerido}
-                </Text>
+                <Animated.View
+                  style={{
+                    overflow: 'hidden',
+                    opacity: this.anim_ErrorUsername,
+                    maxHeight: this.anim_ErrorUsername.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 50]
+                    })
+                  }}>
+                  <Text
+                    style={styles.inputTextoError}>
+                    {this.state.usernameError}
+                  </Text>
+                </Animated.View>
+
               </View>
 
               <View style={styles.contenedorInput}>
@@ -345,9 +298,20 @@ export default class Login extends React.Component {
                   useNativeDriver
                 />
 
-                <Text
-                  style={[styles.inputTextoError, { maxHeight: errorPasswordVisible ? 20 : 0 }]}>{texto_PasswordRequerida}
-                </Text>
+                <Animated.View
+                  style={{
+                    overflow: 'hidden',
+                    opacity: this.anim_ErrorPassword,
+                    maxHeight: this.anim_ErrorPassword.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, 50]
+                    })
+                  }}>
+                  <Text
+                    style={styles.inputTextoError}>
+                    {this.state.passwordError}
+                  </Text>
+                </Animated.View>
 
               </View>
 
@@ -360,22 +324,16 @@ export default class Login extends React.Component {
                   rounded={true}
                   disabled={this.state.cargandoLogin}
                   style={styles.botonAcceder}
-                  onPress={() => this.login()}
+                  onPress={this.login}
                 >
-                  {this.state.cargandoLogin && (
-                    <Spinner color={initData.botonAcceder_ColorCargando} />
-                  )}
-
-                  <Text style={styles.botonAccederTexto}>{this.state.cargandoLogin ? texto_Accediendo : texto_BotonAcceder}</Text>
+                  <Text style={styles.botonAccederTexto}>{texto_BotonAcceder}</Text>
                 </Button>
 
                 <Button
                   full={true}
                   transparent={true}
                   disabled={this.state.cargandoLogin}
-                  onPress={() => {
-                    this.recuperarCuenta();
-                  }}
+                  onPress={this.recuperarCuenta}
                   style={styles.botonRecuperarCuenta}
                 >
                   <Text style={styles.botonAccederTexto}>{texto_BotonOlvidoContraseña}</Text>
@@ -388,7 +346,7 @@ export default class Login extends React.Component {
                   rounded={true}
                   disabled={this.state.cargandoLogin}
                   style={styles.botonNuevoUsuario}
-                  onPress={() => this.nuevoUsuario()}
+                  onPress={this.nuevoUsuario}
                 >
                   <Text style={styles.botonNuevoUsuarioTexto}>{texto_BotonCrearUsuario}</Text>
                 </Button>
@@ -404,6 +362,7 @@ export default class Login extends React.Component {
         <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
 
       </View >
+
     );
   }
 }
@@ -510,3 +469,16 @@ const styles = StyleSheet.create({
     marginTop: 4
   }
 });
+
+const texto_Titulo = "Iniciar sesión";
+const url_ImagenFondo = "https://servicios2.cordoba.gov.ar/CBA147/Resources/Imagenes/fondo_login_oscura.jpg";
+const url_ImagenLogo = "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw";
+const texto_Usuario = "Usuario";
+const texto_UsuarioRequerido = "DatoRequerido";
+const texto_Password = "Contraseña";
+const texto_PasswordRequerida = "Dato requerido";
+const texto_Accediendo = "Cargando...";
+const texto_BotonAcceder = "Acceder";
+const texto_BotonOlvidoContraseña = "¿Olvidaste tu contraseña?";
+const texto_BotonCrearUsuario = "Crear usuario";
+const texto_ErrorGenerico = "Error procesando la solicitud";
