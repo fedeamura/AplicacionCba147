@@ -6,11 +6,15 @@ import {
 import {
   Text,
   Item,
-  Picker
+  Picker,
+  Button
 } from "native-base";
 import { Card, CardContent } from "react-native-paper";
 
 //Mis componentes
+import App from "@UI/App";
+
+//Rukes
 import Rules_Ajustes from "@Rules/Rules_Ajustes";
 
 export default class PaginaAjustes extends React.Component {
@@ -34,6 +38,7 @@ export default class PaginaAjustes extends React.Component {
       this.setState({ cardRequerimiento: val });
     });
   }
+
   render() {
     const initData = global.initData;
 
@@ -59,6 +64,8 @@ export default class PaginaAjustes extends React.Component {
             </Item>
           </CardContent>
         </Card>
+
+        <Button onPress={() => { App.navegar('PickerUbicacion') }}><Text>Ubicacion</Text></Button>
 
       </View >
     );

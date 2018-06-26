@@ -17,7 +17,7 @@ export default class MiToolbar extends React.Component {
       <Toolbar style={[styles.toolbar, {
         backgroundColor: initData.toolbar_BackgroundColor,
         height: initData.toolbar_Height
-      }]}
+      }, this.props.style]}
         elevation={0}
         dark={initData.toolbar_Dark}>
 

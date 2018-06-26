@@ -2,14 +2,17 @@ import React from "react";
 import {
   View,
   ScrollView,
-  StyleSheet
+  StyleSheet,
+  Alert
 } from "react-native";
 import {
-  Text,
+  Text, Spinner,
 } from "native-base";
 import { Card, CardContent } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import WebImage from 'react-native-web-image'
+
+import Rules_Usuario from '@Rules/Rules_Usuario';
 
 export default class PaginaPerfil extends React.Component {
 
@@ -18,26 +21,51 @@ export default class PaginaPerfil extends React.Component {
 
     this.state = {
       cargando: true,
+      datos: undefined,
       error: undefined
     };
   }
 
   componentDidMount() {
+    this.buscarDatos();
+  }
 
+  buscarDatos = () => {
+    this.setState({ cargando: true },
+      () => {
+        Rules_Usuario.getDatos()
+          .then((datos) => {
+            this.setState({ cargando: false, datos: datos });
+          })
+          .catch((error) => {
+            this.setState({ cargando: false, error: error });
+          });;
+      });
   }
 
   render() {
 
     const initData = global.initData;
 
+    if (this.state.cargando == true) {
+      return (<View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
+        <Spinner color="green"/>
+      </View >);
+    }
+
+    if (this.state.datos == undefined) return null;
+
+    const urlFoto = this.state.datos.SexoMasculino ? initData.url_placeholder_user_male : initData.url_placeholder_user_female;
+
     return (
-      <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
+      <View
+        style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]} >
         <ScrollView>
           <View style={styles.scrollView}>
             <View style={styles.imagen}>
               <WebImage
                 resizeMode="cover"
-                source={{ uri: 'https://i.pinimg.com/originals/d1/1a/45/d11a452f5ce6ab534e083cdc11e8035e.png' }}
+                source={{ uri: urlFoto }}
                 style={{
                   width: '100%',
                   height: '100%'
@@ -47,13 +75,13 @@ export default class PaginaPerfil extends React.Component {
             <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{texto_Titulo_DatosPersonales}</Text>
             <Card style={styles.card}>
               <CardContent>
-                <Text style={{ fontSize: 24 }}>Federico Amura</Text>
+                <Text style={{ fontSize: 24 }}>{this.state.datos.Nombre} {this.state.datos.Apellido}</Text>
 
                 <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
                   <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                   <View style={{ marginLeft: 16 }}>
                     <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Dni}</Text>
-                    <Text>35476866</Text>
+                    <Text>{this.state.datos.Dni}</Text>
                   </View>
                 </View>
 
@@ -61,7 +89,7 @@ export default class PaginaPerfil extends React.Component {
                   <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                   <View style={{ marginLeft: 16 }}>
                     <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Cuil}</Text>
-                    <Text>20354768667</Text>
+                    <Text>{this.state.datos.Cuil}</Text>
                   </View>
                 </View>
 
@@ -69,7 +97,7 @@ export default class PaginaPerfil extends React.Component {
                   <Icon name="calendar" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                   <View style={{ marginLeft: 16 }}>
                     <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_FechaNacimiento}</Text>
-                    <Text>01/04/1991</Text>
+                    <Text>{this.state.datos.FechaNacimiento}</Text>
                   </View>
                 </View>
 
@@ -77,7 +105,7 @@ export default class PaginaPerfil extends React.Component {
                   <Icon name={"gender-male"} type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                   <View style={{ marginLeft: 16 }}>
                     <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Sexo}</Text>
-                    <Text>{texto_Titulo_SexoMasculino}</Text>
+                    <Text>{this.state.datos.SexoMasculino ? texto_Titulo_SexoMasculino : texto_Titulo_SexoFemenino}</Text>
                   </View>
                 </View>
 
@@ -86,7 +114,7 @@ export default class PaginaPerfil extends React.Component {
                   <Icon name="map" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                   <View style={{ marginLeft: 16 }}>
                     <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_DomicilioLegal}</Text>
-                    <Text>Independencia 710 4f, Cordoba, Cordoba</Text>
+                    <Text>{this.state.datos.DomicilioLegal}</Text>
                   </View>
                 </View>
               </CardContent>
@@ -101,7 +129,7 @@ export default class PaginaPerfil extends React.Component {
                   <Icon name="email" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                   <View style={{ marginLeft: 16 }}>
                     <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Email}</Text>
-                    <Text>fede.amura@gmail.com</Text>
+                    <Text>{this.state.datos.Email}</Text>
                   </View>
                 </View>
 
@@ -109,7 +137,7 @@ export default class PaginaPerfil extends React.Component {
                   <Icon name="phone" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                   <View style={{ marginLeft: 16 }}>
                     <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_TelefonoCelular}</Text>
-                    <Text>351-7449132</Text>
+                    <Text>{this.state.datos.TelefonoCelular}</Text>
                   </View>
                 </View>
 
@@ -117,7 +145,7 @@ export default class PaginaPerfil extends React.Component {
                   <Icon name="phone" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                   <View style={{ marginLeft: 16 }}>
                     <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_TelefonoFijo}</Text>
-                    <Text>351-4226236</Text>
+                    <Text>{this.state.datos.TelefonoFijo}</Text>
                   </View>
                 </View>
 

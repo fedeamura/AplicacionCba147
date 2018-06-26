@@ -41,6 +41,7 @@ export default class PaginaInicio extends React.Component {
   }
 
   componentDidMount() {
+
     // BackHandler.addEventListener('hardwareBackPress', () => {
     //   if (this.state.cargando == true) return true;
     // });
@@ -101,13 +102,14 @@ export default class PaginaInicio extends React.Component {
       },
       verDetalleRequerimiento: (id) => {
         this.buscarRequerimientos();
+
         this.verDetalleRequerimiento(id);
       }
     });
   }
 
   verDetalleRequerimiento = (id) => {
-    Alert.alert('', 'Ver detalle');
+    App.navegar('RequerimientoDetalle', { id: id });
   }
 
   render() {

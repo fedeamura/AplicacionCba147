@@ -1,7 +1,7 @@
 import React from "react";
 
 export default class Rules_Requerimiento extends React.Component {
-  
+
   static get = () => {
     return new Promise((resolve, reject) => {
       let rqs = [];
@@ -58,6 +58,14 @@ export default class Rules_Requerimiento extends React.Component {
       setTimeout(() => {
         callback();
       }, 5000);
+    });
+  }
+
+  static getDetalle = (id) => {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback({});
+      }, 500);
     });
   }
 }

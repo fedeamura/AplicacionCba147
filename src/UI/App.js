@@ -28,8 +28,10 @@ import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
 import RecuperarCuenta from "@UI/RecuperarCuenta/Index";
 import Inicio from "@UI/Inicio/Index";
 import RequerimientoNuevo from "@UI/RequerimientoNuevo/Index";
+import RequerimientoDetalle from "@UI/RequerimientoDetalle/Index";
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
+import VisorFoto from "@UI/VisorFoto/Index";
 
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
@@ -56,11 +58,17 @@ const RootStack = StackNavigator(
     RequerimientoNuevo: {
       screen: RequerimientoNuevo
     },
+    RequerimientoDetalle: {
+      screen: RequerimientoDetalle
+    },
     PickerUbicacion: {
       screen: MiPickerUbicacion
     },
     PickerListado: {
       screen: MiPicker
+    },
+    VisorFoto: {
+      screen: VisorFoto
     }
   },
   {

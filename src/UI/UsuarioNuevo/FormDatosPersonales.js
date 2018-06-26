@@ -19,7 +19,7 @@ import {
 import { Card, CardContent } from 'react-native-paper';
 import MiInputTextValidar from '@Utils/MiInputTextValidar';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import moment from 'moment';
+import { dateToString } from '@Utils/Helpers'
 
 //Mis componentes
 import Rules_Usuario from "../../Rules/Rules_Usuario";
@@ -228,8 +228,8 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     });
   }
 
+
   render() {
-    moment.locale('es');
 
     return (
       <View style={{}}>
@@ -295,7 +295,7 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
                     pointerEvents='none'
                     onPress={this.mostrarDatePickerFechaNacimiento}
                     placeholder={texto_HintFechaNacimiento}
-                    value={this.state.fechaNacimiento == undefined ? "" : moment(this.state.fechaNacimiento).format("DD/MM/YYYY")}
+                    value={this.state.fechaNacimiento == undefined ? "" : dateToString(this.state.fechaNacimiento)}
                   />
 
                 </View>

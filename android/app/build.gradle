@@ -151,6 +151,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-photo-view')
     compile project(':lottie-react-native')
     compile project(':react-native-fs')
     compile project(':react-native-web-image')

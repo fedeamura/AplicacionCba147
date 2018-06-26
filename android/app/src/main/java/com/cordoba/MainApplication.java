@@ -3,6 +3,7 @@ package com.cordoba;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnative.photoview.PhotoViewPackage;
 import com.airbnb.android.react.lottie.LottiePackage;
 import com.rnfs.RNFSPackage;
 import org.vovkasm.WebImage.WebImagePackage;
@@ -44,6 +45,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new PhotoViewPackage(),
             new LottiePackage(),
             new RNFSPackage(),
             new WebImagePackage(),

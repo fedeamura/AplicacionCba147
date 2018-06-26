@@ -1,11 +1,9 @@
 import React from "react";
 import {
-  Platform,
   StyleSheet,
   View,
   Alert,
   Animated,
-  StatusBar,
   ScrollView,
   Keyboard,
 } from "react-native";
@@ -15,22 +13,18 @@ import {
 import {
   Card,
   CardContent,
-  Toolbar,
-  ToolbarBackAction,
-  ToolbarContent
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LinearGradient from 'react-native-linear-gradient';
-import FormDatosPersonales from './FormDatosPersonales';
-import FormDatosExtra from './FormDatosExtra';
-import Resultado from './Resultado';
-
-import moment from 'moment';
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
 import MiStatusBar from '@Utils/MiStatusBar';
 import MiToolbar from '@Utils/MiToolbar';
+import FormDatosPersonales from './FormDatosPersonales';
+import FormDatosExtra from './FormDatosExtra';
+import Resultado from './Resultado';
+import { dateToString } from "@Utils/Helpers";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -168,7 +162,6 @@ export default class Login extends React.Component {
 
   render() {
     const initData = global.initData;
-    moment.locale('es');
 
     return (
       <View style={styles.contenedor}>
@@ -231,7 +224,7 @@ export default class Login extends React.Component {
                         <Icon name="calendar" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
                         <View style={{ marginLeft: 16 }}>
                           <Text style={{ fontWeight: 'bold' }}>{texto_TituloFechaNacimiento}</Text>
-                          <Text>{moment(this.state.datosPersonales.fechaNacimiento).format("DD/MM/YYYY")}</Text>
+                          <Text>{dateToString(this.state.datosPersonales.fechaNacimiento)}</Text>
                         </View>
                       </View>
 

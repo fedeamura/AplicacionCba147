@@ -62,7 +62,7 @@ export default class Rules_Usuario extends React.Component {
 
   static isLogin = () => {
     return new Promise((resolve, reject) => {
-      resolve(false);
+      resolve(true);
 
       // DB.getItem("token")
       //   .then(response => {
@@ -153,48 +153,22 @@ export default class Rules_Usuario extends React.Component {
     });
   }
 
-  static getDatosUsuario = () => {
+  static getDatos = () => {
     return new Promise((resolve, reject) => {
-      const url =
-        "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/GetDatosUsuario";
-
-      fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          token: App.Variables.Token
-        })
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          if (responseJson == undefined || responseJson.d == undefined) {
-            console.log('Sin datos');
-            reject('Error procesando la solicitud');
-            return;
-          }
-
-          var data = responseJson.d;
-
-          console.log(data);
-          if (!data.Ok) {
-            console.log('Error');
-            console.log(data.Error);
-
-            reject(data.Error);
-            return;
-          }
-
-          resolve(data.Return);
-        })
-        .catch(error => {
-          console.log('Error');
-          console.log(error);
-
-          reject('Error procesando la solicitud');
+      setTimeout(() => {
+        resolve({
+          Nombre: 'Federico',
+          Apellido: 'Amura',
+          Dni: 35476866,
+          Cuil: '20354768667',
+          SexoMasculino: true,
+          FechaNacimiento: '01/04/1991',
+          DomicilioLegal: '27 de abril 464 13B, Cordoba, Argentina',
+          Email: 'fede.amura@gmail.com',
+          TelefonoCelular: '351-7449132',
+          TelefonoFijo: '351-4226236'
         });
+      }, 500);
     });
   }
 
