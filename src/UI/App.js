@@ -32,6 +32,7 @@ import RequerimientoDetalle from "@UI/RequerimientoDetalle/Index";
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 import VisorFoto from "@UI/VisorFoto/Index";
+import UsuarioValidarDatosRenaper from '@UI/UsuarioValidarDatosRenaper/Index';
 
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
@@ -69,6 +70,9 @@ const RootStack = StackNavigator(
     },
     VisorFoto: {
       screen: VisorFoto
+    },
+    UsuarioValidarDatosRenaper: {
+      screen: UsuarioValidarDatosRenaper
     }
   },
   {

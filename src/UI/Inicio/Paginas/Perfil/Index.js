@@ -14,6 +14,10 @@ import { Card, CardContent, FAB } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import WebImage from 'react-native-web-image'
 
+//Mis componentes
+import App from "@UI/App";
+
+//Rules
 import Rules_Usuario from '@Rules/Rules_Usuario';
 
 export default class PaginaPerfil extends React.Component {
@@ -53,7 +57,7 @@ export default class PaginaPerfil extends React.Component {
 
   consultarUsuarioValidadoRenaper = () => {
     Rules_Usuario.esUsuarioValidadoRenaper().then((validado) => {
-      if (!validado) {
+      if (validado == false) {
         Animated.timing(this.animBoton, { toValue: 0, duration: 300 }).start();
         this.mostrarAlertaUsuarioNoValidadoRenaper();
       } else {
@@ -72,7 +76,7 @@ export default class PaginaPerfil extends React.Component {
 
   ocultarAlertaUsuarioNoValidadoRenaper = () => {
     this.setState({ alertaUsuarioNoValidadoVisible: false });
-    Animated.timin(this.animAlertaUsuarioNoValidado, { toValue: 0, duration: 500 }).start();
+    Animated.timing(this.animAlertaUsuarioNoValidado, { toValue: 0, duration: 500 }).start();
   }
 
   abrirEditar = () => {
@@ -80,7 +84,11 @@ export default class PaginaPerfil extends React.Component {
   }
 
   abrirValidarRenaper = () => {
-
+    App.navegar('UsuarioValidarDatosRenaper', {
+      callback: () => {
+        this.buscarDatos();
+      }
+    });
   }
 
   render() {

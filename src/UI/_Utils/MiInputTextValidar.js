@@ -1,8 +1,5 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  Platform,
-  StyleSheet,
-  Alert,
   View,
   Animated,
 } from "react-native";
@@ -10,10 +7,8 @@ import {
   Text,
   Input,
   Item,
-  Content
 } from "native-base";
 import { validar } from '@Utils/MiValidador'
-import { debounce } from 'lodash'
 
 export default class MiInputTextValidar extends React.Component {
 
@@ -21,7 +16,7 @@ export default class MiInputTextValidar extends React.Component {
     super(props);
 
     this.state = {
-      valor: undefined,
+      valor: props.valorInicial,
       error: undefined
     };
 
@@ -115,7 +110,7 @@ export default class MiInputTextValidar extends React.Component {
             autoCorrect={this.props.autoCorrect}
             keyboardType={this.props.keyboardType}
             placeholder={this.props.placeholder}
-            value={this.state.valor}
+            value={this.state.valor != undefined ? ("" + this.state.valor) : ''}
             onChangeText={(val) => { this.onValorChange(val) }} />
         </Item>
 

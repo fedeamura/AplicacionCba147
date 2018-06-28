@@ -105,7 +105,7 @@ export default class PaginaInicio extends React.Component {
 
     consultarUsuarioValidadoRenaper = () => {
         Rules_Usuario.esUsuarioValidadoRenaper().then((validado) => {
-            if (!validado) {
+            if (validado == false) {
                 this.mostrarAlertaUsuarioNoValidadoRenaper();
             } else {
                 this.ocultarAlertaUsuarioNoValidadoRenaper();
@@ -122,7 +122,7 @@ export default class PaginaInicio extends React.Component {
 
     ocultarAlertaUsuarioNoValidadoRenaper = () => {
         this.setState({ alertaUsuarioNoValidadoVisible: false });
-        Animated.timin(this.animAlertaUsuarioNoValidado, { toValue: 0, duration: 500 }).start();
+        Animated.timing(this.animAlertaUsuarioNoValidado, { toValue: 0, duration: 500 }).start();
     }
 
     abrirNuevoRequerimiento = () => {
@@ -143,7 +143,11 @@ export default class PaginaInicio extends React.Component {
     }
 
     abrirValidarRenaper = () => {
-
+        App.navegar('UsuarioValidarDatosRenaper', {
+            callback: () => {
+                this.consultarUsuarioValidadoRenaper();
+            }
+        });
     }
 
     render() {

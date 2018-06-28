@@ -29,26 +29,49 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      nombre: undefined,
-      nombreError: undefined,
-      apellido: undefined,
-      apellidoError: undefined,
-      dni: undefined,
-      dniError: undefined,
-      fechaNacimiento: undefined,
-      fechaNacimientoError: undefined,
-      sexoMasculino: true,
-      datePickerFechaNacimientoVisible: false,
+    let fecha = undefined;
+    if (props.datosIniciales != undefined) {
 
+      fecha = new Date(
+        props.datosIniciales.FechaNacimiento.split('/')[2],
+        props.datosIniciales.FechaNacimiento.split('/')[1] - 1,
+        props.datosIniciales.FechaNacimiento.split('/')[0]
+      );
+    }
+    this.state = {
+      noValidar: props.noValidar || false,
+      nombre: props.datosIniciales != undefined ? props.datosIniciales.Nombre : undefined,
+      nombreError: undefined,
+      apellido: props.datosIniciales != undefined ? props.datosIniciales.Apellido : undefined,
+      apellidoError: undefined,
+      dni: props.datosIniciales != undefined ? props.datosIniciales.Dni : undefined,
+      dniError: undefined,
+      fechaNacimiento: fecha,
+      fechaNacimientoError: undefined,
+      sexoMasculino: props.datosIniciales != undefined ? props.datosIniciales.SexoMasculino : undefined,
+      datePickerFechaNacimientoVisible: false,
       cargando: false,
       completado: false,
       error: false
     };
 
+
+    setTimeout(() => {
+      this.validarCampos();
+    }, 100);
+
     this.animCargando = new Animated.Value(0);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if ('cargando' in nextProps) {
+      if (nextProps.cargando == true) {
+        this.mostrarCargando();
+      } else {
+        this.ocultarCargando();
+      }
+    }
+  }
   shouldComponentUpdate = (nextProps, nextState) => {
     return JSON.stringify(nextState) != JSON.stringify(this.state);
   }
@@ -65,7 +88,6 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
       completado: completado,
       error: tieneError
     });
-
 
     if (this.props.onAlgoInsertado != undefined) {
       this.props.onAlgoInsertado(tieneNombre || tieneApellido || tieneDni || tieneFechaNacimiento);
@@ -127,6 +149,25 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     }, this.validarCampos);
   }
 
+  mostrarCargando = () => {
+    Animated.timing(this.animCargando, {
+      toValue: 1,
+      duration: 300
+    }).start();
+    this.setState({
+      cargando: true
+    });
+  }
+
+  ocultarCargando = () => {
+    Animated.timing(this.animCargando, {
+      toValue: 0,
+      duration: 300
+    }).start();
+    this.setState({
+      cargando: false
+    });
+  }
   validarDatos = () => {
     if (this.state.nombre == undefined || this.state.nombre == "") {
       Alert.alert('', texto_Error_IngreseNombre,
@@ -191,6 +232,21 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     }
 
 
+    let data = {
+      Nombre: this.state.nombre,
+      Apellido: this.state.apellido,
+      Dni: this.state.dni,
+      SexoMasculino: this.state.sexoMasculino,
+      fechaNacimiento: this.state.fechaNacimiento
+    };
+
+    if (this.state.noValidar == true) {
+      if (this.props.onReady != undefined) {
+        this.props.onReady(data);
+      }
+      return;
+    }
+
     let comando = {
       nombre: this.state.nombre,
       apellido: this.state.apellido,
@@ -241,6 +297,7 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
             {/* Nombre */}
             <MiInputTextValidar
               onRef={(ref) => { this.inputNombre = ref; }}
+              valorInicial={this.state.nombre}
               placeholder={texto_HintNombre}
               autoCapitalize="words"
               returnKeyType="done"
@@ -255,6 +312,7 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
             {/* Apellido */}
             <MiInputTextValidar
               onRef={(ref) => { this.inputApellido = ref; }}
+              valorInicial={this.state.apellido}
               placeholder={texto_HintApellido}
               autoCapitalize="words"
               returnKeyType="done"
@@ -270,6 +328,7 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
             {/* Dni */}
             <MiInputTextValidar
               onRef={(ref) => { this.inputDni = ref; }}
+              valorInicial={this.state.dni}
               placeholder={texto_HintDni}
               keyboardType="numeric"
               returnKeyType="done"

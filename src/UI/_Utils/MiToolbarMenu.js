@@ -284,6 +284,7 @@ export default class MiToolbarMenu extends React.Component {
             return (
 
               <Animated.View
+                pointerEvents={this.state.expandido == false ? 'none' : 'auto'}
                 key={opcion.valor}
                 style={
                   [

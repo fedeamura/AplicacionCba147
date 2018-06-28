@@ -180,8 +180,8 @@ export default class Rules_Usuario extends React.Component {
           Apellido: 'Amura',
           Dni: 35476866,
           Cuil: '20354768667',
-          SexoMasculino: true,
-          FechaNacimiento: '01/04/1991',
+          SexoMasculino: false,
+          FechaNacimiento: '01/05/1991',
           DomicilioLegal: '27 de abril 464 13B, Cordoba, Argentina',
           Email: 'fede.amura@gmail.com',
           TelefonoCelular: '351-7449132',
@@ -196,7 +196,7 @@ export default class Rules_Usuario extends React.Component {
   static esUsuarioValidadoRenaper = () => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
-        callback(false);
+        callback(global.validado || false);
       }, 100);
     });
   }
@@ -205,6 +205,16 @@ export default class Rules_Usuario extends React.Component {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback(usuario);
+        // callbackError('El usuario ya existe');
+      }, 1000);
+    });
+  }
+
+  static actualizarDatosPersonales = (comando) => {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        global.validado = true;
+        callback(comando);
         // callbackError('El usuario ya existe');
       }, 1000);
     });
