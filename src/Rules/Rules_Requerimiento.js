@@ -68,4 +68,6 @@ export default class Rules_Requerimiento extends React.Component {
       }, 500);
     });
   }
+
+  
 }

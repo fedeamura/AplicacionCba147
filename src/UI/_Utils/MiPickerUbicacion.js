@@ -14,7 +14,8 @@ import {
   Button,
   Text,
   Input,
-  Spinner
+  Spinner,
+  ListItem
 } from "native-base";
 
 import MapView from 'react-native-maps';
@@ -23,6 +24,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //Mis compontenes
 import App from "@UI/App";
+import MiListado from "@Utils/MiListado";
 
 //Rules
 import Rules_Domicilio from "@Rules/Rules_Domicilio";
@@ -33,7 +35,7 @@ export default class MiPickerUbicacion extends React.Component {
 
     this.state = {
       cargando: false,
-      buscando: false,
+      mostrarPanelBusqueda: false,
       data: undefined,
       busqueda: undefined,
       initialRegion: {
@@ -63,14 +65,14 @@ export default class MiPickerUbicacion extends React.Component {
 
 
   onContenedorBusquedaPress = () => {
-    Keyboard.dismiss();
 
     if (this.state.cargando == true) {
       this.input._root.blur();
+      Keyboard.dismiss();
       return;
     }
 
-    this.setState({ buscando: true })
+    this.setState({ mostrarPanelBusqueda: true, sugerencias: undefined })
     Animated.timing(this.animSugerencias, { toValue: 1, duration: 300 }).start();
   }
 
@@ -85,53 +87,32 @@ export default class MiPickerUbicacion extends React.Component {
     Animated.timing(this.animSugerencias, { toValue: 0, duration: 300 }).start();
 
     this.input._root.blur();
-    this.setState({ buscando: false, busqueda: undefined });
+    this.setState({ mostrarPanelBusqueda: false, busqueda: undefined, sugerencias: undefined });
   }
-
 
   onInputBusquedaChangeText = (text) => {
     this.setState({ busqueda: text });
   }
 
-  buscar = () => {
-    // if (this.state.busqueda == undefined || this.state.busqueda == "") {
-    //   this.setState({
-    //     errorSurgerencias: undefined,
-    //     buscandoSugerencias: false,
-    //     sugerencias: []
-    //   });
-
-    //   Animated.spring(this.animSugerencias, {
-    //     toValue: 0
-    //   }).start();
-
-    //   return;
-    // }
-
-    // Animated.spring(this.animSugerencias, {
-    //   toValue: 1
-    // }).start();
-
-    // this.setState({
-    //   buscandoSugerencias: true
-    // }, () => {
-    //   Rules_Domicilio.buscarCoordenada(this.state.busqueda)
-    //     .then((results) => {
-    //       this.setState({
-    //         errorSurgerencias: undefined,
-    //         buscandoSugerencias: false,
-    //         sugerencias: results
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       this.setState({
-    //         buscandoSugerencias: false,
-    //         errorSurgerencias: 'Error buscando',
-    //         sugerencias: []
-    //       });
-    //     });
-    // });
-
+  buscar = (busqueda) => {
+    this.setState({
+      cargando: true,
+      sugerencias: undefined
+    }, () => {
+      Rules_Domicilio.buscarSugerencias(busqueda)
+        .then((data) => {
+          if (data.length == 1) {
+            this.setState({ cargando: false }, () => {
+              this.onSugerenciaClick(data[0]);
+            })
+          } else {
+            this.setState({ cargando: false, sugerencias: data });
+          }
+        }).catch((error) => {
+          this.setState({ cargando: false });
+          Alert.alert('', error);
+        })
+    });
   }
 
   onMapaClick = (e) => {
@@ -174,6 +155,29 @@ export default class MiPickerUbicacion extends React.Component {
     });
   }
 
+  onSugerenciaClick = (sugerencia) => {
+    this.onBtnCancelarBusquedaPress();
+
+    if (sugerencia == undefined) sugerencia = {};
+    sugerencia.Latitud = -31.415023;
+    sugerencia.Longitud = -64.190488;
+
+    //Pongo cargando
+    this.setState({
+      data: sugerencia
+    }, () => {
+      this.map.animateToRegion({
+        latitude: sugerencia.Latitud,
+        longitude: sugerencia.Longitud,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+
+      //Oculto la card del detalle
+      this.verDetalleMarcador();
+    });
+  }
+
   verDetalleMarcador = () => {
     Animated.spring(this.animCard, { toValue: 1 }).start();
   }
@@ -200,27 +204,33 @@ export default class MiPickerUbicacion extends React.Component {
       cargarMapa: false
     }, () => {
       if (params != undefined && params.onUbicacionSeleccionada != undefined) {
-        params.onUbicacionSeleccionada(this.state.marcador);
+        params.onUbicacionSeleccionada(this.state.data);
         App.goBack();
       }
     });
   }
+
   render() {
 
-    return (
-      <View style={styles.contenedor}>
+    const initData = global.initData;
 
-        <Card style={styles.contenedorBusqueda}>
+    return (
+      <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
+
+        <Card style={[styles.contenedorBusqueda]}>
           <Input ref={(ref) => { this.input = ref }}
             placeholder='Buscar...'
             value={this.state.busqueda}
+            returnKeyType="done"
+            keyboardType="default"
+            onSubmitEditing={this.buscar}
             onChangeText={this.onInputBusquedaChangeText}
             style={styles.inputBusqueda}
             onFocus={this.onContenedorBusquedaPress} />
 
 
           <Animated.View
-            pointerEvents={this.state.buscando == true ? 'auto' : 'none'}
+            pointerEvents={this.state.mostrarPanelBusqueda == true ? 'auto' : 'none'}
             style={[
               styles.contenedorBtnCancelarBusqueda,
               {
@@ -343,17 +353,36 @@ export default class MiPickerUbicacion extends React.Component {
         {/* Sugerencias */}
         <TouchableWithoutFeedback onPress={this.onBtnCancelarBusquedaPress}>
           <Animated.View
-            pointerEvents={this.state.buscando == true ? 'auto' : 'none'}
+            pointerEvents={this.state.mostrarPanelBusqueda == true ? 'auto' : 'none'}
             style={{
               position: 'absolute',
               left: 0,
               right: 0,
               top: 0,
               bottom: 0,
-              backgroundColor: 'white',
+              backgroundColor: initData.backgroundColor,
               opacity: this.animSugerencias
             }}>
-            <View style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'white' }}></View>
+            <View style={{ position: 'absolute', left: 0, right: 0, top: 104, bottom: 0 }}>
+
+              {(this.state.sugerencias != undefined && this.state.sugerencias.length == 0) && (
+                <Text>Sin resultado</Text>
+              )}
+
+              {(this.state.sugerencias != undefined && this.state.sugerencias.length != 0) && (
+                <MiListado
+                  backgroundColor={initData.backgroundColor}
+                  data={this.state.sugerencias}
+                  renderItem={(item) => {
+                    return (<ListItem
+                      style={{ paddingLeft: 8, paddingRight: 8 }}
+                      onPress={() => { this.onSugerenciaClick(item) }}>
+                      <Text>Holu</Text>
+                    </ListItem>);
+                  }}
+                />
+              )}
+            </View>
           </Animated.View>
         </TouchableWithoutFeedback>
 

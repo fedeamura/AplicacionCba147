@@ -2,7 +2,6 @@ import React from "react";
 import {
   View,
   Animated,
-  Platform,
   StyleSheet,
   ScrollView,
   Keyboard,
@@ -42,7 +41,6 @@ export default class RequerimientoDetalle extends React.Component {
       error: undefined
     };
 
-    this.animScroll = new Animated.Value(0);
     this.animContenido = new Animated.Value(0);
     this.keyboardHeight = new Animated.Value(0);
   }
@@ -77,9 +75,7 @@ export default class RequerimientoDetalle extends React.Component {
               Animated.timing(this.animContenido, { toValue: 1, duration: 300 }).start();
             });
           });
-
       });
-
     });
   }
 
@@ -107,81 +103,25 @@ export default class RequerimientoDetalle extends React.Component {
 
   render() {
     const initData = global.initData;
+
     const urlMapa = 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=2&size=600x600&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7Ccordoba+argentina';
-    const ySombra = Platform.OS == 'ios' ? 76 : 56;
 
     return (
       <View style={style.contenedor} >
 
         <MiStatusBar />
 
-        {/* Toolbar */}
-        <Animated.View style={{
-          position: 'absolute', left: 0, right: 0, zIndex: 10,
-          backgroundColor: this.animScroll.interpolate({
-            inputRange: [0, 300 - 56],
-            outputRange: ['rgba(255,255,255,0)', 'rgba(255,255,255,1)']
-          })
-        }
-        }>
-
-          <LinearGradient
-            colors={["rgba(255,255,255,1)", "rgba(255,255,255,0)"]}
-            backgroundColor="transparent"
-            style={{ left: 0, top: 0, right: 0, bottom: 0, position: 'absolute' }}
-            pointerEvents="none" />
-
-          <MiToolbar
-            titulo={this.state.cargando ? '' : texto_Titulo}
-            onBackPress={() => { App.goBack(); }}
-            style={{ backgroundColor: 'transparent' }} />
-
-        </Animated.View >
-
-        {/* Sombra del toolbar */}
-        < Animated.View style={{
-          position: 'absolute', left: 0, top: ySombra, right: 0, height: 16, zIndex: 10,
-          opacity: this.animScroll.interpolate({
-            inputRange: [0, 300 - 56],
-            outputRange: [0, 1]
-          })
-        }}>
-
-          <LinearGradient
-            colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
-            backgroundColor="transparent"
-            style={{ height: 16, width: '100%' }}
-            pointerEvents="none" />
-        </Animated.View >
-
+        <MiToolbar
+          titulo={texto_Titulo}
+          onBackPress={() => { App.goBack(); }}
+        />
 
         {/* Contenido */}
         < View style={[style.contenido, { backgroundColor: initData.backgroundColor }]} >
 
           <ScrollView
-            contentContainerStyle={{}}
-            scrollEventThrottle={16}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: this.animScroll } } }]
-            )}
-          >
-            <View style={{ width: '100%', height: 300 }}>
+            contentContainerStyle={{}}>
 
-              {/* Mapa (solo cuando este cargando) */}
-              {this.state.cargando == false && (
-                <WebImage
-                  resizeMode="cover"
-                  style={{ width: '100%', height: '100%' }}
-                  source={{ uri: urlMapa }}
-                />
-              )}
-
-              <LinearGradient
-                colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.2)"]}
-                backgroundColor="transparent"
-                style={{ left: 0, bottom: 0, right: 0, height: 16, position: 'absolute' }}
-                pointerEvents="none" />
-            </View>
             <View style={{ padding: 16 }}>
 
               <Animated.View style={{
@@ -195,29 +135,14 @@ export default class RequerimientoDetalle extends React.Component {
                   outputRange: [1, 0]
                 })
               }}>
-                <Card style={style.card}>
-                  <CardContent style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Spinner color="green" />
-                    <Text>Cargando</Text>
-                  </CardContent>
-
-                </Card>
+                <Spinner color="green" />
               </Animated.View>
 
               <Animated.View style={{ opacity: this.animContenido }} >
 
                 {/* Encabezado */}
-                <View style={{ marginLeft: 24 }}>
-
+                <View style={{ marginLeft: 24, marginTop: 32 }}>
                   <Text style={{ fontSize: 32 }}>QAZWSX/2018</Text>
-
-                  <View style={{ display: 'flex', flexDirection: 'row' }}>
-                    {/* <Text style={{ fontWeight: 'bold' }}>Estado:</Text> */}
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <View style={{ width: 16, height: 16, borderRadius: 16, backgroundColor: 'red' }}></View>
-                      <Text style={{ marginLeft: 4 }}>Nuevo</Text>
-                    </View>
-                  </View>
                 </View>
 
                 {/* Basicos */}
@@ -271,19 +196,28 @@ export default class RequerimientoDetalle extends React.Component {
                   <View style={{ backgroundColor: 'rgba(0,0,0,0.05)', padding: 16, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
                     <Text style={{ fontSize: 16 }}>Independencia 710, Cordoba Cordoba</Text>
                   </View>
-                  <View style={{ padding: 16 }}>
+                  <View style={{ padding: 16, display: 'flex', flexDirection: 'row' }}>
 
-                    <Text style={{ fontWeight: 'bold' }}>CPC</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Text>Nº 10 - Central</Text>
+                    <View style={{ flex: 1 }}>
+
+                      <Text style={{ fontWeight: 'bold' }}>CPC</Text>
+                      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <Text>Nº 10 - Central</Text>
+                      </View>
+
+                      <Text style={{ fontWeight: 'bold', marginTop: 16 }}>Barrio</Text>
+                      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <Text>Nueva Córdoba</Text>
+                      </View>
                     </View>
 
-                    <Text style={{ fontWeight: 'bold', marginTop: 16 }}>Barrio</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Text>Nueva Córdoba</Text>
-                    </View>
-
+                    <WebImage
+                      resizeMode="cover"
+                      style={{ width: 104, height: 104, borderRadius: 16 }}
+                      source={{ uri: urlMapa }}
+                    />
                   </View>
+
                 </Card>
 
                 {/* Imagenes */}

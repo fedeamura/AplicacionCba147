@@ -10,28 +10,11 @@ export default class Rules_Domicilio extends React.Component {
     })
   }
 
-  static buscarCoordenada(busqueda) {
-    let url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + busqueda + '&key=' + App.Variables.KeyGoogleMaps;
-
+  static buscarSugerencias = (busqueda) => {
     return new Promise((callback, callbackError) => {
-      fetch(url, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        }
-      })
-        .then(response => response.json())
-        .then(responseJson => {
-          if (responseJson.status != "OK") {
-            callbackError('Error procesando la solicitud');
-            return;
-          }
-
-          callback(responseJson.results);
-        })
-        .catch(error => {
-        });
+      setTimeout(() => {
+        callback([{}]);
+      }, 500);
     });
   }
 }

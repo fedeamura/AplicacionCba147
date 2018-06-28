@@ -1,5 +1,4 @@
 import React from "react";
-import App from "Cordoba/src/UI/App";
 import DB from "Cordoba/src/DAO/DB";
 
 export default class Rules_Usuario extends React.Component {
@@ -11,7 +10,14 @@ export default class Rules_Usuario extends React.Component {
 
   static login = (user, pass) => {
     return new Promise((resolve, reject) => {
-      resolve();
+      let token = "test";
+      DB.setItem("token", token).then(() => {
+        global.token = token;
+        resolve();
+      }).catch((error) => {
+        reject('Error procesando la solicitud');
+      });
+
       // reject('Error procesando la solicitud');
       // const url =
       //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/IniciarSesion";
@@ -62,7 +68,21 @@ export default class Rules_Usuario extends React.Component {
 
   static isLogin = () => {
     return new Promise((resolve, reject) => {
-      resolve(true);
+      DB.getItem("token")
+        .then(response => {
+          if (response == undefined) {
+            global.token = undefined;
+            resolve(false);
+            return;
+          }
+
+          global.token = response;
+          resolve(true);
+        }).catch((error) => {
+          global.token = undefined;
+          resolve(false);
+        });;
+
 
       // DB.getItem("token")
       //   .then(response => {
@@ -142,10 +162,9 @@ export default class Rules_Usuario extends React.Component {
 
   static cerrarSesion = () => {
     return new Promise((resolve, reject) => {
-
       try {
         DB.removeItem("token");
-        App.Variables.Token = undefined;
+        global.token = undefined;
         resolve();
       } catch (error) {
         reject('Error procesando la solicitud');
@@ -166,9 +185,19 @@ export default class Rules_Usuario extends React.Component {
           DomicilioLegal: '27 de abril 464 13B, Cordoba, Argentina',
           Email: 'fede.amura@gmail.com',
           TelefonoCelular: '351-7449132',
-          TelefonoFijo: '351-4226236'
+          TelefonoFijo: '351-4226236',
+          ValidadoEmail: true,
+          ValidadoRenaper: false
         });
       }, 500);
+    });
+  }
+
+  static esUsuarioValidadoRenaper = () => {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback(false);
+      }, 100);
     });
   }
 

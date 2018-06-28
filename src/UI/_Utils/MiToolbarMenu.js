@@ -7,6 +7,7 @@ import {
   Easing,
   Keyboard,
   Dimensions,
+  TouchableOpacity,
   TouchableWithoutFeedback
 } from "react-native";
 import {
@@ -300,8 +301,9 @@ export default class MiToolbarMenu extends React.Component {
                       ]
 
                     }]}>
-                <View style={styles.encabezado_Opcion}>
-                  <TouchableWithoutFeedback
+                <View style={[styles.encabezado_Opcion, { backgroundColor: opcion.backgroundColor }]}>
+                  <TouchableOpacity
+                    style={{ width: '100%' }}
                     onPress={() => { this.onPressOpcion(opcion, index); }}>
                     <Animated.View style={
                       [
@@ -375,7 +377,7 @@ export default class MiToolbarMenu extends React.Component {
 
                       </Animated.View>
                     </Animated.View>
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
 
                 </View>
 
@@ -405,11 +407,13 @@ export default class MiToolbarMenu extends React.Component {
                     })
                   }]
                 }]}>
-            <Button transparent onPress={() => {
-              if (this.props.iconoIzquierdaOnPress != undefined) {
-                this.props.iconoIzquierdaOnPress();
-              }
-            }}>
+            <Button
+              style={styles.btnLeftBtn}
+              transparent onPress={() => {
+                if (this.props.iconoIzquierdaOnPress != undefined) {
+                  this.props.iconoIzquierdaOnPress();
+                }
+              }}>
               <Icon
                 style={[
                   styles.btnLeftIcon, {
@@ -438,7 +442,7 @@ export default class MiToolbarMenu extends React.Component {
                 }]
               }
             ]}>
-            <Button transparent onPress={() => {
+            <Button style={styles.btnLeftBtn} transparent onPress={() => {
               this.seleccionar(this.state.opcion);
             }}>
               <Icon style={styles.btnClose} name={this.props.iconoCerrar} color={this.props.iconoCerrarColor || 'white'} />
@@ -537,10 +541,22 @@ const styles = StyleSheet.create({
   },
   btnLeft: {
     position: 'absolute',
-    left: 16,
+    left: 8,
+    width: 48,
     height: 48,
     zIndex: 100,
+    borderRadius: 48,
+    overflow: 'hidden',
     top: 16
+  },
+  btnLeftBtn: {
+    borderRadius: 48,
+    display: 'flex',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 48,
+    height: 48
   },
   btnLeftIcon: {
     fontSize: 24

@@ -1,14 +1,16 @@
 import React from "react";
 import {
   View,
+  Animated,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
   Alert
 } from "react-native";
 import {
   Text, Spinner,
 } from "native-base";
-import { Card, CardContent } from 'react-native-paper';
+import { Card, CardContent, FAB } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import WebImage from 'react-native-web-image'
 
@@ -20,10 +22,14 @@ export default class PaginaPerfil extends React.Component {
     super(props);
 
     this.state = {
+      alertaUsuarioNoValidadoVisible: false,
       cargando: true,
       datos: undefined,
       error: undefined
     };
+
+    this.animBoton = new Animated.Value(0);
+    this.animAlertaUsuarioNoValidado = new Animated.Value(0);
   }
 
   componentDidMount() {
@@ -31,16 +37,50 @@ export default class PaginaPerfil extends React.Component {
   }
 
   buscarDatos = () => {
+    Animated.timing(this.animBoton, { toValue: 0, duration: 300 }).start();
     this.setState({ cargando: true },
       () => {
         Rules_Usuario.getDatos()
           .then((datos) => {
             this.setState({ cargando: false, datos: datos });
+            this.consultarUsuarioValidadoRenaper();
           })
           .catch((error) => {
             this.setState({ cargando: false, error: error });
           });;
       });
+  }
+
+  consultarUsuarioValidadoRenaper = () => {
+    Rules_Usuario.esUsuarioValidadoRenaper().then((validado) => {
+      if (!validado) {
+        Animated.timing(this.animBoton, { toValue: 0, duration: 300 }).start();
+        this.mostrarAlertaUsuarioNoValidadoRenaper();
+      } else {
+        Animated.timing(this.animBoton, { toValue: 1, duration: 300 }).start();
+        this.ocultarAlertaUsuarioNoValidadoRenaper();
+      }
+    }).catch((error) => {
+      this.ocultarAlertaUsuarioNoValidadoRenaper();
+    });
+  }
+
+  mostrarAlertaUsuarioNoValidadoRenaper = () => {
+    this.setState({ alertaUsuarioNoValidadoVisible: true });
+    Animated.timing(this.animAlertaUsuarioNoValidado, { toValue: 1, duration: 500 }).start();
+  }
+
+  ocultarAlertaUsuarioNoValidadoRenaper = () => {
+    this.setState({ alertaUsuarioNoValidadoVisible: false });
+    Animated.timin(this.animAlertaUsuarioNoValidado, { toValue: 0, duration: 500 }).start();
+  }
+
+  abrirEditar = () => {
+
+  }
+
+  abrirValidarRenaper = () => {
+
   }
 
   render() {
@@ -49,7 +89,7 @@ export default class PaginaPerfil extends React.Component {
 
     if (this.state.cargando == true) {
       return (<View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
-        <Spinner color="green"/>
+        <Spinner color="green" />
       </View >);
     }
 
@@ -60,7 +100,41 @@ export default class PaginaPerfil extends React.Component {
     return (
       <View
         style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]} >
+
+
+        {/* ALerta usuario no validado */}
+        <TouchableOpacity onPress={this.abrirValidarRenaper}>
+          <Animated.View style={{
+            overflow: 'hidden',
+            backgroundColor: '#E53935',
+            opacity: this.animAlertaUsuarioNoValidado,
+            maxHeight: this.animAlertaUsuarioNoValidado.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 100]
+            })
+          }}>
+            <View style={{
+              padding: 16,
+              display: 'flex',
+              flexDirection: 'row',
+              paddingLeft: 27,
+              paddingRight: 27
+            }}>
+              <View>
+                <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>Su usuario no se encuentra validado por el registro nacional de las personas.</Text>
+                <Text style={{ color: 'white', fontSize: 16 }}>Haga click aquí para validarlo</Text>
+              </View>
+
+            </View>
+
+          </Animated.View>
+        </TouchableOpacity>
+
+
         <ScrollView>
+
+
+
           <View style={styles.scrollView}>
             <View style={styles.imagen}>
               <WebImage
@@ -152,7 +226,39 @@ export default class PaginaPerfil extends React.Component {
               </CardContent>
             </Card>
           </View>
+
         </ScrollView>
+
+        {/* Boton nuevo requerimiento */}
+        <Animated.View
+          pointerEvents={this.state.cargando == true || this.state.error != undefined || this.state.requerimientos == undefined || this.state.requerimientos.length == 0 ? 'none' : 'auto'}
+          style={{
+            position: 'absolute',
+            right: 0,
+            bottom: 0,
+            padding: 24,
+            opacity: this.animBoton.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 1]
+            }),
+            transform: [
+              {
+                scale: this.animBoton
+              }
+            ]
+          }}
+        >
+
+          <FAB
+            icon="edit"
+            style={{ backgroundColor: 'green' }}
+            color="white"
+            onPress={this.abrirEditar} />
+
+
+
+        </Animated.View>
+
       </View >
     );
   }
@@ -170,11 +276,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: (200 / 2),
     margin: 16,
+    marginTop: 32,
     alignSelf: 'center'
   },
   scrollView: {
     width: '100%',
-    padding: 16
+    padding: 16,
+    paddingBottom: 104
   },
   card: {
     borderRadius: 16,
