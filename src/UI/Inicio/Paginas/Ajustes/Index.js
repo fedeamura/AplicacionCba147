@@ -19,8 +19,8 @@ import {
   TouchableRipple
 } from "react-native-paper";
 import WebImage from 'react-native-web-image';
-import ItemDetalle from './ItemDetalle';
-import CardDetalle from './CardDetalle';
+import MiItemDetalle from '@Utils/MiItemDetalle';
+import MiCardDetalle from '@Utils/MiCardDetalle';
 
 //Mis componentes
 import App from "@UI/App";
@@ -74,7 +74,7 @@ export default class PaginaAjustes extends React.Component {
         <ScrollView contentContainerStyle={{ padding: 16 }}>
 
           {/* Sesion Activa */}
-          <CardDetalle
+          <MiCardDetalle
             padding={false}
             titulo='Sesión activa'
             botones={[
@@ -95,30 +95,30 @@ export default class PaginaAjustes extends React.Component {
               </View>
             </TouchableRipple>
 
-          </CardDetalle>
+          </MiCardDetalle>
 
           {/* General  */}
-          <CardDetalle padding={false} titulo='General'>
-            <ItemDetalle
+          <MiCardDetalle padding={false} titulo='General'>
+            <MiItemDetalle
               style={{ padding: 16 }}
               onPress={this.verIntroduccion}
               titulo="Introduccion"
               subtitulo='Haga click aquí para volver a ver la introducción' />
 
-          </CardDetalle>
+          </MiCardDetalle>
 
           {/* Acerca de... */}
-          <CardDetalle padding={false} titulo='Sobre nosotros'>
-            <ItemDetalle
+          <MiCardDetalle padding={false} titulo='Sobre nosotros'>
+            <MiItemDetalle
               style={{ padding: 16 }}
               titulo="Desarrollo de aplicacion"
               subtitulo='Esta aplicación fue desarrollada por la Municipalidad de Cordoba, en la Direccion de Informatica' />
 
-          </CardDetalle>
+          </MiCardDetalle>
 
           {/* Especificaciones tecnicas */}
-          <CardDetalle padding={false} titulo='Especificaciones tecnicas'>
-            <ItemDetalle
+          <MiCardDetalle padding={false} titulo='Especificaciones tecnicas'>
+            <MiItemDetalle
               icono='react'
               style={{ padding: 16 }}
               onPress={() => { }}
@@ -127,7 +127,7 @@ export default class PaginaAjustes extends React.Component {
 
             <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.1 }}></View>
 
-            <ItemDetalle
+            <MiItemDetalle
               icono='github-circle'
               style={{ padding: 16 }}
               onPress={() => { }}
@@ -135,13 +135,13 @@ export default class PaginaAjustes extends React.Component {
               subtitulo='htts://github.com/asas' />
             <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.1 }}></View>
 
-            <ItemDetalle
+            <MiItemDetalle
               icono='code-braces'
               style={{ padding: 16 }}
               onPress={() => { }}
               titulo='Licencias de codigo libre'
               subtitulo='Haga click para ver' />
-          </CardDetalle>
+          </MiCardDetalle>
 
           <Text style={{ alignSelf: 'center', marginTop: 16, marginBottom: 16 }}>Vesion 1.5</Text>
           {/* <Button onPress={() => { App.navegar('PickerUbicacion') }}><Text>Ubicacion</Text></Button> */}

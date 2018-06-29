@@ -9,7 +9,7 @@ import WebImage from 'react-native-web-image';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableRipple } from "react-native-paper";
 
-export default class ItemDetalle extends React.Component {
+export default class MiItemDetalle extends React.Component {
 
   constructor(props) {
     super(props);
@@ -24,7 +24,13 @@ export default class ItemDetalle extends React.Component {
       <TouchableRipple onPress={this.props.onPress}>
         <View style={[{ display: 'flex', flexDirection: 'row', alignItems: 'center', overflow: 'hidden' }, this.props.style]}>
           {this.props.icono != undefined && (
-            <Icon style={{ fontSize: 32, marginRight: 8, alignSelf: this.props.iconoAlign || 'center' }} name={this.props.icono} />
+            <Icon style={{
+              opacity:0.8,
+              fontSize: 24,
+              marginRight: 16,
+              alignSelf: this.props.iconoAlign || 'center'
+            }}
+              name={this.props.icono} />
           )}
 
           <View>

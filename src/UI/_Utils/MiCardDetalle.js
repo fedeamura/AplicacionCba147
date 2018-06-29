@@ -10,7 +10,7 @@ import {
   Card
 } from "react-native-paper";
 
-export default class CardDetalle extends React.Component {
+export default class MiCardDetalle extends React.Component {
 
   static defaultProps = {
     ...React.Component.defaultProps,

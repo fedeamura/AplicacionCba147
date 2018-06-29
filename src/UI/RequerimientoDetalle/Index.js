@@ -8,9 +8,7 @@ import {
   TouchableOpacity
 } from "react-native";
 import { Text, Spinner, Button } from 'native-base'
-import { Card } from "react-native-paper";
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import WebImage from "react-native-web-image";
 import openMap from 'react-native-open-maps';
 
@@ -18,6 +16,8 @@ import openMap from 'react-native-open-maps';
 import App from "@UI/App";
 import MiStatusBar from "@Utils/MiStatusBar";
 import MiToolbar from "@Utils/MiToolbar";
+import MiCardDetalle from '@Utils/MiCardDetalle';
+import MiItemDetalle from '@Utils/MiItemDetalle';
 
 //Rules
 import Rules_Requerimiento from '@Rules/Rules_Requerimiento';
@@ -163,76 +163,40 @@ export default class RequerimientoDetalle extends React.Component {
                 </View>
 
                 {/* Basicos */}
-                <Text style={{ fontSize: 24, left: 24 }}></Text>
-                <Card style={[style.card]}>
-
-                  <View style={{ padding: 16 }}>
-
-                    <Text style={{ fontWeight: 'bold' }}>Servicio</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Text>Alumbrado público</Text>
-                    </View>
-
-                    <Text style={{ marginTop: 16, fontWeight: 'bold' }}>Motivo</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Text>Foco roto</Text>
-                    </View>
-
-                    <Text style={{ marginTop: 16, fontWeight: 'bold' }}>Descripción</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Text>Test de la descripcion del requerimiento. Aca iria todo el texto que ingreso el vecino</Text>
-                    </View>
-
-                  </View>
-                </Card>
+                <MiCardDetalle>
+                  <MiItemDetalle titulo='Servicio' subtitulo='Alumbrado público' />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo='Motivo' subtitulo='Foco roto' />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo='Descripción' subtitulo='Test de la descripcion del requerimiento. Aca iria todo el texto que ingreso el vecino' />
+                </MiCardDetalle>
 
                 {/* Estado */}
-                <Text style={{ fontSize: 24, left: 24, marginTop: 32 }}>Estado actual</Text>
-                <Card style={[style.card]}>
-
-                  <View style={{ padding: 16 }}>
-
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <View style={{ width: 16, height: 16, borderRadius: 16, backgroundColor: 'red', marginRight: 8 }}></View>
-                      <Text style={{ fontSize: 20 }}>Nuevo</Text>
-                    </View>
-
-                    <Text style={{ fontWeight: 'bold', marginTop: 16 }}>Fecha de cambio de estado</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Text>10/10/2017 10:00</Text>
-                    </View>
-
-                    <Text style={{ fontWeight: 'bold', marginTop: 16 }}>Motivo</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Text>Motivo del estado actual</Text>
-                    </View>
-
+                <MiCardDetalle titulo='Estado actual'>
+                  <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ width: 16, height: 16, borderRadius: 16, backgroundColor: 'red', marginRight: 8 }}></View>
+                    <Text style={{ fontSize: 20 }}>Nuevo</Text>
                   </View>
-                </Card>
-
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo='Fecha' subtitulo='10/10/2018 10:00' />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo='Motivo' subtitulo='Motivo del cambio de estado al actual' />
+                </MiCardDetalle>
 
                 {/* Ubicacion */}
-                <Text style={{ fontSize: 24, left: 24, marginTop: 32 }}>Ubicación</Text>
-                <Card style={[style.card]}>
-
-                  <View style={{ backgroundColor: 'rgba(0,0,0,0.05)', padding: 16, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
-                    <Text style={{ fontSize: 16 }}>Independencia 710, Cordoba Cordoba</Text>
-                  </View>
-                  <View style={{ padding: 16, display: 'flex', flexDirection: 'row' }}>
-
+                <MiCardDetalle titulo='Ubicación' botones={[
+                  { texto: 'Abrir mapa', onPress: () => { this.abrirMapa(); } }
+                ]}>
+                  <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <View style={{ flex: 1 }}>
-
-                      <Text style={{ fontWeight: 'bold' }}>CPC</Text>
-                      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <Text>Nº 10 - Central</Text>
-                      </View>
-
-                      <Text style={{ fontWeight: 'bold', marginTop: 16 }}>Barrio</Text>
-                      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                        <Text>Nueva Córdoba</Text>
-                      </View>
+                      <MiItemDetalle titulo='Direccion' subtitulo='Independencia 710 4f' />
+                      <View style={{ height: 16 }} />
+                      <MiItemDetalle titulo='Observaciones' subtitulo='13b arriba de la perla' />
+                      <View style={{ height: 16 }} />
+                      <MiItemDetalle titulo='CPC' subtitulo='Nº 10 - Central' />
+                      <View style={{ height: 16 }} />
+                      <MiItemDetalle titulo='Barrio' subtitulo='Centro' />
                     </View>
-
                     <WebImage
                       resizeMode="cover"
                       style={{ width: 104, height: 104, borderRadius: 16 }}
@@ -240,78 +204,37 @@ export default class RequerimientoDetalle extends React.Component {
                     />
                   </View>
 
-                  <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.2, marginTop: 16 }}></View>
-                  <View style={{ padding: 16 }}>
-                    <Button
-                      bordered
-                      small
-                      onPress={this.abrirMapa}
-                      style={{
-                        borderColor: 'green',
-                        alignSelf: 'flex-end'
-                      }}
-                    ><Text style={{ color: 'green' }}>Abrir mapa</Text></Button>
-                  </View>
-
-                </Card>
+                </MiCardDetalle>
 
                 {/* Imagenes */}
-                <Text style={{ fontSize: 24, left: 24, marginTop: 32 }}>Imágenes</Text>
-                <Card style={[style.card]}>
-
-                  <View style={{ padding: 16 }}>
-
+                <MiCardDetalle titulo='Imágenes'>
+                  <TouchableOpacity onPress={() => this.abrirImagen()}>
                     <View style={{ width: 104, height: 104, borderRadius: 16, overflow: 'hidden' }}>
-                      <TouchableOpacity onPress={() => this.abrirImagen()}>
-                        <WebImage
-                          resizeMode="cover"
-                          style={{ width: '100%', height: '100%' }}
-                          source={{ uri: urlMapa }}
-                        />
-                      </TouchableOpacity>
-
+                      <WebImage
+                        resizeMode="cover"
+                        style={{ width: '100%', height: '100%' }}
+                        source={{ uri: urlMapa }}
+                      />
                     </View>
-                  </View>
-                </Card>
+                  </TouchableOpacity>
+                </MiCardDetalle>
 
                 {/* Informacion organica */}
-                <Text style={{ fontSize: 24, left: 24, marginTop: 32 }}>Area encargada</Text>
-                <Card style={[style.card]}>
-                  <View style={{ backgroundColor: 'rgba(0,0,0,0.05)', padding: 16, borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
-                    <Text style={{ fontSize: 16 }}>Alumbrado público</Text>
-                  </View>
-
-                  <View style={{ padding: 16 }}>
-
-                    <Text style={{ fontWeight: 'bold' }}>Responsable</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Icon name="account" style={{ fontSize: 18, marginRight: 4 }} />
-                      <Text>Federico Gabriel Amura</Text>
-                    </View>
-
-                    <Text style={{ marginTop: 16, fontWeight: 'bold' }}>Teléfono</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Icon name="phone" style={{ fontSize: 18, marginRight: 4 }} />
-                      <Text>3517449132</Text>
-                    </View>
-                  </View>
-                </Card>
+                <MiCardDetalle titulo='Area encargada'>
+                  <MiItemDetalle titulo='Area' subtitulo='Alumbrado publico' />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo='Responsable' subtitulo='Federico Amura' />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo='Dirección' subtitulo='Municipalidad de Cordoba. Oficina 3' />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo='Teléfono' subtitulo='3517449132' />
+                </MiCardDetalle>
 
 
                 {/* Informacion adicional */}
-                <Text style={{ fontSize: 24, left: 24, marginTop: 32 }}>Información adicional</Text>
-                <Card style={[style.card]}>
-
-                  <View style={{ padding: 16 }}>
-
-                    <Text style={{ fontWeight: 'bold' }}>Fecha de Creación</Text>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <Icon name="account" style={{ fontSize: 18, marginRight: 4 }} />
-                      <Text>10/10/2017 10:00</Text>
-                    </View>
-
-                  </View>
-                </Card>
+                <MiCardDetalle titulo='Información adicional'>
+                  <MiItemDetalle titulo='Fecha de creación' subtitulo='10/10/2018 10:00' />
+                </MiCardDetalle>
 
               </Animated.View>
 

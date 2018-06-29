@@ -10,12 +10,13 @@ import {
 import {
   Text, Spinner,
 } from "native-base";
-import { Card, CardContent, FAB } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { FAB } from 'react-native-paper';
 import WebImage from 'react-native-web-image'
 
 //Mis componentes
 import App from "@UI/App";
+import MiCardDetalle from '@Utils/MiCardDetalle';
+import MiItemDetalle from '@Utils/MiItemDetalle';
 
 //Rules
 import Rules_Usuario from '@Rules/Rules_Usuario';
@@ -154,85 +155,46 @@ export default class PaginaPerfil extends React.Component {
                 }} />
             </View>
 
-            <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{texto_Titulo_DatosPersonales}</Text>
-            <Card style={styles.card}>
-              <CardContent>
-                <Text style={{ fontSize: 24 }}>{this.state.datos.Nombre} {this.state.datos.Apellido}</Text>
-
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                  <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
-                  <View style={{ marginLeft: 16 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Dni}</Text>
-                    <Text>{this.state.datos.Dni}</Text>
-                  </View>
-                </View>
-
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                  <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
-                  <View style={{ marginLeft: 16 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Cuil}</Text>
-                    <Text>{this.state.datos.Cuil}</Text>
-                  </View>
-                </View>
-
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                  <Icon name="calendar" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
-                  <View style={{ marginLeft: 16 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_FechaNacimiento}</Text>
-                    <Text>{this.state.datos.FechaNacimiento}</Text>
-                  </View>
-                </View>
-
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                  <Icon name={"gender-male"} type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
-                  <View style={{ marginLeft: 16 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Sexo}</Text>
-                    <Text>{this.state.datos.SexoMasculino ? texto_Titulo_SexoMasculino : texto_Titulo_SexoFemenino}</Text>
-                  </View>
-                </View>
+            <MiCardDetalle titulo={texto_Titulo_DatosPersonales}>
+              <MiItemDetalle
+                icono='account-card-details'
+                titulo={texto_Titulo_Nombre} subtitulo={this.state.datos.Nombre + ' ' + this.state.datos.Apellido} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle
+                icono='account-card-details'
+                titulo={texto_Titulo_Dni} subtitulo={this.state.datos.Dni} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle
+                icono='account-card-details'
+                titulo={texto_Titulo_Cuil} subtitulo={this.state.datos.Cuil} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle
+                icono='calendar'
+                titulo={texto_Titulo_FechaNacimiento} subtitulo={this.state.datos.FechaNacimiento} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle
+                icono='gender-male'
+                titulo={texto_Titulo_Sexo} subtitulo={this.state.datos.SexoMasculino ? texto_Titulo_SexoMasculino : texto_Titulo_SexoFemenino} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle
+                icono='map'
+                titulo={texto_Titulo_DomicilioLegal} subtitulo={this.state.datos.DomicilioLegal} />
+            </MiCardDetalle>
 
 
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                  <Icon name="map" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
-                  <View style={{ marginLeft: 16 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_DomicilioLegal}</Text>
-                    <Text>{this.state.datos.DomicilioLegal}</Text>
-                  </View>
-                </View>
-              </CardContent>
-            </Card>
-
-            <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{texto_Titulo_DatosContacto}</Text>
-            <Card style={[styles.card]}>
-
-              <CardContent>
-
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                  <Icon name="email" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
-                  <View style={{ marginLeft: 16 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_Email}</Text>
-                    <Text>{this.state.datos.Email}</Text>
-                  </View>
-                </View>
-
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                  <Icon name="phone" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
-                  <View style={{ marginLeft: 16 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_TelefonoCelular}</Text>
-                    <Text>{this.state.datos.TelefonoCelular}</Text>
-                  </View>
-                </View>
-
-                <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                  <Icon name="phone" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
-                  <View style={{ marginLeft: 16 }}>
-                    <Text style={{ fontWeight: 'bold' }}>{texto_Titulo_TelefonoFijo}</Text>
-                    <Text>{this.state.datos.TelefonoFijo}</Text>
-                  </View>
-                </View>
-
-              </CardContent>
-            </Card>
+            <MiCardDetalle titulo={texto_Titulo_DatosContacto}>
+              <MiItemDetalle
+                icono='email'
+                titulo={texto_Titulo_Email} subtitulo={this.state.datos.Email} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle
+                icono='phone'
+                titulo={texto_Titulo_TelefonoCelular} subtitulo={this.state.datos.TelefonoCelular} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle
+                icono='phone'
+                titulo={texto_Titulo_TelefonoFijo} subtitulo={this.state.datos.TelefonoFijo} />
+            </MiCardDetalle>
           </View>
 
         </ScrollView>
@@ -299,6 +261,7 @@ const styles = StyleSheet.create({
 });
 
 const texto_Titulo_DatosPersonales = 'Datos personales';
+const texto_Titulo_Nombre = 'Nombre';
 const texto_Titulo_Dni = 'Nº de Documento';
 const texto_Titulo_Cuil = 'CUIL';
 const texto_Titulo_FechaNacimiento = 'Fecha de nacimiento';
