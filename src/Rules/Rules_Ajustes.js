@@ -7,6 +7,27 @@ export default class Rules_Ajustes extends React.Component {
     super();
   }
 
+  static setIntroVista = () => {
+    DB.setItem("introVista", 'true').then(() => {
+
+    }).catch((error) => {
+
+    });
+  }
+
+  static esIntroVista = () => {
+    return new Promise((resolve, reject) => {
+      DB.getItem("introVista").then((val) => {
+        if (val == undefined) {
+          val = 'false';
+        }
+        resolve(val == 'true');
+      }).catch((error) => {
+        reject('Error procesando la solicitud');
+      });
+    });
+  }
+
   static setListadoRequerimientoInterfaz = (tipo) => {
     return new Promise((resolve, reject) => {
       DB.setItem("listadoRequerimientoInterfaz", tipo + '').then(() => {

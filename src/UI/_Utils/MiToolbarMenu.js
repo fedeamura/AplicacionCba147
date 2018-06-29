@@ -7,7 +7,6 @@ import {
   Easing,
   Keyboard,
   Dimensions,
-  TouchableOpacity,
   TouchableWithoutFeedback
 } from "react-native";
 import {
@@ -17,6 +16,7 @@ import ExtraDimensions from 'react-native-extra-dimensions-android';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
+import { TouchableRipple } from "react-native-paper";
 
 const tAnim = 500;
 const marginIcon = 16;
@@ -303,7 +303,7 @@ export default class MiToolbarMenu extends React.Component {
 
                     }]}>
                 <View style={[styles.encabezado_Opcion, { backgroundColor: opcion.backgroundColor }]}>
-                  <TouchableOpacity
+                  <TouchableRipple
                     style={{ width: '100%' }}
                     onPress={() => { this.onPressOpcion(opcion, index); }}>
                     <Animated.View style={
@@ -378,7 +378,7 @@ export default class MiToolbarMenu extends React.Component {
 
                       </Animated.View>
                     </Animated.View>
-                  </TouchableOpacity>
+                  </TouchableRipple>
 
                 </View>
 

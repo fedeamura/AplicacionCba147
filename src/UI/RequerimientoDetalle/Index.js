@@ -7,11 +7,12 @@ import {
   Keyboard,
   TouchableOpacity
 } from "react-native";
-import { Text, Spinner } from 'native-base'
-import { Card, CardContent } from "react-native-paper";
+import { Text, Spinner, Button } from 'native-base'
+import { Card } from "react-native-paper";
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import WebImage from "react-native-web-image";
+import openMap from 'react-native-open-maps';
 
 //Mis componentes
 import App from "@UI/App";
@@ -101,6 +102,10 @@ export default class RequerimientoDetalle extends React.Component {
     App.navegar('VisorFoto', { url: 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=2&size=600x600&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7Ccordoba+argentina' });
   }
 
+  abrirMapa = () => {
+    openMap({ latitude: -31.414965, longitude: -64.190731, query: 'Ubicación de su requerimiento' });
+  }
+
   render() {
     const initData = global.initData;
 
@@ -145,6 +150,18 @@ export default class RequerimientoDetalle extends React.Component {
                   <Text style={{ fontSize: 32 }}>QAZWSX/2018</Text>
                 </View>
 
+                <View style={{ padding: 16 }}>
+
+                  <Button
+                    bordered
+                    small
+                    style={{
+                      borderColor: 'green'
+                    }}>
+                    <Text style={{ color: 'green' }}>Cancelar requerimiento</Text>
+                  </Button>
+                </View>
+
                 {/* Basicos */}
                 <Text style={{ fontSize: 24, left: 24 }}></Text>
                 <Card style={[style.card]}>
@@ -178,6 +195,11 @@ export default class RequerimientoDetalle extends React.Component {
                     <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                       <View style={{ width: 16, height: 16, borderRadius: 16, backgroundColor: 'red', marginRight: 8 }}></View>
                       <Text style={{ fontSize: 20 }}>Nuevo</Text>
+                    </View>
+
+                    <Text style={{ fontWeight: 'bold', marginTop: 16 }}>Fecha de cambio de estado</Text>
+                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                      <Text>10/10/2017 10:00</Text>
                     </View>
 
                     <Text style={{ fontWeight: 'bold', marginTop: 16 }}>Motivo</Text>
@@ -216,6 +238,19 @@ export default class RequerimientoDetalle extends React.Component {
                       style={{ width: 104, height: 104, borderRadius: 16 }}
                       source={{ uri: urlMapa }}
                     />
+                  </View>
+
+                  <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.2, marginTop: 16 }}></View>
+                  <View style={{ padding: 16 }}>
+                    <Button
+                      bordered
+                      small
+                      onPress={this.abrirMapa}
+                      style={{
+                        borderColor: 'green',
+                        alignSelf: 'flex-end'
+                      }}
+                    ><Text style={{ color: 'green' }}>Abrir mapa</Text></Button>
                   </View>
 
                 </Card>

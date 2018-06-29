@@ -6,21 +6,21 @@ import {
 } from "react-native";
 import {
   Text,
-  Item,
-  Picker,
   Button
 } from "native-base";
 import {
   Card,
-  CardContent,
   Dialog,
   Button as ButtonPeper,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Paragraph
+  Paragraph,
+  TouchableRipple
 } from "react-native-paper";
 import WebImage from 'react-native-web-image';
+import ItemDetalle from './ItemDetalle';
+import CardDetalle from './CardDetalle';
 
 //Mis componentes
 import App from "@UI/App";
@@ -59,20 +59,8 @@ export default class PaginaAjustes extends React.Component {
     });
   }
 
-  mostrarDialogoCambios = () => {
-    this.setState({ dialogoCambiosVisible: true });
-  }
-
-  ocultarDialogoCambios = () => {
-    this.setState({ dialogoCambiosVisible: false });
-  }
-
-  mostrarDialogoCerrarSesion = () => {
-    this.setState({ dialogoCerrarSesionVisible: true });
-  }
-
-  ocultarDialogoCerrarSesion = () => {
-    this.setState({ dialogoCerrarSesionVisible: false });
+  verIntroduccion = () => {
+    App.navegar('Introduccion');
   }
 
   render() {
@@ -85,11 +73,15 @@ export default class PaginaAjustes extends React.Component {
 
         <ScrollView contentContainerStyle={{ padding: 16 }}>
 
-          {/* Sesion */}
-          <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>Sesión activa</Text>
-          <Card style={styles.card}>
-            <CardContent >
-              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          {/* Sesion Activa */}
+          <CardDetalle
+            padding={false}
+            titulo='Sesión activa'
+            botones={[
+              { texto: 'Cerrar sesión', onPress: () => { this.setState({ dialogoCerrarSesionVisible: true }); } }
+            ]}>
+            <TouchableRipple onPress={() => { }}>
+              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 16 }}>
 
                 <WebImage
                   resizeMode="cover"
@@ -101,109 +93,88 @@ export default class PaginaAjustes extends React.Component {
 
                 <Text style={{ marginLeft: 8, fontSize: 20 }}>Federico Amura</Text>
               </View>
+            </TouchableRipple>
 
-              <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.2, marginTop: 16 }}></View>
-              <Button
-                bordered
-                small
-                onPress={this.mostrarDialogoCerrarSesion}
-                style={{
-                  borderColor: 'green', marginTop: 16,
-                  alignSelf: 'flex-end'
-                }}
-              ><Text style={{ color: 'green' }}>Cerrar sesión</Text></Button>
-            </CardContent>
-          </Card>
+          </CardDetalle>
 
+          {/* General  */}
+          <CardDetalle padding={false} titulo='General'>
+            <ItemDetalle
+              style={{ padding: 16 }}
+              onPress={this.verIntroduccion}
+              titulo="Introduccion"
+              subtitulo='Haga click aquí para volver a ver la introducción' />
 
-          {/* Acerca de... */}
-          <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>Versión</Text>
-          <Card style={styles.card}>
-            <CardContent >
-              <Text>Version 1.5.0</Text>
-              <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.2, marginTop: 16 }}></View>
-              <Button
-                bordered
-                small
-                onPress={this.mostrarDialogoCambios}
-                style={{
-                  borderColor: 'green', marginTop: 16,
-                  alignSelf: 'flex-end'
-                }}
-              ><Text style={{ color: 'green' }}>Ver informe de cambios</Text></Button>
-            </CardContent>
-          </Card>
+          </CardDetalle>
 
           {/* Acerca de... */}
-          <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>Acerca de nosotros</Text>
-          <Card style={styles.card}>
-            <CardContent >
-              <WebImage
-                resizeMode="contain"
-                source={require('@Resources/logo_muni.png')}
-                style={{
-                  width: '100%',
-                  height: 250
-                }} />
-              <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.2, marginBottom: 16 }}></View>
+          <CardDetalle padding={false} titulo='Sobre nosotros'>
+            <ItemDetalle
+              style={{ padding: 16 }}
+              titulo="Desarrollo de aplicacion"
+              subtitulo='Esta aplicación fue desarrollada por la Municipalidad de Cordoba, en la Direccion de Informatica' />
 
-              <Text style={{ fontWeight: 'bold', textAlign: 'center' }}>Aplicación desarrollada por la Municipalidad de Córdoba</Text>
+          </CardDetalle>
 
-            </CardContent>
-          </Card>
+          {/* Especificaciones tecnicas */}
+          <CardDetalle padding={false} titulo='Especificaciones tecnicas'>
+            <ItemDetalle
+              icono='react'
+              style={{ padding: 16 }}
+              onPress={() => { }}
+              titulo='Lenguaje de programación'
+              subtitulo='React Native' />
 
+            <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.1 }}></View>
+
+            <ItemDetalle
+              icono='github-circle'
+              style={{ padding: 16 }}
+              onPress={() => { }}
+              titulo='Codigo fuente'
+              subtitulo='htts://github.com/asas' />
+            <View style={{ width: '100%', height: 1, backgroundColor: 'black', opacity: 0.1 }}></View>
+
+            <ItemDetalle
+              icono='code-braces'
+              style={{ padding: 16 }}
+              onPress={() => { }}
+              titulo='Licencias de codigo libre'
+              subtitulo='Haga click para ver' />
+          </CardDetalle>
+
+          <Text style={{ alignSelf: 'center', marginTop: 16, marginBottom: 16 }}>Vesion 1.5</Text>
           {/* <Button onPress={() => { App.navegar('PickerUbicacion') }}><Text>Ubicacion</Text></Button> */}
         </ScrollView>
 
 
         {/* Dialogo cerrar sesion */}
-        <Dialog
-          style={{ borderRadius: 16 }}
-          visible={this.state.dialogoCerrarSesionVisible}
-          onDismiss={this.ocultarDialogoCerrarSesion}
-        >
-          <DialogContent>
-            <Paragraph>¿Esta seguro que desea cerrar sesión?</Paragraph>
-          </DialogContent>
-          <DialogActions>
-            <ButtonPeper onPress={this.ocultarDialogoCerrarSesion}>No</ButtonPeper>
-            <ButtonPeper onPress={this.cerrarSesion}>Si</ButtonPeper>
-          </DialogActions>
-        </Dialog>
-
-
-        {/* Dialogo cambios version */}
-        <Dialog
-          style={{ borderRadius: 16 }}
-          visible={this.state.dialogoCambiosVisible}
-          onDismiss={this.ocultarDialogoCambios}
-        >
-          <DialogTitle>Informe de cambios</DialogTitle>
-          <DialogContent>
-            <ScrollView style={{ maxHeight: 300 }}>
-
-              <Paragraph style={{ marginTop: 16, fontWeight: 'bold' }}>Versión 1.5.0</Paragraph>
-              <Paragraph>Interfaz totalmente nueva</Paragraph>
-              <Paragraph>Mejoras en la selección de ubicación de un requerimiento</Paragraph>
-              <Paragraph>Ahora se podés ver el area encargada de solucionar tu requerimiento</Paragraph>
-
-              <Paragraph style={{ marginTop: 16, fontWeight: 'bold' }}>Versión 1.0.0</Paragraph>
-              <Paragraph>Versión inicial</Paragraph>
-
-            </ScrollView>
-
-          </DialogContent>
-          <DialogActions>
-            <ButtonPeper onPress={this.ocultarDialogoCambios}>Aceptar</ButtonPeper>
-          </DialogActions>
-        </Dialog>
+        {this.renderDialogoCerrarSesion()}
       </View >
     );
   }
 
-
-
-
+  renderDialogoCerrarSesion() {
+    return <Dialog
+      style={{ borderRadius: 16 }}
+      visible={this.state.dialogoCerrarSesionVisible}
+      onDismiss={() => {
+        this.setState({ dialogoCerrarSesionVisible: false });
+      }}
+    >
+      <DialogContent>
+        <Paragraph>¿Esta seguro que desea cerrar sesión?</Paragraph>
+      </DialogContent>
+      <DialogActions>
+        <ButtonPeper onPress={() => {
+          this.setState({ dialogoCerrarSesionVisible: false });
+        }}>No</ButtonPeper>
+        <ButtonPeper onPress={() => {
+          this.setState({ dialogoCerrarSesionVisible: false });
+        }}>Si</ButtonPeper>
+      </DialogActions>
+    </Dialog>;
+  }
 }
 
 const styles = StyleSheet.create({

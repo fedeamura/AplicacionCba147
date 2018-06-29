@@ -25,6 +25,7 @@ import App from "Cordoba/src/UI/App";
 
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
+import Rules_Ajustes from "@Rules/Rules_Ajustes";
 
 export default class Login extends React.Component {
   static navigationOptions = {
@@ -85,20 +86,37 @@ export default class Login extends React.Component {
   }
 
   consultarLogin = () => {
-    Rules_Usuario.isLogin()
-      .then((login) => {
-        if (login) {
-          Animated.spring(this.anim_Logo, { toValue: 0 }).start(() => App.replace('Inicio'));
-          return;
-        }
+    Rules_Ajustes.esIntroVista().then((vista) => {
+      if (vista == false) {
+        App.navegar('Introduccion', {
+          callback: () => {
+            this.consultarLogin();
+          }
+        });
+      } else {
+        Rules_Usuario.isLogin()
+          .then((login) => {
+            if (login) {
+              Animated.spring(this.anim_Logo, { toValue: 0 }).start(() => App.replace('Inicio'));
+              return;
+            }
 
-        Animated.spring(this.anim_Form, {
-          toValue: 1
-        }).start();
-      })
-      .catch((error) => {
-        Alert.alert('', error, [{ text: 'Reintentar', onPress: this.consultarLogin }]);
-      });
+            Animated.spring(this.anim_Form, {
+              toValue: 1
+            }).start();
+          })
+          .catch((error) => {
+            Alert.alert('', error, [{ text: 'Reintentar', onPress: this.consultarLogin }]);
+          });
+      }
+    }).catch(() => {
+
+    });
+
+
+
+
+
   }
 
   mostrarFormulario = () => {

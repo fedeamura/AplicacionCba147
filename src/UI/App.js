@@ -1,13 +1,8 @@
 import React, { Component } from "react";
 import {
   Platform,
-  StyleSheet,
-  Text,
   View,
   LayoutAnimation,
-  BackHandler,
-  Animated,
-  Easing,
   StatusBar,
   Alert
 } from "react-native";
@@ -15,14 +10,13 @@ import {
   StackNavigator,
   NavigationActions
 } from "react-navigation";
-import color from "color";
 import {
-  Provider as PaperProvider,
-  Button
+  Provider as PaperProvider
 } from "react-native-paper";
 import codePush from "react-native-code-push";
 
 //Mis Componentes
+import Introduccion from "@UI/Introduccion/Index";
 import Login from "@UI/Login/Index";
 import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
 import RecuperarCuenta from "@UI/RecuperarCuenta/Index";
@@ -35,7 +29,6 @@ import VisorFoto from "@UI/VisorFoto/Index";
 import UsuarioValidarDatosRenaper from '@UI/UsuarioValidarDatosRenaper/Index';
 
 //Rules
-import Rules_Usuario from "@Rules/Rules_Usuario";
 import Rules_Init from "@Rules/Rules_Init";
 
 import AppCargando from "./AppCargando";
@@ -44,6 +37,9 @@ import AppMantenimiento from "./AppMantenimiento";
 //Defino el las screens de la app
 const RootStack = StackNavigator(
   {
+    Introduccion: {
+      screen: Introduccion
+    },
     Login: {
       screen: Login
     },
@@ -105,7 +101,6 @@ export default class App extends React.Component {
       initData: undefined,
       error: undefined
     };
-
   }
 
   componentDidMount() {
@@ -116,6 +111,7 @@ export default class App extends React.Component {
         Rules_Init.getInitData()
           .then((initData) => {
             global.initData = initData;
+
             this.setState({
               cargando: false,
               initData: initData,
