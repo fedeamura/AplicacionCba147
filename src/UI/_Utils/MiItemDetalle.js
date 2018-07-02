@@ -21,11 +21,15 @@ export default class MiItemDetalle extends React.Component {
 
   render() {
     return (
-      <TouchableRipple onPress={this.props.onPress}>
-        <View style={[{ display: 'flex', flexDirection: 'row', alignItems: 'center', overflow: 'hidden' }, this.props.style]}>
+      <TouchableRipple onPress={this.props.onPress} style={this.props.style}>
+        <View style={
+          [
+            { display: 'flex', flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
+          ]
+        }>
           {this.props.icono != undefined && (
             <Icon style={{
-              opacity:0.8,
+              opacity: 0.8,
               fontSize: 24,
               marginRight: 16,
               alignSelf: this.props.iconoAlign || 'center'

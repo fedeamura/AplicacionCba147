@@ -45,46 +45,58 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
         };
     }
 
-    informarDescripcion() {
+    onDescripcionChange = (text) => {
+        this.setState({ descripcion: text }, () => {
+            this.informarDescripcion();
+        });
+    }
+
+    informarDescripcion = () => {
         if (this.props.onDescripcion == undefined) return;
         this.props.onDescripcion(this.state.descripcion);
     }
 
-    informarReady() {
+    informarReady = () => {
         if (this.props.onReady == undefined) return;
         this.props.onReady();
     }
 
     render() {
-        return (
+        const botonSiguienteDeshabilitado = this.state.descripcion == undefined || this.state.descripcion.trim() == "";
 
+        return (
             <View>
                 <View style={{
-                    marginTop: 32, marginBottom: 32
+                    padding: 16
                 }}>
                     <Textarea
-                        onChangeText={(text) => {
-                            this.setState({ descripcion: text }, () => {
-                                this.informarDescripcion();
-                            });
-                        }}
-                        style={{ fontSize: 22 }}
+                        onChangeText={this.onDescripcionChange}
+                        style={{ fontSize: 18 }}
                         rowSpan={5}
                         placeholder="Contanos que está pasando..." />
                 </View>
 
-                <Button
-                    onPress={() => {
-                        this.informarReady();
-                    }}
-                    rounded
-                    disabled={this.state.descripcion == undefined || this.state.descripcion.trim() == ""}
-                    style={{
-                        alignSelf: 'flex-end',
-                        backgroundColor: this.state.descripcion == undefined || this.state.descripcion.trim() == "" ? 'rgba(150,150,150,1)' : 'green'
-                    }}>
-                    <Text>Siguiente</Text>
-                </Button>
+                <View style={{ height: 1, width: '100%', backgroundColor: 'rgba(0,0,0,0.1)' }} />
+
+                {/* Boton siguiente  */}
+                <View style={{ padding: 16 }}>
+                    <Button
+                        small
+                        onPress={this.informarReady}
+                        rounded
+                        bordered
+                        disabled={botonSiguienteDeshabilitado}
+                        style={{
+                            alignSelf: 'flex-end',
+                            borderColor: botonSiguienteDeshabilitado ? 'rgba(150,150,150,1)' : 'green'
+                        }}>
+                        <Text
+                            style={{
+                                color: botonSiguienteDeshabilitado ? 'rgba(150,150,150,1)' : 'green'
+                            }}
+                        >Siguiente</Text>
+                    </Button>
+                </View>
 
             </View >
         );

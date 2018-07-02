@@ -1,53 +1,50 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-    Platform,
     View,
-    UIManager,
+    Image,
     Alert,
-    Animated,
-    StatusBar,
-    ScrollView,
-    Keyboard,
-    Dimensions,
-    Image
+    TouchableOpacity
 } from "react-native";
 import {
-    Container,
     Button,
     Text,
-    Input,
-    ListItem,
-    Content,
-    Spinner,
-    CardItem
+    Spinner
 } from "native-base";
-import { Card, CardContent } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import WebImage from 'react-native-web-image'
-import LinearGradient from 'react-native-linear-gradient';
-import color from "color";
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNFS from 'react-native-fs';
 
 //Mis componentes
 import App from "@UI/App";
+import MiView from "@Utils/MiView";
 
 export default class RequerimientoNuevo_PasoFoto extends React.Component {
-
 
     constructor(props) {
         super(props);
 
         this.state = {
-            error: undefined,
             cargando: false,
-            foto: undefined
+            foto: undefined,
+            viewSeleccionarVisible: true,
+            viewSeleccionadoVisible: false
         };
     }
 
-    agregarFoto() {
+    static defaultProps = {
+        ...React.Component.defaultProps,
+        onReady: () => { },
+        onFoto: () => { },
+        onCargando: () => { }
+    }
+
+    componentWillUpdate(prevProps, prevState) {
+        if (this.state.cargando != prevState.cargando) {
+            this.props.onCargando(prevState.cargando);
+        }
+    }
+
+    agregarFoto = () => {
         var options = {
             title: 'Elegir foto'
         };
@@ -55,6 +52,7 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
         this.setState({
             cargando: true
         }, () => {
+            // Mando a buscar la foto
             ImagePicker.launchImageLibrary(options, (response) => {
                 if (response.didCancel) {
                     this.setState({
@@ -65,117 +63,145 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
                 else if (response.error) {
                     this.setState({
                         cargando: false,
-                        foto: undefined,
-                        error: response.error
+                        foto: undefined
                     });
+
+                    Alert.alert('', 'Error procesando la solicitud');
                     return
                 }
 
-                ImageResizer.createResizedImage(response.uri, 1000, 1000, 'JPEG', 80).then((response2) => {
-                    RNFS.readFile(response2.uri, 'base64')
-                        .then(base64 => {
-                            let foto = 'data:image/jpeg;base64,' + base64;
-                            this.setState({
-                                cargando: false,
-                                error: undefined,
-                                foto: foto
-                            }, () => {
-                                this.informarFoto();
+                // Achico la imagen
+                ImageResizer.createResizedImage(response.uri, 1000, 1000, 'JPEG', 80)
+                    .then((response2) => {
+                        // Convierto la imagen a base64
+                        RNFS.readFile(response2.uri, 'base64')
+                            .then(base64 => {
+                                let foto = 'data:image/jpeg;base64,' + base64;
+                                this.setState({
+                                    cargando: false,
+                                    foto: foto
+                                }, this.informarFoto);
+                            }).catch(() => {
+                                Alert.alert('', 'Error procesando la solicitud');
+                                this.setState({
+                                    cargando: false,
+                                    foto: undefined
+                                });
                             });
+                    })
+                    .catch((err) => {
+                        Alert.alert('', 'Error procesando la solicitud');
+                        this.setState({
+                            cargando: false,
+                            foto: undefined
                         });
-
-                }).catch((err) => {
-                    this.setState({
-                        cargando: false,
-                        error: error,
-                        foto: undefined
                     });
-                });
             });
 
         });
 
     }
 
-    informarFoto() {
-        if (this.props.onFoto == undefined) return;
+    cancelarFoto = () => {
+        this.setState({ viewSeleccionadoVisible: false }, () => {
+            setTimeout(() => {
+                this.setState({ foto: undefined, viewSeleccionarVisible: true });
+            }, 300);
+        })
+    }
+
+    informarFoto = () => {
+        this.setState({ viewSeleccionarVisible: false }, () => {
+            setTimeout(() => {
+                this.setState({ viewSeleccionadoVisible: true });
+            }, 300);
+        });
+
         this.props.onFoto(this.state.foto);
     }
 
-    informarReady() {
-        if (this.props.onReady == undefined) return;
+    informarReady = () => {
         this.props.onReady();
     }
 
+    abrirImagen = () => {
+        App.navegar('VisorFoto', {
+            source: { uri: this.state.foto }
+        });
+    }
+
     render() {
-
         return (
-
             <View>
-                {this.state.cargando && (
-                    <Spinner color="green" />
-                )}
 
-                {this.state.error != undefined && (
-                    <View>
-                        <Text>Error</Text>
-                        <Text>{this.state.error}</Text>
-                    </View>
-                )}
+                <View style={{ minHeight: 100 }}>
+                    {this.renderViewSeleccionar()}
+                    {this.renderViewSeleccionado()}
+                </View>
 
-                {this.state.cargando == false && this.state.foto == undefined && (
-                    <View style={{ padding: 32 }}>
-                        <Button
-                            bordered
-                            onPress={() => { this.agregarFoto(); }}
-                            style={{
-                                alignSelf: 'center',
-                                borderColor: 'green'
-                            }}>
-                            <Text style={{ color: 'green' }}>Agregar foto</Text>
-                        </Button>
-                    </View>
-                )}
-                {this.state.foto != undefined && (
-                    <View>
-                        <View style={{ marginTop: 16, marginBottom: 32 }}>
+                <View style={{ height: 1, width: '100%', backgroundColor: 'rgba(0,0,0,0.1)' }} />
 
-                            <Image
-                                resizeMode="cover"
-                                style={{ width: 156, height: 156, alignSelf: 'center' }}
-                                source={{ uri: this.state.foto }}
-                            />
+                <View style={{ padding: 16 }}>
+                    <Button
+                        onPress={this.informarReady}
+                        rounded
+                        small
+                        bordered
+                        style={{
+                            alignSelf: 'flex-end',
+                            borderColor: 'green'
+                        }}>
+                        <Text style={{ color: 'green' }}>Siguiente</Text>
+                    </Button>
+                </View>
 
-
-                            <Button
-                                danger
-                                small
-                                style={{ alignSelf: 'center', marginTop: 8 }}
-                                onPress={() => {
-                                    this.setState({
-                                        foto: undefined
-                                    }, () => {
-                                        this.informarFoto();
-                                    });
-                                }}>
-                                <Text>Cancelar foto</Text>
-                            </Button>
-                        </View>
-                    </View>
-
-                )}
-                <Button
-                    onPress={() => {
-                        this.informarReady();
-                    }}
-                    rounded
-                    style={{
-                        alignSelf: 'flex-end',
-                        backgroundColor: 'green'
-                    }}>
-                    <Text>Siguiente</Text>
-                </Button>
             </View >
         );
+    }
+
+    renderViewSeleccionar() {
+        return <MiView visible={this.state.viewSeleccionarVisible}>
+            <View style={{ padding: 16 }}>
+                <Button
+                    bordered
+                    small
+                    onPress={this.agregarFoto}
+                    style={{
+                        alignSelf: 'center',
+                        borderColor: 'green'
+                    }}>
+                    <Text style={{ color: 'green' }}>Agregar foto</Text>
+                </Button>
+            </View>
+
+        </MiView>;
+    }
+
+    renderViewSeleccionado() {
+        return <MiView visible={this.state.viewSeleccionadoVisible}>
+            <View style={{ padding: 16 }}>
+
+                <View style={{ borderRadius: 16, overflow: 'hidden' }}>
+                    <TouchableOpacity onPress={this.abrirImagen}>
+                        <Image
+                            resizeMode="cover"
+                            style={{ width: 156, height: 156, alignSelf: 'center', borderRadius: 16, overflow: 'hidden' }}
+                            source={{ uri: this.state.foto }}
+                        />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={{ height: 16 }} />
+
+                <Button
+                    bordered
+                    small
+                    style={{ alignSelf: 'center', borderColor: '#D32F2F' }}
+                    onPress={this.cancelarFoto}>
+                    <Text style={{ color: '#D32F2F' }}>Cancelar foto</Text>
+                </Button>
+            </View>
+
+        </MiView >;
     }
 }

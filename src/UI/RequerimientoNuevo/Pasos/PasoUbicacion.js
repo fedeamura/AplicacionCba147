@@ -1,142 +1,152 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-    Platform,
-    View,
-    UIManager,
-    Alert,
-    Animated,
-    StatusBar,
-    ScrollView,
-    Keyboard,
-    Dimensions
+    View
 } from "react-native";
 import {
-    Container,
     Button,
     Text,
-    Item,
-    Input,
-    Textarea,
-    Label,
-    ListItem,
-    Content,
-    CardItem
 } from "native-base";
-import { Card, CardContent } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
 import LinearGradient from 'react-native-linear-gradient';
-import color from "color";
-
-//Anims
-UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 //Mis componentes
 import App from "@UI/App";
+import MiView from "@Utils/MiView";
+import MiItemDetalle from '@Utils/MiItemDetalle';
 
 export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
-
 
     constructor(props) {
         super(props);
 
         this.state = {
-            ubicacion: undefined
+            ubicacion: undefined,
+            viewSeleccionarVisible: true,
+            viewSeleccionadoVisible: false
         };
     }
 
-    informarUbicacion() {
-        if (this.props.onUbicacion != undefined) {
-            this.props.onUbicacion(this.state.ubicacion);
-        }
+    static defaultProps = {
+        ...React.Component.defaultProps,
+        onReady: () => { },
+        onUbicacion: () => { }
     }
 
-    informarReady() {
-        if (this.props.onReady != undefined) {
-            this.props.onReady();
-        }
+    onUbicacion = (ubicacion) => {
+        this.setState({ ubicacion: ubicacion, viewSeleccionarVisible: false }, () => {
+            this.informarUbicacion();
+
+            setTimeout(() => {
+                this.setState({ viewSeleccionadoVisible: true });
+            }, 300);
+        });
+    }
+
+    cancelarUbicacion = () => {
+        this.setState({ ubicacion: undefined, viewSeleccionadoVisible: false }, () => {
+            this.informarUbicacion();
+
+            setTimeout(() => {
+                this.setState({ viewSeleccionarVisible: true });
+            }, 300);
+        });
+    }
+
+    seleccionarUbicacion = () => {
+        App.navegar('PickerUbicacion', {
+            onUbicacionSeleccionada: this.onUbicacion
+        });
+    }
+
+    informarUbicacion = () => {
+        this.props.onUbicacion(this.state.ubicacion);
+    }
+
+    informarReady = () => {
+        this.props.onReady();
     }
 
     render() {
         return (
-
-            <View>
-                {this.state.ubicacion == undefined && (
-                    <Button
-                        bordered
-                        onPress={() => {
-                            App.navegar('PickerUbicacion', {
-                                onUbicacionSeleccionada: (data) => {
-                                    this.setState({ ubicacion: data }, () => {
-                                        this.informarUbicacion();
-                                    });
-                                }
-                            });
-                        }}
-                        style={{
-                            borderColor: 'green',
-                            alignSelf: 'center',
-                            margin: 32
-                        }}><Text style={{ color: 'green' }}>Seleccionar ubicacion</Text></Button>
-                )}
-
-                {this.state.ubicacion != undefined && (
-                    <View>
-                        <View style={{ marginTop: 16, marginBottom: 32 }}>
-                            <View>
-                                <WebImage
-                                    resizeMode='cover'
-                                    style={{
-                                        width: '100%', height: 256
-                                    }}
-                                    source={{ uri: 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=1&size=600x300&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:1%7Ccordoba+argentina' }}></WebImage>
-
-                                <View style={{ position: 'absolute', backgroundColor: 'transparent', bottom: 0, left: 0, right: 0 }}>
-                                    <LinearGradient
-                                        colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.8)']}
-                                        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}></LinearGradient>
-                                    <View style={{ padding: 8 }}>
-                                        <Text>Direccion: 27 de Abril 464, Córdoba, Argentina</Text>
-                                        <Text>Descripcioón: 13º B</Text>
-                                        <Text>CPC: Nº 10 - Central</Text>
-                                        <Text>Barrio: Nueva córdoba</Text>
-                                    </View>
-
-                                </View>
-                            </View>
-
-                            <Button
-                                small
-                                danger
-                                onPress={() => {
-                                    this.setState({
-                                        ubicacion: undefined
-                                    }, () => {
-                                        this.informarUbicacion();
-                                    });
-                                }}
-                                style={{ alignSelf: 'center', marginTop: 8 }}>
-                                <Text style={{ color: 'white' }}>Cancelar ubicacion</Text>
-                            </Button>
-                        </View>
-
-                        <Button
-                            onPress={() => {
-                                this.informarReady();
-                            }}
-                            rounded
-                            disabled={this.state.ubicacion == undefined}
-                            style={{
-                                alignSelf: 'flex-end',
-                                backgroundColor: this.state.ubicacion == undefined ? 'rgba(150,150,150,1)' : 'green'
-                            }}
-                        ><Text>Siguiente</Text></Button>
-                    </View>
-
-                )}
-
+            <View style={{ minHeight: 100 }}>
+                {this.renderViewSeleccionar()}
+                {this.renderViewSeleccionado()}
             </View >
         );
+    }
+
+    renderViewSeleccionar() {
+        return <MiView visible={this.state.viewSeleccionarVisible}>
+            <Button
+                bordered
+                small
+                onPress={this.seleccionarUbicacion}
+                style={{
+                    borderColor: 'green',
+                    alignSelf: 'center',
+                    margin: 32
+                }}>
+                <Text style={{ color: 'green' }}>Seleccionar ubicacion</Text>
+            </Button>
+        </MiView>;
+    }
+
+    renderViewSeleccionado() {
+        return <MiView visible={this.state.viewSeleccionadoVisible}>
+            <View>
+                <View>
+                    <WebImage
+                        resizeMode='cover'
+                        style={{
+                            width: '100%', height: 256
+                        }}
+                        source={{ uri: 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=1&size=600x300&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:1%7Ccordoba+argentina' }}></WebImage>
+
+                    <View style={{ position: 'absolute', backgroundColor: 'transparent', bottom: 0, left: 0, right: 0 }}>
+                        <LinearGradient
+                            colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,1)']}
+                            style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}></LinearGradient>
+                        <View style={{ padding: 16 }}>
+                            <Text>27 de Abril 464, Córdoba, Argentina</Text>
+                            <Text>13º B</Text>
+                            <Text>CPC: Nº 10 - Central</Text>
+                            <Text>Barrio: Nueva córdoba</Text>
+                        </View>
+
+                    </View>
+
+                </View>
+
+                <View style={{ height: 16 }} />
+
+                <Button
+                    small
+                    bordered
+                    onPress={this.cancelarUbicacion}
+                    style={{ alignSelf: 'center', borderColor: '#D32F2F' }}>
+                    <Text style={{ color: '#D32F2F' }}>Cancelar ubicacion</Text>
+                </Button>
+            </View>
+
+            <View style={{ height: 16 }} />
+            <View style={{ height: 1, width: '100%', backgroundColor: 'rgba(0,0,0,0.1)' }} />
+
+            <View style={{ padding: 16 }}>
+                <Button
+                    small
+                    onPress={this.informarReady}
+                    rounded
+                    bordered
+                    style={{
+                        alignSelf: 'flex-end',
+                        borderColor: 'green'
+                    }}><Text
+                        style={{
+                            color: 'green'
+                        }}
+                    >Siguiente</Text></Button>
+            </View>
+
+        </MiView>;
     }
 }

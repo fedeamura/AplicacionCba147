@@ -19,7 +19,7 @@ export default class VisorFoto extends React.Component {
     const { params } = this.props.navigation.state;
 
     this.state = {
-      url: params.url || ''
+      source: params.source || { uri: '' }
     };
   }
 
@@ -46,7 +46,7 @@ export default class VisorFoto extends React.Component {
 
         <PhotoView
           resizeMode={'cover'}
-          source={{ uri: this.state.url || '' }}
+          source={this.state.source}
           minimumZoomScale={1}
           maximumZoomScale={3}
           androidScaleType="center"

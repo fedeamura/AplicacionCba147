@@ -99,7 +99,9 @@ export default class RequerimientoDetalle extends React.Component {
   }
 
   abrirImagen = (identificador) => {
-    App.navegar('VisorFoto', { url: 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=2&size=600x600&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7Ccordoba+argentina' });
+    App.navegar('VisorFoto', {
+      source: { uri: 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=2&size=600x600&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7Ccordoba+argentina' }
+    });
   }
 
   abrirMapa = () => {

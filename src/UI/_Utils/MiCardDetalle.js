@@ -23,15 +23,32 @@ export default class MiCardDetalle extends React.Component {
     this.state = {
     };
   }
+  static defaultProps = {
+    ...React.Component.defaultProps,
+    elevation: 2,
+    botones: [],
+    padding: true
+  }
+
 
   render() {
-    const padding = ('padding' in this.props && this.props.padding == false) ? 0 : 16;
+    const padding = this.props.padding ? 16 : 0;
     const tieneBotones = this.props.botones.length != 0;
 
     return (
       <View>
-        <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{this.props.titulo}</Text>
-        <Card style={{ borderRadius: 16, margin: 8 }}>
+        {/* Titulo */}
+        {this.props.titulo != undefined && (
+          <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{this.props.titulo}</Text>
+        )}
+
+        {/* Card */}
+        <Card style={{
+          borderRadius: 16,
+          margin: 8,
+          backgroundColor: this.props.backgroundColor || 'white',
+          elevation: this.props.elevation
+        }}>
 
           {/* Contenido */}
           <View style={{
@@ -56,6 +73,7 @@ export default class MiCardDetalle extends React.Component {
                     <View style={{ marginRight: index == (this.props.botones.length - 1) ? 0 : 8, }}>
                       <Button
                         bordered
+                        rounded
                         small
                         onPress={data.onPress}
                         style={{ borderColor: 'green' }}

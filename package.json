@@ -13,6 +13,7 @@
     "react": "16.0.0",
     "react-native": "0.51.1",
     "react-native-animatable": "1.2.4",
+    "react-native-back-android": "^3.1.1",
     "react-native-code-push": "5.3.2",
     "react-native-extra-dimensions-android": "0.21.0",
     "react-native-fs": "^2.9.12",
@@ -30,7 +31,8 @@
     "react-native-textinput-effects": "0.4.2",
     "react-native-vector-icons": "4.5.0",
     "react-native-web-image": "0.0.6",
-    "react-navigation": "1.5.8"
+    "react-navigation": "1.5.8",
+    "rn-viewpager": "^1.2.9"
   },
   "devDependencies": {
     "babel-jest": "22.4.3",

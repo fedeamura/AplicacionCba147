@@ -13,6 +13,7 @@ import {
 import { FAB } from 'react-native-paper';
 import WebImage from 'react-native-web-image'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MiView from '@Utils/MiView';
 
 //Mis componentes
 import App from "@UI/App";
@@ -36,6 +37,7 @@ export default class PaginaInicio extends React.Component {
         super(props);
 
         this.state = {
+            viewVisible: true,
             alertaUsuarioNoValidadoVisible: false,
             cargando: true,
             error: undefined,

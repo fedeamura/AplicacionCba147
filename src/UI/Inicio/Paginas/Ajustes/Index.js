@@ -169,9 +169,7 @@ export default class PaginaAjustes extends React.Component {
         <ButtonPeper onPress={() => {
           this.setState({ dialogoCerrarSesionVisible: false });
         }}>No</ButtonPeper>
-        <ButtonPeper onPress={() => {
-          this.setState({ dialogoCerrarSesionVisible: false });
-        }}>Si</ButtonPeper>
+        <ButtonPeper onPress={this.cerrarSesion}>Si</ButtonPeper>
       </DialogActions>
     </Dialog>;
   }
