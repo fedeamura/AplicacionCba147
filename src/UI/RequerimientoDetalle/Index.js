@@ -152,17 +152,6 @@ export default class RequerimientoDetalle extends React.Component {
                   <Text style={{ fontSize: 32 }}>QAZWSX/2018</Text>
                 </View>
 
-                <View style={{ padding: 16 }}>
-
-                  <Button
-                    bordered
-                    small
-                    style={{
-                      borderColor: 'green'
-                    }}>
-                    <Text style={{ color: 'green' }}>Cancelar requerimiento</Text>
-                  </Button>
-                </View>
 
                 {/* Basicos */}
                 <MiCardDetalle>
@@ -237,6 +226,23 @@ export default class RequerimientoDetalle extends React.Component {
                 <MiCardDetalle titulo='Información adicional'>
                   <MiItemDetalle titulo='Fecha de creación' subtitulo='10/10/2018 10:00' />
                 </MiCardDetalle>
+
+                <View style={{
+                  padding: 16,
+                  marginTop: 32,
+                  width: '100%'
+                }}>
+
+                  <Button
+                    bordered
+                    small
+                    style={{
+                      borderColor: '#D32F2F',
+                      alignSelf: 'center'
+                    }}>
+                    <Text style={{ color: '#D32F2F', }}>Cancelar requerimiento</Text>
+                  </Button>
+                </View>
 
               </Animated.View>
 

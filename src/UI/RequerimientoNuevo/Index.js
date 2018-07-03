@@ -17,6 +17,7 @@ import {
   DialogActions,
   DialogContent
 } from 'react-native-paper';
+import _ from 'lodash';
 
 
 //Mis componentes
@@ -76,6 +77,7 @@ export default class RequerimientoNuevo extends React.Component {
 
   componentDidMount() {
     Rules_Servicio.get().then((data) => {
+      data = _.orderBy(data, 'Nombre');
       this.setState({ cargando: false, servicios: data });
     }).catch(() => {
       Alert.alert('', 'Error procesando la solicitud');
@@ -395,7 +397,7 @@ const style = StyleSheet.create({
 });
 
 const texto_Titulo = 'Nuevo requerimiento';
-const texto_Titulo_Servicio = 'Servicio';
+const texto_Titulo_Servicio = 'Categoría y motivo';
 const texto_Titulo_Descripcion = 'Descripción';
 const texto_Titulo_Ubicacion = 'Ubicación';
 const texto_Titulo_Foto = 'Foto';

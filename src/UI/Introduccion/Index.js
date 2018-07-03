@@ -93,42 +93,6 @@ export default class Introduccion extends React.Component {
     return <PagerDotIndicator pageCount={4} />;
   }
 
-
-  // render() {
-  //   const initData = global.initData;
-
-  //   let view = undefined;
-  //   switch (this.state.paso) {
-  //     case 0: {
-  //       view = this.renderPagina1();
-  //     } break;
-  //     case 1: {
-  //       view = this.renderPagina2();
-  //     } break;
-  //     case 2: {
-  //       view = this.renderPagina3();
-  //     } break;
-  //     case 3: {
-  //       view = this.renderPagina4();
-  //     } break;
-  //   }
-
-
-  //   return (
-  //     <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]} >
-
-  //       {/* StatusBar */}
-  //       <MiStatusBar />
-
-  //       {/* Contenido */}
-  //       <Animated.View style={{ opacity: this.anim }}>
-  //         {view}
-  //       </Animated.View>
-
-  //     </View>
-  //   );
-  // }
-
   renderPagina1() {
     return <View
       key={1}

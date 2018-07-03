@@ -7,79 +7,61 @@ export default class Rules_Servicio extends React.Component {
       setTimeout(() => {
         callback([
           {
-            id: 1,
-            nombre: 'Servicio 1',
-            principal: true
+            Id: 1,
+            Nombre: 'Alumbrado público',
+            Icono: 'lightbulb-on-outline',
+            Principal: true,
+            Color: '#FBC02D'
           },
           {
-            id: 2,
-            nombre: 'Servicio 2',
-            principal: true
+            Id: 2,
+            Nombre: 'Obras viales',
+            Icono: 'sign-caution',
+            Principal: true,
+            Color: '#F57C00'
           },
           {
-            id: 3,
-            nombre: 'Servicio 3',
-            principal: true
+            Id: 3,
+            Nombre: 'Espacios verdes',
+            Icono: 'tree',
+            Principal: true,
+            Color: '#43A047'
           },
           {
-            id: 4,
-            nombre: 'Servicio 4',
-            principal: true
+            Id: 4,
+            Nombre: 'Policia municipal',
+            Icono: 'security-account',
+            Principal: true,
+            Color: '#3F51B5'
           },
           {
-            id: 5,
-            nombre: 'Servicio 5',
-            principal: true
+            Id: 5,
+            Nombre: 'Fiscalización y control',
+            Icono: 'security',
+            Principal: true,
+            Color: '#673AB7'
           },
           {
-            id: 6,
-            nombre: 'Servicio 6',
-            principal: true
+            Id: 6,
+            Nombre: 'Transporte',
+            Icono: 'bus-side',
+            Principal: true,
+            Color: '#009688'
           },
           {
-            id: 7,
-            nombre: 'Servicio 7'
+            Id: 7,
+            Nombre: 'Higiente urbana',
+            Icono: 'delete-empty',
+            Principal: true,
+            Color: '#6D4C41'
           },
           {
-            id: 8,
-            nombre: 'Servicio 8'
+            Id: 8,
+            Nombre: 'Redes sanitarias',
+            Icono: 'water-pump',
+            Principal: true,
+            Color: '#039BE5'
           },
-          {
-            id: 9,
-            nombre: 'Servicio 9'
-          },
-          {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }, {
-            id: 9,
-            nombre: 'Servicio 9'
-          }
-
         ])
       }, 500);
       // const url =
@@ -112,42 +94,5 @@ export default class Rules_Servicio extends React.Component {
     });
   }
 
-  static getPrincipales = () => {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback([
-          {
-            id: 1,
-            nombre: 'Servicio 1',
-            principal: true
-          },
-          {
-            id: 2,
-            nombre: 'Servicio 2',
-            principal: true
-          },
-          {
-            id: 3,
-            nombre: 'Servicio 3',
-            principal: true
-          },
-          {
-            id: 4,
-            nombre: 'Servicio 4',
-            principal: true
-          },
-          {
-            id: 5,
-            nombre: 'Servicio 5',
-            principal: true
-          },
-          {
-            id: 6,
-            nombre: 'Servicio 6',
-            principal: true
-          }
-        ])
-      }, 500);
-    });
-  }
+
 }

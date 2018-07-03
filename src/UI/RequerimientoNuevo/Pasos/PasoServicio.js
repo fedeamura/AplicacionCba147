@@ -1,14 +1,10 @@
 import React from "react";
 import {
-    View,
-    Alert,
-    Dimensions,
-    Animated
+    View
 } from "react-native";
 import {
     Button,
     Text,
-    Spinner,
     ListItem
 } from "native-base";
 
@@ -18,6 +14,7 @@ import MiView from "@Utils/MiView";
 import CardCirculo from "@Utils/CardCirculo";
 import MiItemDetalle from "@Utils/MiItemDetalle";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import _ from 'lodash';
 
 //Rules
 import Rules_Motivo from "@Rules/Rules_Motivo";
@@ -56,6 +53,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     seleccionarServicio = (servicio) => {
         this.setState({ cargando: true }, () => {
             Rules_Motivo.get(servicio.Id).then((data) => {
+                data = _.orderBy(data, 'Nombre');
                 this.setState({ servicio: servicio, motivos: data, mostrarServicio: false }, () => {
                     setTimeout(() => {
                         this.setState({ cargando: false, mostrarMotivo: true });
@@ -86,14 +84,25 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         });
     }
 
-    solicitarMotivo = (servicio) => {
-        const initData = global.initData;
+    seleccionarServicioMotivo = (servicio, motivo) => {
+        this.setState({
+            servicio: servicio,
+            motivo: motivo,
+            mostrarServicio: false,
+            mostrarMotivo: false
+        }, () => {
+            this.informar();
+
+            setTimeout(() => {
+                this.setState({ mostrarResultado: true });
+            }, 300);
+        });
     }
 
     cancelarMotivo = () => {
-        this.setState({ mostrarResultado: false }, () => {
+        this.setState({ mostrarResultado: false, mostrarMotivo: false }, () => {
             setTimeout(() => {
-                this.setState({ motivo: undefined, mostrarMotivo: true });
+                this.setState({ motivo: undefined, servicio: undefined, mostrarServicio: true });
             }, 300);
         });
     }
@@ -104,10 +113,10 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             backgroundColor: initData.backgroundColor,
             placeholderBusqueda: 'Buscar categoría...',
             cumpleBusqueda: (item, texto) => {
-                return item.nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
             },
             data: this.state.servicios,
-            title: (item) => { return item.nombre },
+            title: (item) => { return item.Nombre },
             onPress: this.seleccionarServicio
         })
     }
@@ -118,16 +127,55 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             backgroundColor: initData.backgroundColor,
             placeholderBusqueda: 'Buscar motivo...',
             cumpleBusqueda: (item, texto) => {
-                return item.nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
             },
             data: this.state.motivos,
-            title: (item) => { return item.nombre },
+            title: (item) => { return item.Nombre },
             onPress: this.seleccionarMotivo
         });
     }
 
     buscar = () => {
+        this.setState({ cargando: true }, () => {
+            Rules_Motivo.getParaBuscar().then((data) => {
+                this.setState({ cargando: false });
 
+                App.navegar('PickerListado', {
+                    busqueda: true,
+                    backgroundColor: initData.backgroundColor,
+                    placeholderBusqueda: 'Buscar motivo...',
+                    cumpleBusqueda: (item, texto) => {
+                        return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                    },
+                    data: data,
+                    renderItem: (item) => {
+                        return <View>
+                            <View style={{ display: 'flex', flexDirection: 'row' }}>
+                                <Text style={{ fontWeight: 'bold', marginRight: 8 }}>Servicio:</Text>
+                                <Text>{item.ServicioNombre}</Text>
+                            </View>
+                            <View style={{ display: 'flex', flexDirection: 'row' }}>
+                                <Text style={{ fontWeight: 'bold', marginRight: 8 }}>Motivo:</Text>
+                                <Text>{item.Nombre}</Text>
+                            </View>
+                        </View>
+                    },
+                    onPress: (item) => {
+                        let servicio = {
+                            Id: 1,
+                            Nombre: 'Test'
+                        };
+                        let motivo = {
+                            Id: 1,
+                            Nombre: 'Test'
+                        };
+
+                        this.seleccionarServicioMotivo(servicio, motivo);
+                    }
+                });
+            });
+
+        })
     }
 
     informar = () => {
@@ -181,35 +229,34 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     renderViewServiciosPrincipales() {
         const wCirculo = (this.state.width || 0) / 3;
         const iconoFontSize = 24;
-        const textoFontSize = 16;
+        const textoFontSize = 12;
         const cardColorFondo = 'rgba(230,230,230,1)';
         const cardColorFondoSeleccionado = 'green';
-        const iconoColor = 'black';
+        const iconoColor = 'white';
         const iconoColorSeleccionado = 'white';
 
         const serviciosPrincipales = [];
         for (let i = 0; i < this.state.servicios.length; i++) {
             let servicio = this.state.servicios[i];
-            if (servicio.principal) {
+            if (servicio.Principal == true && serviciosPrincipales.length <= 5) {
                 serviciosPrincipales.push(servicio);
             }
         }
 
         //Creo las view principales
         const viewPrincipales = serviciosPrincipales.map((servicio) => {
-            let seleccionado = this.state.seleccionado != undefined && this.state.seleccionado.id == servicio.id;
-            let backgroundColor = seleccionado ? cardColorFondoSeleccionado : cardColorFondo;
-            let iconColor = seleccionado ? iconoColorSeleccionado : iconoColor;
+            let backgroundColor = servicio.Color || cardColorFondo;
+            let iconColor = iconoColor;
 
             return (
 
                 <View style={{ width: wCirculo }}>
                     <CardCirculo
-                        key={servicio.id}
+                        key={servicio.Id}
                         onPress={() => this.seleccionarServicio(servicio)}
-                        icono={servicio.icono || 'flash'}
-                        texto={servicio.nombre || 'Sin datos'}
-                        textoLines={1}
+                        icono={servicio.Icono || 'flash'}
+                        texto={servicio.Nombre || 'Sin datos'}
+                        textoLines={2}
                         iconoStyle={{ fontSize: iconoFontSize, color: iconColor }}
                         cardColor={backgroundColor}
                         cardStyle={{ width: wCirculo * 0.6, height: wCirculo * 0.6, marginBottom: 8, borderRadius: 200 }}
@@ -277,7 +324,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     }
 
     renderViewSeleccionarMotivo() {
-        const nombreServicio = this.state.servicio == undefined ? '' : this.state.servicio.nombre;
+        const nombreServicio = this.state.servicio == undefined ? '' : this.state.servicio.Nombre;
         const motivos = this.state.motivos == undefined ? [] : this.state.motivos.slice(0, 3);
 
         return (
@@ -322,7 +369,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                         return <ListItem
                             onPress={() => { this.seleccionarMotivo(item); }}
                             style={{ marginLeft: 0 }}>
-                            <Text>{item.nombre}</Text>
+                            <Text>{item.Nombre}</Text>
                         </ListItem>;
                     })}
                     <View style={{ height: 16 }} />
@@ -342,8 +389,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     }
 
     renderViewMotivoSeleccionado() {
-        const nombreServicio = this.state.servicio == undefined ? '' : this.state.servicio.nombre;
-        const nombreMotivo = this.state.motivo == undefined ? '' : this.state.motivo.nombre;
+        const nombreServicio = this.state.servicio == undefined ? '' : this.state.servicio.Nombre;
+        const nombreMotivo = this.state.motivo == undefined ? '' : this.state.motivo.Nombre;
 
         return (
             <MiView visible={this.state.mostrarResultado}>
@@ -370,9 +417,9 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                         onPress={this.cancelarMotivo}
                         bordered
                         small
-                        style={{ alignSelf: 'center', borderColor: 'red' }}>
+                        style={{ alignSelf: 'center', borderColor: '#D32F2F' }}>
 
-                        <Text style={{ color: 'red' }}>Cancelar seleccion</Text>
+                        <Text style={{ color: '#D32F2F' }}>Cancelar seleccion</Text>
                     </Button>
                 </View>
             </MiView>

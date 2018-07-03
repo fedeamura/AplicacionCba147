@@ -2,21 +2,22 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  ScrollView
+  Alert,
+  ScrollView,
+  TouchableWithoutFeedback
 } from "react-native";
 import {
   Text,
-  Button
 } from "native-base";
 import {
-  Card,
   Dialog,
   Button as ButtonPeper,
   DialogActions,
   DialogContent,
   DialogTitle,
   Paragraph,
-  TouchableRipple
+  TouchableRipple,
+  Checkbox
 } from "react-native-paper";
 import WebImage from 'react-native-web-image';
 import MiItemDetalle from '@Utils/MiItemDetalle';
@@ -36,8 +37,13 @@ export default class PaginaAjustes extends React.Component {
 
     this.state = {
       dialogoCambiosVisible: false,
-      dialogoCerrarSesionVisible: false
+      dialogoCerrarSesionVisible: false,
+      contadorAjustesDesarroladorClick: 0
     };
+  }
+
+  componentWillMount() {
+
   }
 
   cerrarSesion = () => {
@@ -61,6 +67,14 @@ export default class PaginaAjustes extends React.Component {
 
   verIntroduccion = () => {
     App.navegar('Introduccion');
+  }
+
+  onClickVersion = () => {
+    this.setState({ contadorAjustesDesarroladorClick: this.state.contadorAjustesDesarroladorClick + 1 });
+  }
+
+  abrirAjustesDesarrolladores = () => {
+    App.navegar('AjustesDesarrolladores');
   }
 
   render() {
@@ -99,11 +113,49 @@ export default class PaginaAjustes extends React.Component {
 
           {/* General  */}
           <MiCardDetalle padding={false} titulo='General'>
+
+            {/* Intro */}
             <MiItemDetalle
               style={{ padding: 16 }}
               onPress={this.verIntroduccion}
               titulo="Introduccion"
               subtitulo='Haga click aquí para volver a ver la introducción' />
+
+
+            {/* <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <MiItemDetalle
+                style={{ padding: 16, flex: 1 }}
+                onPress={this.onBetaTesterClick}
+                titulo="Beta test"
+                subtitulo={this.state.betaTester ? 'Haga click aquí para dejar de ser beta tester' : 'Haga click aquí para ser beta tester'} />
+
+              <View style={{ minWidth: 48, minHeight: 48, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+
+                <Checkbox
+                  checked={this.state.betaTester}
+                  color="green"
+                  onPress={() => { }}
+                />
+              </View>
+
+              <View style={{ width: 16 }} />
+            </View> */}
+
+            {/* Ajustes debug */}
+            {this.state.contadorAjustesDesarroladorClick >= 5 && (
+
+              <View>
+
+                <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', height: 1 }} />
+
+                <MiItemDetalle
+                  style={{ padding: 16 }}
+                  onPress={this.abrirAjustesDesarrolladores}
+                  titulo="Ajustes para Desarrolladores"
+                  subtitulo='Haga click aquí para ir a los ajustes para desarrolladores' />
+              </View>
+
+            )}
 
           </MiCardDetalle>
 
@@ -143,13 +195,17 @@ export default class PaginaAjustes extends React.Component {
               subtitulo='Haga click para ver' />
           </MiCardDetalle>
 
-          <Text style={{ alignSelf: 'center', marginTop: 16, marginBottom: 16 }}>Vesion 1.5</Text>
+          <TouchableWithoutFeedback onPress={this.onClickVersion}>
+            <Text style={{ alignSelf: 'center', marginTop: 16, marginBottom: 16 }}>Vesion 1.5</Text>
+          </TouchableWithoutFeedback>
+
           {/* <Button onPress={() => { App.navegar('PickerUbicacion') }}><Text>Ubicacion</Text></Button> */}
         </ScrollView>
 
 
         {/* Dialogo cerrar sesion */}
         {this.renderDialogoCerrarSesion()}
+
       </View >
     );
   }
@@ -173,6 +229,7 @@ export default class PaginaAjustes extends React.Component {
       </DialogActions>
     </Dialog>;
   }
+
 }
 
 const styles = StyleSheet.create({

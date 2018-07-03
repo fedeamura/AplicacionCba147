@@ -1,12 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  StyleSheet,
   Text,
   View,
-  Animated,
-  StatusBar
 } from "react-native";
-import color from "color";
 
 export default class AppError extends React.Component {
 

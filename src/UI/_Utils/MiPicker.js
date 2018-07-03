@@ -74,16 +74,27 @@ export default class MiPicker extends React.Component {
             renderEmpty={() => {
               return <Text>Servicio no encontrado</Text>;
             }}
-            renderItem={({ item }) => (
-              <ListItem
-                onPress={() => {
-                  params.onPress(item);
-                  App.goBack();
-                }}
-              >
-                <Text>{params.title(item)}</Text>
-              </ListItem>
-            )}
+            renderItem={({ item }) => {
+              return (
+                <ListItem
+                  onPress={() => {
+                    params.onPress(item);
+                    App.goBack();
+                  }}
+                >
+                  {params.renderItem != undefined ?
+                    (
+                      <View>
+                        {params.renderItem(item)}
+                      </View>
+                    ) :
+                    (
+                      <Text>{params.title(item)}</Text>
+                    )
+                  }
+                </ListItem>
+              );
+            }}
           />
 
           <LinearGradient

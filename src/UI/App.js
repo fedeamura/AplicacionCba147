@@ -1,10 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   Platform,
   View,
+  Alert,
   LayoutAnimation,
-  StatusBar,
-  Alert
+  StatusBar
 } from "react-native";
 import {
   StackNavigator,
@@ -26,13 +26,16 @@ import RequerimientoDetalle from "@UI/RequerimientoDetalle/Index";
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 import VisorFoto from "@UI/VisorFoto/Index";
+import AjustesDesarrolladores from "@UI/AjustesDesarrolladores/Index";
 import UsuarioValidarDatosRenaper from '@UI/UsuarioValidarDatosRenaper/Index';
+
+import AppCargando from "./AppCargando";
+import AppError from "./AppError";
+import AppMantenimiento from "./AppMantenimiento";
 
 //Rules
 import Rules_Init from "@Rules/Rules_Init";
-
-import AppCargando from "./AppCargando";
-import AppMantenimiento from "./AppMantenimiento";
+import Rules_Ajustes from "../Rules/Rules_Ajustes";
 
 //Defino el las screens de la app
 const RootStack = StackNavigator(
@@ -69,6 +72,9 @@ const RootStack = StackNavigator(
     },
     UsuarioValidarDatosRenaper: {
       screen: UsuarioValidarDatosRenaper
+    },
+    AjustesDesarrolladores: {
+      screen: AjustesDesarrolladores
     }
   },
   {
@@ -84,13 +90,6 @@ const RootStack = StackNavigator(
 global.initData = undefined;
 
 export default class App extends React.Component {
-  // static Variables = {
-  //   Debug: true,
-  //   TodoCompletadoEnNuevo: false,
-  //   Token: undefined,
-  //   DatosUsuario: undefined,
-  //   KeyGoogleMaps: "AIzaSyDNZ3qqO-CJVnLrC8YJcNF6iOXFooAiW3M"
-  // };
 
   constructor(props) {
     super(props);
@@ -104,73 +103,77 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    this.actualizarApp()
-      .then(() => {
+    Rules_Ajustes.isBetaTester().then((test) => {
+      this.actualizarApp(test)
+        .then(() => {
+          //Busco la data inicial
+          Rules_Init.getInitData()
+            .then((initData) => {
+              global.initData = initData;
 
-        //Busco la data inicial
-        Rules_Init.getInitData()
-          .then((initData) => {
-            global.initData = initData;
+              this.setState({
+                cargando: false,
+                initData: initData,
+                error: undefined
+              });
+            })
+            .catch((error) => {
+              global.initData = undefined;
+              this.setState({
+                cargando: false,
+                initData: undefined,
+                error: 'Error procesando la solicitud'
+              });
+            });
 
-            this.setState({
-              cargando: false,
-              initData: initData,
-              error: undefined
-            });
-          })
-          .catch((error) => {
-            global.initData = undefined;
-            this.setState({
-              cargando: false,
-              initData: undefined,
-              error: 'Error procesando la solicitud'
-            });
+        }).catch((error) => {
+          global.initData = undefined;
+          this.setState({
+            cargando: false,
+            initData: undefined,
+            error: 'Error procesando la solicitud'
           });
-
-      }).catch((error) => {
-        global.initData = undefined;
-        this.setState({
-          cargando: false,
-          initData: undefined,
-          error: 'Error procesando la solicitud'
         });
-      });
+    });
   }
 
-  actualizarApp() {
+  actualizarApp(test) {
+    //Keys iOS
+    const key_ios = 'PfHTHuI72bZjyvJHN7-1mPEBLFxsrkFMKlHdf';
+    const key_ios_test = 'onBKUESFsmHzCJxKPyXArfjMnG_W46fa5311-742e-48ec-9cca-e112c82a5ff2';
+
+    //Key Android
+    const key_android = 'yRjO-uUfAoarYJSJWHdTV1P5LYXmHyiWzMHdf';
+    const key_android_test = 'EyHcx3BBhsiNHBOQWHtWhTLdlaUr46fa5311-742e-48ec-9cca-e112c82a5ff2';
+
+    //Key actual
+    const key = Platform.OS == 'ios' ? (test ? key_ios_test : key_ios) : (test ? key_android_test : key_android);
+
     return new Promise((callback, callbackError) => {
-      // Alert.alert('', 'Codepush');
       codePush.sync(
         {
-          deploymentKey: Platform.OS == 'ios' ? 'PfHTHuI72bZjyvJHN7-1mPEBLFxsrkFMKlHdf' : 'yRjO-uUfAoarYJSJWHdTV1P5LYXmHyiWzMHdf',
+          deploymentKey: key,
           installMode: codePush.InstallMode.IMMEDIATE
         },
         //Status change
         (syncStatus) => {
           switch (syncStatus) {
             case codePush.SyncStatus.CHECKING_FOR_UPDATE:
-              // Alert.alert('', 'Checking update');
               break;
             case codePush.SyncStatus.DOWNLOADING_PACKAGE:
-              // Alert.alert('', 'Bajando');
               break;
             case codePush.SyncStatus.INSTALLING_UPDATE:
-              // Alert.alert('', 'Instalando');
               break;
             case codePush.SyncStatus.UP_TO_DATE:
-              // Alert.alert('', 'Actualizado');
               callback();
               break;
             case codePush.SyncStatus.UPDATE_IGNORED:
-              // Alert.alert('', 'Ignorada');
               callback();
               break;
             case codePush.SyncStatus.UPDATE_INSTALLED:
-              // Alert.alert('', 'Instalada');
               callback();
               break;
             case codePush.SyncStatus.UNKNOWN_ERROR:
-              // Alert.alert('', 'Error');
               callbackError('Error procesando la solicitud');
               break;
           }
