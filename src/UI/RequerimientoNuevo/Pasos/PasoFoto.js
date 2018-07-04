@@ -45,6 +45,48 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
     }
 
     agregarFoto = () => {
+        Alert.alert('', 'Agregar foto', [
+            { text: 'Galeria', onPress: this.agregarFotoDesdeGaleria },
+            { text: 'Cámara', onPress: this.agregarFotoDesdeCamara }
+        ]);
+    }
+
+    agregarFotoDesdeCamara = () => {
+        var options = {
+            title: 'Elegir foto'
+        };
+
+        this.setState({
+            cargando: true
+        }, () => {
+            // Mando a buscar la foto
+            ImagePicker.launchCamera(options, (response) => {
+                if (response.didCancel) {
+                    this.setState({
+                        cargando: false
+                    });
+                    return;
+                }
+                else if (response.error) {
+                    this.setState({
+                        cargando: false,
+                        foto: undefined
+                    });
+
+                    Alert.alert('', 'Error procesando la solicitud. Error: ' + response.error);
+                    return
+                }
+
+
+                this.procesarImagen(response.uri);
+            });
+
+        });
+    }
+
+
+
+    agregarFotoDesdeGaleria = () => {
         var options = {
             title: 'Elegir foto'
         };
@@ -70,42 +112,49 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
                     return
                 }
 
-                // Achico la imagen
-                ImageResizer.createResizedImage(response.uri, 1000, 1000, 'JPEG', 80)
-                    .then((response2) => {
-                        // Convierto la imagen a base64
-                        RNFS.readFile(response2.uri, 'base64')
-                            .then(base64 => {
-                                let foto = 'data:image/jpeg;base64,' + base64;
-                                this.setState({
-                                    cargando: false,
-                                    foto: foto
-                                }, this.informarFoto);
-                            }).catch(() => {
-                                Alert.alert('', 'Error procesando la solicitud');
-                                this.setState({
-                                    cargando: false,
-                                    foto: undefined
-                                });
-                            });
-                    })
-                    .catch((err) => {
-                        Alert.alert('', 'Error procesando la solicitud');
-                        this.setState({
-                            cargando: false,
-                            foto: undefined
-                        });
-                    });
+                this.procesarImagen(response.uri);
             });
 
         });
 
     }
 
+    procesarImagen = (img) => {
+        // Achico la imagen
+        ImageResizer.createResizedImage(img, 1000, 1000, 'JPEG', 80)
+            .then((response2) => {
+                // Convierto la imagen a base64
+                RNFS.readFile(response2.uri, 'base64')
+                    .then(base64 => {
+                        let foto = 'data:image/jpeg;base64,' + base64;
+                        this.setState({
+                            cargando: false,
+                            foto: foto
+                        }, this.informarFoto);
+                    }).catch(() => {
+                        Alert.alert('', 'Error procesando la solicitud');
+                        this.setState({
+                            cargando: false,
+                            foto: undefined
+                        });
+                    });
+            })
+            .catch((err) => {
+                Alert.alert('', 'Error procesando la solicitud');
+                this.setState({
+                    cargando: false,
+                    foto: undefined
+                });
+            });
+    }
+
+
     cancelarFoto = () => {
         this.setState({ viewSeleccionadoVisible: false }, () => {
             setTimeout(() => {
-                this.setState({ foto: undefined, viewSeleccionarVisible: true });
+                this.setState({ foto: undefined, viewSeleccionarVisible: true }, () => {
+                    this.props.onFoto(undefined);
+                });
             }, 300);
         })
     }

@@ -397,7 +397,7 @@ const style = StyleSheet.create({
 });
 
 const texto_Titulo = 'Nuevo requerimiento';
-const texto_Titulo_Servicio = 'Categoría y motivo';
+const texto_Titulo_Servicio = 'Categoría';
 const texto_Titulo_Descripcion = 'Descripción';
 const texto_Titulo_Ubicacion = 'Ubicación';
 const texto_Titulo_Foto = 'Foto';

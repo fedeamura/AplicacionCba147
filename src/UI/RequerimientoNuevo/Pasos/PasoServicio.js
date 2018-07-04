@@ -102,7 +102,9 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     cancelarMotivo = () => {
         this.setState({ mostrarResultado: false, mostrarMotivo: false }, () => {
             setTimeout(() => {
-                this.setState({ motivo: undefined, servicio: undefined, mostrarServicio: true });
+                this.setState({ motivo: undefined, servicio: undefined, mostrarServicio: true }, () => {
+                    this.informar();
+                });
             }, 300);
         });
     }
@@ -194,35 +196,11 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         const initData = global.initData;
 
         return (
-            <View>
-                <View style={{ padding: 16, minHeight: this.state.height, opacity: this.state.height == 0 ? 0 : 1 }}>
-                    {this.renderViewServiciosPrincipales()}
-                    {this.renderViewSeleccionarMotivo()}
-                    {this.renderViewMotivoSeleccionado()}
-                </View>
-
-                <View style={{ height: 16 }} />
-                <View style={{ height: 1, width: '100%', backgroundColor: 'rgba(0,0,0,0.1)' }} />
-
-                {/* Boton siguiente  */}
-                <View style={{ padding: 16 }}>
-                    <Button
-                        small
-                        onPress={this.informarReady}
-                        rounded
-                        bordered
-                        disabled={this.state.servicio == undefined || this.state.motivo == undefined}
-                        style={{
-                            alignSelf: 'flex-end',
-                            borderColor: this.state.servicio == undefined || this.state.motivo == undefined ? 'rgba(150,150,150,1)' : 'green'
-                        }}><Text
-                            style={{
-                                color: this.state.servicio == undefined || this.state.motivo == undefined ? 'rgba(150,150,150,1)' : 'green'
-                            }}
-                        >Siguiente</Text></Button>
-                </View>
-
-            </View >
+            <View style={{ minHeight: 250, opacity: this.state.height == 0 ? 0 : 1 }}>
+                {this.renderViewServiciosPrincipales()}
+                {this.renderViewSeleccionarMotivo()}
+                {this.renderViewMotivoSeleccionado()}
+            </View>
         );
     }
 
@@ -269,13 +247,13 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         });
 
         return (
-            <MiView
-                visible={this.state.mostrarServicio}
-            >
-                <View onLayout={(event) => {
-                    var { x, y, width, height } = event.nativeEvent.layout;
-                    this.setState({ height: height, width: width });
-                }}>
+            <MiView visible={this.state.mostrarServicio}>
+                <View
+                    style={{ padding: 16 }}
+                    onLayout={(event) => {
+                        var { x, y, width, height } = event.nativeEvent.layout;
+                        this.setState({ height: height, width: (width - 32) });
+                    }}>
 
                     {/* Buscar */}
                     <View>
@@ -292,7 +270,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                         <View style={{ height: 16 }} />
                     </View>
 
-                    <Text style={{ alignSelf: 'center', fontSize: 22, marginBottom: 8 }}>Categorias principales</Text>
+                    {/* <Text style={{ alignSelf: 'center', fontSize: 22, marginBottom: 8 }}>Categorias principales</Text> */}
                     <View style={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -330,7 +308,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         return (
             <MiView visible={this.state.mostrarMotivo}>
 
-                <View>
+                <View style={{ padding: 16 }}>
                     {/* Buscar */}
                     <View>
                         <Button
@@ -393,35 +371,58 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         const nombreMotivo = this.state.motivo == undefined ? '' : this.state.motivo.Nombre;
 
         return (
-            <MiView visible={this.state.mostrarResultado}>
-                <View>
+            <MiView padding={false} visible={this.state.mostrarResultado}>
+                <View style={{ display: 'flex', flexDirection: 'column', minHeight: 250 }}>
+                    <View style={{ padding: 16, flex: 1 }}>
+                        <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
 
-                    <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+                            <View style={{ flex: 1 }}>
 
-                        <View style={{ flex: 1 }}>
+                                <MiItemDetalle titulo="Categoría seleccionada" subtitulo={nombreServicio} />
+                                <View style={{ height: 8 }} />
 
-                            <MiItemDetalle titulo="Categoría seleccionada" subtitulo={nombreServicio} />
-                            <View style={{ height: 8 }} />
+                                <MiItemDetalle titulo="Motivo seleccionado" subtitulo={nombreMotivo} />
+                                <View style={{ height: 8 }} />
 
-                            <MiItemDetalle titulo="Motivo seleccionado" subtitulo={nombreMotivo} />
-                            <View style={{ height: 8 }} />
 
+                            </View>
 
                         </View>
 
+                        <View style={{ height: 16 }} />
+                        <Button
+                            small
+                            onPress={this.cancelarMotivo}
+                            bordered
+                            small
+                            style={{ alignSelf: 'center', borderColor: '#D32F2F' }}>
+
+                            <Text style={{ color: '#D32F2F' }}>Cancelar seleccion</Text>
+                        </Button>
                     </View>
 
                     <View style={{ height: 16 }} />
-                    <Button
-                        small
-                        onPress={this.cancelarMotivo}
-                        bordered
-                        small
-                        style={{ alignSelf: 'center', borderColor: '#D32F2F' }}>
+                    <View style={{ height: 1, width: '100%', backgroundColor: 'rgba(0,0,0,0.1)' }} />
 
-                        <Text style={{ color: '#D32F2F' }}>Cancelar seleccion</Text>
-                    </Button>
+                    {/* Boton siguiente  */}
+                    <View style={{ padding: 16 }}>
+                        <Button
+                            small
+                            onPress={this.informarReady}
+                            rounded
+                            bordered
+                            disabled={this.state.servicio == undefined || this.state.motivo == undefined}
+                            style={{
+                                alignSelf: 'flex-end',
+                                borderColor: this.state.servicio == undefined || this.state.motivo == undefined ? 'rgba(150,150,150,1)' : 'green'
+                            }}><Text
+                                style={{
+                                    color: this.state.servicio == undefined || this.state.motivo == undefined ? 'rgba(150,150,150,1)' : 'green'
+                                }}
+                            >Siguiente</Text></Button>
+                    </View>
                 </View>
+
             </MiView>
         );
     }
