@@ -14,7 +14,7 @@ import {
   DialogActions,
   DialogContent
 } from 'react-native-paper';
-import AndroidBackButton from "react-native-android-back-button"
+import { BackHandler } from "react-native";
 
 //Mis componentes
 import App from "@UI/App";
@@ -81,6 +81,15 @@ export default class Inicio extends React.Component {
         }
       ]
     };
+
+    this._didFocusSubscription = props.navigation.addListener('didFocus', payload => {
+      BackHandler.addEventListener('hardwareBackPress', this.back);
+    });
+
+    this._willBlurSubscription = props.navigation.addListener('willBlur', payload => {
+      BackHandler.removeEventListener('hardwareBackPress', this.back);
+    });
+
   }
 
   back = () => {
@@ -102,7 +111,7 @@ export default class Inicio extends React.Component {
     return (
       <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
 
-        <AndroidBackButton onPress={this.back} />
+        {/* <AndroidBackButton onPress={this.back} /> */}
 
         <MiStatusBar />
 

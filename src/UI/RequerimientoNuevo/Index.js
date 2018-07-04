@@ -17,7 +17,8 @@ import {
   DialogContent
 } from 'react-native-paper';
 import _ from 'lodash';
-import AndroidBackButton from "react-native-android-back-button"
+// import AndroidBackButton from "react-native-android-back-button"
+import { BackHandler } from "react-native";
 
 //Mis componentes
 import App from "@UI/App";
@@ -36,6 +37,9 @@ import Rules_Requerimiento from '@Rules/Rules_Requerimiento';
 
 
 export default class RequerimientoNuevo extends React.Component {
+  _didFocusSubscription;
+  _willBlurSubscription;
+
   static navigationOptions = {
     title: "Nuevo requerimiento",
     header: null,
@@ -62,31 +66,41 @@ export default class RequerimientoNuevo extends React.Component {
     };
 
     this.keyboardHeight = new Animated.Value(0);
+
+    this._didFocusSubscription = props.navigation.addListener('didFocus', payload => {
+      BackHandler.addEventListener('hardwareBackPress', this.back);
+    });
+
+    this._willBlurSubscription = props.navigation.addListener('willBlur', payload => {
+      BackHandler.removeEventListener('hardwareBackPress', this.back);
+    });
   }
 
   back = () => {
-    //Si estoy registrando
-    if (this.state.mostrarPanelResultado == true && this.state.registrando == true) {
-      return true;
-    }
+    //Se esta mostrando el panel de registracion
+    if (this.state.mostrarPanelResultado == true) {
 
-    //Si ya registre
-    if (this.state.mostrarPanelResultado == true && this.state.registrando == false) {
+      //Registrando....
+      if (this.state.registrando == true) {
+        return true;
+      }
+
+      //Ya registre
       const { params } = this.props.navigation.state;
       if (params.callback != undefined) {
         params.callback();
-        return false;
       }
+      return false;
     }
 
     //Si no registre aun pero el form tiene algo
-    const tieneAlgo = this.state.servicio != undefined ||
+    const formConDatos = this.state.servicio != undefined ||
       this.state.motivo ||
       this.state.descripcion != undefined ||
       this.state.foto != undefined ||
       this.state.ubicacion != undefined;
 
-    if (tieneAlgo == true) {
+    if (formConDatos == true) {
       this.setState({ dialogoConfirmarSalidaVisible: true });
       return true;
     }
@@ -223,8 +237,6 @@ export default class RequerimientoNuevo extends React.Component {
 
     return (
       <View style={style.contenedor}>
-
-        <AndroidBackButton onPress={this.back} />
 
         <MiStatusBar />
 
