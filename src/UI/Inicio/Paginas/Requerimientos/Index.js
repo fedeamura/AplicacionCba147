@@ -134,7 +134,6 @@ export default class PaginaInicio extends React.Component {
             },
             verDetalleRequerimiento: (id) => {
                 this.buscarRequerimientos();
-
                 this.verDetalleRequerimiento(id);
             }
         });

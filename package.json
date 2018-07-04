@@ -27,6 +27,7 @@
     "react-native-open-maps": "^0.2.2",
     "react-native-paper": "1.2.4",
     "react-native-photo-view": "^1.5.2",
+    "react-native-push-notification": "^3.0.2",
     "react-native-sensitive-info": "5.1.0",
     "react-native-textinput-effects": "0.4.2",
     "react-native-vector-icons": "4.6.0",

@@ -6,11 +6,10 @@ import {
   Animated,
   Easing,
   Keyboard,
-  Dimensions,
   TouchableWithoutFeedback
 } from "react-native";
 import {
-  Button,
+  Button
 } from "native-base";
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -42,6 +41,9 @@ export default class MiToolbarMenu extends React.Component {
       }
     }
 
+    let expandido = this.props.expandido || false;
+
+
     //Estado inicial
     this.state = {
       opcion: props.opcion || 0,
@@ -51,18 +53,32 @@ export default class MiToolbarMenu extends React.Component {
       animandoExpandir: false,
       animandoSeleccionar: false,
       opciones: props.opciones || [],
-      hOpcion: this.hOpcion,
-      hToolbar: this.hToolbar,
-      yCollapse: this.yCollapse,
-      ySombraCollapse: this.hToolbar,
-      ySombraExpandido: Dimensions.get('window').height
+      // hOpcion: this.hOpcion,
+      // hToolbar: this.hToolbar,
+      // yCollapse: this.yCollapse,
+      // ySombraCollapse: this.hToolbar,
+      // ySombraExpandido: this.state.hScreen,
+      hScreen: 500,
+      visible: false
     };
+
+    this.animSombra = new Animated.Value(expandido ? 0 : 1);
+  }
+
+  onLayout = (event) => {
+    var { x, y, width, height } = event.nativeEvent.layout;
+
+    this.setState({ hScreen: height }, () => {
+      this.initDimens();
+      this.setState({ visible: true });
+    });
   }
 
   initOpciones = (props) => {
     this.anims = [];
     this.animsBackground = [];
     this.animsSombras = [];
+    this.animsPress = [];
 
     let expandido = props.expandido || false;
 
@@ -70,12 +86,15 @@ export default class MiToolbarMenu extends React.Component {
       this.anims.push(new Animated.Value(expandido ? 1 : 0));
       this.animsBackground.push(new Animated.Value(expandido ? 1 : 0));
       this.animsSombras.push(new Animated.Value(expandido ? 1 : 0));
+      this.animsPress.push(new Animated.Value(0));
     });
+  }
 
-    this.animSombra = new Animated.Value(expandido ? 0 : 1);
+  initDimens = () => {
 
     //Calculo el tamaño de la opcion
-    this.hOpcion = (Dimensions.get('window').height - ExtraDimensions.get('SOFT_MENU_BAR_HEIGHT') + ExtraDimensions.get('STATUS_BAR_HEIGHT')) / props.opciones.length;
+    this.hOpcion = (this.state.hScreen) / this.state.opciones.length;
+    // this.hOpcion = (Dimensions.get('window').height - ExtraDimensions.get('SOFT_MENU_BAR_HEIGHT') + ExtraDimensions.get('STATUS_BAR_HEIGHT')) / props.opciones.length;
 
     //Calculo el tamaño del toolbar
     this.hToolbar = hToolbarDefault;
@@ -91,7 +110,11 @@ export default class MiToolbarMenu extends React.Component {
     if (Platform.OS == 'ios') {
       this.yCollapse -= 20;
     }
+
+    this.ySombraCollapse = this.hToolbar;
+    this.ySombraExpandido = this.state.hScreen;
   }
+
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.expandido) {
@@ -227,6 +250,7 @@ export default class MiToolbarMenu extends React.Component {
   onPressOpcion = (opcion, index) => {
     if (this.state.opciones.length == 0) return;
 
+    this.onPressUp(index);
     if (!this.state.expandido) {
       if (this.props.expandirAlHacerClick == true) {
         this.expandir();
@@ -237,7 +261,290 @@ export default class MiToolbarMenu extends React.Component {
     this.seleccionar(index);
   }
 
+  onPressIn = (index) => {
+    Animated.timing(this.animsPress[index], { toValue: 1, duration: 300 }).start();
+  }
+
+  onPressUp = (index) => {
+    Animated.timing(this.animsPress[index], { toValue: 0, duration: 300 }).start();
+  }
+
   render() {
+
+    return (
+      <View
+        onLayout={this.onLayout}
+        style={styles.contenedor}>
+
+        {this.state.visible == true && (
+
+          <View
+            style={styles.contenedor}>
+
+            <View style={[styles.encabezado_Opciones]}>
+
+              {/* Las opciones */}
+              {this.state.opciones.map((opcion, index) => {
+                return this.renderOpcion(opcion, index);
+              })}
+
+            </View>
+
+            {/* Boton Izquierda */}
+            {this.renderBotonIzquierda()}
+
+            {/* Boton Cerrar */}
+            {this.renderBotonCerrar()}
+
+            {/* Sombra  */}
+            {this.renderSombra()}
+
+            {/* Content */}
+            {this.renderContent()}
+
+          </View >
+        )}
+
+      </View>
+
+    );
+  }
+
+  renderOpcion(opcion, index) {
+
+    let zIndex = this.state.opciones.length - index;
+    if ((!this.state.expandido || this.state.animandoExpandir) && this.state.opcion == opcion.valor) {
+      zIndex = zIndexFront;
+    }
+
+    let yExpandido = this.hOpcion * index;
+    if (Platform.OS == 'ios') {
+      yExpandido -= 20;
+    }
+    let solapamiento = 0;
+    yExpandido -= solapamiento;
+
+    let yTextoCollapse = (-(opcion.iconoFontSize + marginIcon) / 2) + ((this.hOpcion - this.hToolbar) / 2) - (25 / 2);
+    if (Platform.OS === 'ios') {
+      yTextoCollapse = yTextoCollapse + 10;
+    }
+    yTextoCollapse = 'icono' in opcion && opcion.icono != undefined ? yTextoCollapse : yTextoCollapse + ((opcion.iconoFontSize + marginIcon) / 2);
+    if (Platform.OS == 'ios') {
+      // yTextoCollapse-=20;
+    }
+
+    const anim = this.anims[index];
+    const animBackground = this.animsBackground[index];
+    const animSombra = this.animsSombras[index];
+    const animPress = this.animsPress[index];
+
+    return (<Animated.View
+      pointerEvents={this.state.expandido == false ? 'none' : 'auto'}
+      key={opcion.valor}
+      style={
+        [
+          styles.encabezado_Opcion,
+          {
+            maxHeight: this.hOpcion + (index == this.state.opciones.length - 1 ? this.state.opciones.length * solapamiento : 0),
+            zIndex: zIndex,
+            transform: [
+              {
+                translateY: anim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [this.yCollapse, yExpandido]
+                })
+              }
+            ]
+
+          }]}>
+      <View style={[styles.encabezado_Opcion, { backgroundColor: opcion.backgroundColor }]}>
+        <TouchableWithoutFeedback
+          style={{ width: '100%' }}
+          onPressIn={() => { this.onPressIn(index) }}
+          onPressOut={() => { this.onPressUp(index) }}
+          onPress={() => { this.onPressOpcion(opcion, index); }}>
+          <Animated.View style={
+            [
+              styles.encabezado_OpcionInterior,
+              {
+                backgroundColor: this.props.toolbarBackgroundColor == undefined ? opcion.backgroundColor : animBackground.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [this.props.toolbarBackgroundColor || opcion.backgroundColor, opcion.backgroundColor]
+                })
+              }
+            ]}>
+
+            {/* Sombra */}
+            <Animated.View style={[styles.sombra, {
+              opacity: animSombra.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 1]
+              })
+            }]}>
+              <LinearGradient
+                colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
+                style={styles.sombra}></LinearGradient>
+
+            </Animated.View>
+
+
+            {/* Fondo para click*/}
+            <Animated.View style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'black',
+              opacity: animPress.interpolate({ inputRange: [0, 1], outputRange: [0, 0.2] })
+            }} />
+
+            {/* Icono */}
+            {('icono' in opcion && opcion.icono != undefined) && (
+              <Animated.View style={{
+                opacity: anim.interpolate({
+                  inputRange: [0, 0.7, 1],
+                  outputRange: [0, 0, 1]
+                }),
+                backgroundColor: 'transparent',
+                transform: [
+                  {
+                    scale: anim.interpolate({
+                      inputRange: [0, 0.7, 1],
+                      outputRange: [0, 0, 1]
+                    })
+                  }
+                ]
+              }}>
+                <Icon style={[styles.encabezado_OpcionIcono, { fontSize: opcion.iconoFontSize, marginBottom: marginIcon, color: opcion.iconoColor }]} type={'MaterialCommunityIcons'} name={opcion.icono} />
+              </Animated.View>
+            )}
+
+            {/* Texto */}
+            <Animated.View
+              style={{
+                backgroundColor: 'transparent',
+                transform: [
+                  {
+                    translateY: anim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [yTextoCollapse, 0]
+                    })
+                  }
+                ]
+              }}
+            >
+              <Animated.Text
+                style={
+                  [
+                    {
+                      fontSize: opcion.tituloFontSize,
+                      color: this.props.toolbarTituloColor == undefined ? opcion.tituloColor : animBackground.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [this.props.toolbarTituloColor, opcion.tituloColor]
+                      })
+
+                    }
+                  ]}>
+                {opcion.titulo.toUpperCase()}
+              </Animated.Text>
+
+            </Animated.View>
+          </Animated.View>
+
+        </TouchableWithoutFeedback>
+
+      </View>
+
+    </Animated.View >)
+  }
+
+  renderBotonIzquierda() {
+    if (this.props.mostrarBotonIzquierda == undefined || this.props.mostrarBotonIzquierda == false) return null;
+
+    return <Animated.View
+      pointerEvents={this.state.expandido || this.state.animando ? "none" : "auto"}
+      style={
+        [
+          styles.btnLeft,
+          {
+            opacity: this.anims[0].interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0]
+            }),
+            transform: [{
+              translateY: this.state.opciones.length == 0 ? this.ySombraCollapse : this.anims[0].interpolate({
+                inputRange: [0, 1],
+                outputRange: [Platform.OS == 'ios' ? ((this.hToolbar - 20) / 2) - 20 : -12, (this.hOpcion * (this.state.index || 0)) + (this.hOpcion / 2)]
+              })
+            }]
+          }]}>
+      <Button
+        style={styles.btnLeftBtn}
+        transparent onPress={() => {
+          if (this.props.iconoIzquierdaOnPress != undefined) {
+            this.props.iconoIzquierdaOnPress();
+          }
+        }}>
+        <Icon
+          style={[
+            styles.btnLeftIcon, {
+              color: this.props.iconoIzquierdaColor || 'black'
+            }]}
+          name={this.props.iconoIzquierda} />
+      </Button>
+    </Animated.View>
+  }
+
+  renderBotonCerrar() {
+    if (this.props.mostrarBotonCerrar != true) return <View />;
+
+    return <Animated.View
+      pointerEvents={this.state.expandido && !this.state.animando ? "auto" : "none"}
+      style={
+        [
+          styles.btnLeft,
+          {
+            color: this.props.iconoCerrarColor,
+            opacity: this.anims[0].interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 1]
+            }),
+            transform: [{
+              translateY: Platform.OS == 'ios' ? ((this.hToolbar - 20) / 2) - 20 : -12
+            }]
+          }
+        ]
+      }>
+      <Button style={styles.btnLeftBtn} transparent onPress={() => {
+        this.seleccionar(this.state.opcion);
+      }}>
+        <Icon style={styles.btnClose} name={this.props.iconoCerrar} color={this.props.iconoCerrarColor || 'white'} />
+      </Button>
+    </Animated.View>
+  }
+
+  renderSombra() {
+    return <Animated.View style={[styles.sombra, {
+      zIndex: 120,
+      transform: [
+        {
+          translateY: this.anims[0].interpolate({
+            inputRange: [0, 1],
+            outputRange: [this.hToolbar, this.state.hScreen]
+          })
+        }
+      ]
+    }]}>
+
+      <LinearGradient
+        colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
+        style={styles.sombra}></LinearGradient>
+
+    </Animated.View>
+  }
+
+  renderContent() {
     let content = undefined;
     if (this.state.opcion != undefined) {
       _.each(this.state.opciones, (opcion) => {
@@ -247,244 +554,16 @@ export default class MiToolbarMenu extends React.Component {
       });
     }
 
-    return (
-      <View style={styles.contenedor}>
-
-
-
-        <View style={[styles.encabezado_Opciones]}>
-
-          {this.state.opciones.map((opcion, index) => {
-
-            let zIndex = this.state.opciones.length - index;
-            if ((!this.state.expandido || this.state.animandoExpandir) && this.state.opcion == opcion.valor) {
-              zIndex = zIndexFront;
-            }
-
-            let yExpandido = this.state.hOpcion * index;
-            if (Platform.OS == 'ios') {
-              yExpandido -= 20;
-            }
-            let solapamiento = 0;
-            yExpandido -= solapamiento;
-
-            let yTextoCollapse = (-(opcion.iconoFontSize + marginIcon) / 2) + ((this.state.hOpcion - this.state.hToolbar) / 2) - (25 / 2);
-            if (Platform.OS === 'ios') {
-              yTextoCollapse = yTextoCollapse + 10;
-            }
-            yTextoCollapse = 'icono' in opcion && opcion.icono != undefined ? yTextoCollapse : yTextoCollapse + ((opcion.iconoFontSize + marginIcon) / 2);
-            if (Platform.OS == 'ios') {
-              // yTextoCollapse-=20;
-            }
-
-            const anim = this.anims[index];
-            const animBackground = this.animsBackground[index];
-            const animSombra = this.animsSombras[index];
-
-            return (
-
-              <Animated.View
-                pointerEvents={this.state.expandido == false ? 'none' : 'auto'}
-                key={opcion.valor}
-                style={
-                  [
-                    styles.encabezado_Opcion,
-                    {
-                      maxHeight: this.state.hOpcion + (index == this.state.opciones.length - 1 ? this.state.opciones.length * solapamiento : 0),
-                      zIndex: zIndex,
-                      transform: [
-                        {
-                          translateY: anim.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [this.yCollapse, yExpandido]
-                          })
-                        }
-                      ]
-
-                    }]}>
-                <View style={[styles.encabezado_Opcion, { backgroundColor: opcion.backgroundColor }]}>
-                  <TouchableRipple
-                    style={{ width: '100%' }}
-                    onPress={() => { this.onPressOpcion(opcion, index); }}>
-                    <Animated.View style={
-                      [
-                        styles.encabezado_OpcionInterior,
-                        {
-                          backgroundColor: this.props.toolbarBackgroundColor == undefined ? opcion.backgroundColor : animBackground.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [this.props.toolbarBackgroundColor || opcion.backgroundColor, opcion.backgroundColor]
-                          })
-                        }
-                      ]}>
-                      <Animated.View style={[styles.sombra, {
-                        opacity: animSombra.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 1]
-                        })
-                      }]}>
-                        <LinearGradient
-                          colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
-                          style={styles.sombra}></LinearGradient>
-
-                      </Animated.View>
-
-                      {('icono' in opcion && opcion.icono != undefined) && (
-
-                        <Animated.View style={{
-                          opacity: anim.interpolate({
-                            inputRange: [0, 0.7, 1],
-                            outputRange: [0, 0, 1]
-                          }),
-                          transform: [
-                            {
-                              scale: anim.interpolate({
-                                inputRange: [0, 0.7, 1],
-                                outputRange: [0, 0, 1]
-                              })
-                            }
-                          ]
-                        }}>
-                          <Icon style={[styles.encabezado_OpcionIcono, { fontSize: opcion.iconoFontSize, marginBottom: marginIcon, color: opcion.iconoColor }]} type={'MaterialCommunityIcons'} name={opcion.icono} />
-                        </Animated.View>
-                      )}
-
-                      <Animated.View
-                        style={{
-                          transform: [
-                            {
-                              translateY: anim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [yTextoCollapse, 0]
-                              })
-                            }
-                          ]
-                        }
-                        }
-                      >
-                        <Animated.Text
-                          style={
-                            [
-                              {
-                                fontSize: opcion.tituloFontSize,
-                                color: this.props.toolbarTituloColor == undefined ? opcion.tituloColor : animBackground.interpolate({
-                                  inputRange: [0, 1],
-                                  outputRange: [this.props.toolbarTituloColor, opcion.tituloColor]
-                                })
-
-                              }
-                            ]}>
-                          {opcion.titulo.toUpperCase()}
-                        </Animated.Text>
-
-                      </Animated.View>
-                    </Animated.View>
-                  </TouchableRipple>
-
-                </View>
-
-              </Animated.View>
-
-            );
-          })}
-
-        </View>
-
-        {/* Boton Izquierda */}
-        {this.props.mostrarBotonIzquierda != undefined && (
-          <Animated.View
-            pointerEvents={this.state.expandido || this.state.animando ? "none" : "auto"}
-            style={
-              [
-                styles.btnLeft,
-                {
-                  opacity: this.anims[0].interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [1, 0]
-                  }),
-                  transform: [{
-                    translateY: this.state.opciones.length == 0 ? this.state.ySombraCollapse : this.anims[0].interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [Platform.OS == 'ios' ? ((this.hToolbar - 20) / 2) - 20 : -12, (this.state.hOpcion * (this.state.index || 0)) + (this.state.hOpcion / 2)]
-                    })
-                  }]
-                }]}>
-            <Button
-              style={styles.btnLeftBtn}
-              transparent onPress={() => {
-                if (this.props.iconoIzquierdaOnPress != undefined) {
-                  this.props.iconoIzquierdaOnPress();
-                }
-              }}>
-              <Icon
-                style={[
-                  styles.btnLeftIcon, {
-                    color: this.props.iconoIzquierdaColor || 'black'
-                  }]}
-                name={this.props.iconoIzquierda} />
-            </Button>
-          </Animated.View>
-
-        )}
-
-        {/* Boton Cerrar */}
-        {this.props.mostrarBotonCerrar == true && (
-          <Animated.View
-            pointerEvents={this.state.expandido && !this.state.animando ? "auto" : "none"}
-            style={[
-              styles.btnLeft,
-              {
-                color: this.props.iconoCerrarColor,
-                opacity: this.anims[0].interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [0, 1]
-                }),
-                transform: [{
-                  translateY: Platform.OS == 'ios' ? ((this.hToolbar - 20) / 2) - 20 : -12
-                }]
-              }
-            ]}>
-            <Button style={styles.btnLeftBtn} transparent onPress={() => {
-              this.seleccionar(this.state.opcion);
-            }}>
-              <Icon style={styles.btnClose} name={this.props.iconoCerrar} color={this.props.iconoCerrarColor || 'white'} />
-            </Button>
-          </Animated.View>
-
-        )}
-
-        <Animated.View style={[styles.sombra, {
-          zIndex: 120,
-          transform: [
-            {
-              translateY: this.anims[0].interpolate({
-                inputRange: [0, 1],
-                outputRange: [this.state.hToolbar, Dimensions.get('window').height]
-              })
-            }
-          ]
-        }]}>
-
-          <LinearGradient
-            colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
-            style={styles.sombra}></LinearGradient>
-
-        </Animated.View>
-
-
-        {/* Content */}
-        <View
-          style={[
-            styles.content,
-            {
-              marginTop: this.state.hToolbar,
-              zIndex: this.state.animandoSeleccionar == false && this.state.expandido == false ? 100 : -1
-            }]}
-          key={this.state.opcion}>
-          {content}
-        </View>
-
-      </View >
-    );
+    return <View
+      style={[
+        styles.content,
+        {
+          marginTop: this.hToolbar,
+          zIndex: this.state.animandoSeleccionar == false && this.state.expandido == false ? 100 : -1
+        }]}
+      key={this.state.opcion}>
+      {content}
+    </View>;
   }
 }
 

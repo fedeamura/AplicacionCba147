@@ -9,10 +9,6 @@ import {
   Text
 } from "native-base";
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
-import backAndroid, {
-  hardwareBackPress,
-  exitApp
-} from 'react-native-back-android'
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
@@ -40,13 +36,6 @@ export default class Introduccion extends React.Component {
     this.anim = new Animated.Value(1);
   }
 
-  handleHardwareBackPress = () => {
-    const { params } = this.props.navigation.state;
-    if (params != undefined && params.callback != undefined) {
-      return true;
-    }
-    return false;
-  };
 
   verSiguientePagina = () => {
     if (this.state.paso == 3) {

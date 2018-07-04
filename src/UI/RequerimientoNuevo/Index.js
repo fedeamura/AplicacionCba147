@@ -5,8 +5,7 @@ import {
   Animated,
   StyleSheet,
   ScrollView,
-  Keyboard,
-  BackHandler
+  Keyboard
 } from "react-native";
 import LinearGradient from 'react-native-linear-gradient';
 import { Spinner } from "native-base";
@@ -18,7 +17,7 @@ import {
   DialogContent
 } from 'react-native-paper';
 import _ from 'lodash';
-
+import AndroidBackButton from "react-native-android-back-button"
 
 //Mis componentes
 import App from "@UI/App";
@@ -63,6 +62,36 @@ export default class RequerimientoNuevo extends React.Component {
     };
 
     this.keyboardHeight = new Animated.Value(0);
+  }
+
+  back = () => {
+    //Si estoy registrando
+    if (this.state.mostrarPanelResultado == true && this.state.registrando == true) {
+      return true;
+    }
+
+    //Si ya registre
+    if (this.state.mostrarPanelResultado == true && this.state.registrando == false) {
+      const { params } = this.props.navigation.state;
+      if (params.callback != undefined) {
+        params.callback();
+        return false;
+      }
+    }
+
+    //Si no registre aun pero el form tiene algo
+    const tieneAlgo = this.state.servicio != undefined ||
+      this.state.motivo ||
+      this.state.descripcion != undefined ||
+      this.state.foto != undefined ||
+      this.state.ubicacion != undefined;
+
+    if (tieneAlgo == true) {
+      this.setState({ dialogoConfirmarSalidaVisible: true });
+      return true;
+    }
+
+    return false;
   }
 
   componentWillMount() {
@@ -177,32 +206,34 @@ export default class RequerimientoNuevo extends React.Component {
     this.mostrarPaso(paso);
   }
 
-  cerrar = () => {
-    const tieneAlgo = this.state.servicio != undefined ||
-      this.state.motivo ||
-      this.state.descripcion != undefined ||
-      this.state.foto != undefined ||
-      this.state.ubicacion != undefined;
-
-    if (tieneAlgo == true) {
-      this.setState({ dialogoConfirmarSalidaVisible: true });
-      return;
-    }
-
+  onBtnVerDetalleClick = (id) => {
     App.goBack();
+
+    setTimeout(() => {
+      const { params } = this.props.navigation.state;
+
+      if (params != undefined && 'verDetalleRequerimiento' in params && params.verDetalleRequerimiento != undefined) {
+        params.verDetalleRequerimiento(id);
+      }
+    }, 300);
   }
 
   render() {
-    const { params } = this.props.navigation.state;
     const initData = global.initData;
 
     return (
       <View style={style.contenedor}>
 
+        <AndroidBackButton onPress={this.back} />
+
         <MiStatusBar />
 
         {/* Toolbar */}
-        <MiToolbar titulo={texto_Titulo} onBackPress={this.cerrar} />
+        <MiToolbar titulo={texto_Titulo} onBackPress={() => {
+          if (!this.back()) {
+            App.goBack();
+          }
+        }} />
 
         {/* Contenido */}
         <View style={[style.contenido, { backgroundColor: initData.backgroundColor }]} >
@@ -342,16 +373,7 @@ export default class RequerimientoNuevo extends React.Component {
           numero={this.state.numero}
           visible={this.state.mostrarPanelResultado}
           cargando={this.state.registrando}
-          onPressVerDetalle={(id) => {
-            App.goBack();
-
-            setTimeout(() => {
-              if (params != undefined && 'verDetalleRequerimiento' in params && params.verDetalleRequerimiento != undefined) {
-                params.verDetalleRequerimiento(id);
-              }
-            }, 300);
-          }} />
-
+          onPressVerDetalle={this.onBtnVerDetalleClick} />
 
         {this.renderDialogoConfirmarSalida()}
       </View >
@@ -383,7 +405,6 @@ export default class RequerimientoNuevo extends React.Component {
       </DialogActions>
     </Dialog>
   }
-
 }
 
 const style = StyleSheet.create({
