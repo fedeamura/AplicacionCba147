@@ -395,7 +395,6 @@ export default class RequerimientoNuevo extends React.Component {
 
   renderDialogoConfirmarSalida() {
     return <Dialog
-      dismissable={false}
       style={{ borderRadius: 16 }}
       visible={this.state.dialogoConfirmarSalidaVisible}
       onDismiss={() => { this.setState({ dialogoConfirmarSalidaVisible: false }) }}

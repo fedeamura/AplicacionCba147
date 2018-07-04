@@ -96,6 +96,8 @@ export default class App extends React.Component {
     console.disableYellowBox = true;
 
     this.state = {
+      descargando: false,
+      progresoDescarga: 0,
       cargando: true,
       initData: undefined,
       error: undefined
@@ -226,7 +228,7 @@ export default class App extends React.Component {
   render() {
     //Cargando
     if (this.state.cargando == true) {
-      return <AppCargando />;
+      return <AppCargando descargando={this.state.descargando} progresoDescarga={this.state.progresoDescarga} />;
     }
 
     //Error
