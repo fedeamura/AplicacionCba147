@@ -15,6 +15,8 @@ export function validar(val, params) {
 
     if (val != undefined && val != "") {
 
+        let mensaje;
+
         //Tipo
         switch (params.tipo) {
             case 'libre': {
@@ -22,28 +24,47 @@ export function validar(val, params) {
             } break;
 
             case 'nombre': {
-                let mensaje = params.mensajes.soloLetras || "Solo letras permitidas";
-                if (!validarNombre(val)) return mensaje;
+                let m = params.mensajes.tipo || "Solo letras permitidas";
+                if (!validarNombre(val)) {
+                    mensaje = m;
+                }
             } break;
 
             case 'numeroEntero': {
-                let mensaje = params.mensajes.soloNumeroEntero || "Solo números enteros permitidos";
-                if (!validarNumeroEntero(val)) return mensaje;
+                let m = params.mensajes.tipo || "Solo números enteros permitidos";
+                if (!validarNumeroEntero(val)) {
+                    mensaje = m;
+                }
             } break;
 
             case 'soloNumeroFlotante': {
-                let mensaje = params.mensajes.soloNumeroEntero || "Solo números enteros permitidos";
+                let m = params.mensajes.tipo || "Solo números enteros permitidos";
                 if (val.indexOf(',') != -1) return "Solo números enteros permitidos";
                 val = parseFloat(val);
-                if (val == NaN) return mensaje;
+                if (val == NaN) {
+                    mensaje = m;
+                }
             } break;
 
             case 'email': {
-                let mensaje = params.mensajes.emailInvalido || 'Email inválido';
-                if (!validarEmail(val)) return mensaje;
+                let m = params.mensajes.tipo || 'Email inválido';
+                if (!validarEmail(val)) {
+                    mensaje = m;
+                }
+            } break;
+
+            case 'username': {
+                let m = params.mensajes.tipo || 'Nombre de usuario inválido';
+                if (!validarUsername(val)) {
+                    mensaje = m;
+                }
             } break;
         }
 
+        if (mensaje != undefined) {
+            return mensaje;
+        }
+        
         //Min
         if ('minLength' in params) {
             let min = params.minLength;
@@ -64,6 +85,17 @@ export function validar(val, params) {
 
 function validarNombre(val) {
     return /^[\D\s]+$/.test(val);
+}
+
+function validarUsername(val) {
+    let letrasPermitidas = "abcdefghijklmnñopqrstuvwxyz._-";
+
+    for (var i = 0; i < val.length; i++) {
+        let letra = '' + val.charAt(i).toLowerCase();
+        if (letrasPermitidas.indexOf(letra) == -1) return false;
+    }
+
+    return true;
 }
 
 

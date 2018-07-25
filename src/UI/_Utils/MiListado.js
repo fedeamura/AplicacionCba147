@@ -1,6 +1,7 @@
 import React from "react";
 import {
   View,
+  Alert,
   StyleSheet,
   FlatList,
   Animated,
@@ -19,6 +20,16 @@ export default class MiListado extends React.Component {
     // this.anim_Cargando = new Animated.Value(0);
     this.anim_Empty = new Animated.Value(0);
     this.anim_Error = new Animated.Value(0);
+  }
+
+
+  static defaultProps = {
+    ...React.Component.defaultProps,
+    renderEmpty: undefined,
+    renderError: undefined,
+    renderHeader: () => { return null },
+    numColumns: 1,
+    keyExtractor: () => { return 'a' }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -86,7 +97,7 @@ export default class MiListado extends React.Component {
 
     //Empty
     let viewEmpty;
-    if ('renderEmpty' in this.props && this.props.renderEmpty != undefined) {
+    if (this.props.renderEmpty != undefined) {
       viewEmpty = this.props.renderEmpty();
     } else {
       viewEmpty = (
@@ -99,7 +110,7 @@ export default class MiListado extends React.Component {
 
     //Error
     let viewError;
-    if ('renderError' in this.props && this.props.renderError != undefined) {
+    if (this.props.renderError != undefined) {
       viewError = this.props.renderError();
     } else {
       viewError = (
@@ -120,8 +131,14 @@ export default class MiListado extends React.Component {
           }}
           style={[styles.listado]}
           data={this.props.data}
+          numColumns={this.props.numColumns}
+          ListHeaderComponent={() => {
+            return this.props.renderHeader();
+          }}
           contentContainerStyle={this.props.style}
-          keyExtractor={this.props.keyExtractor}
+          keyExtractor={(item) => {
+            return this.props.numColumns + '_' + this.props.keyExtractor(item);
+          }}
           renderItem={item => {
             return this.props.renderItem(item);
           }}
@@ -131,24 +148,20 @@ export default class MiListado extends React.Component {
 
         {/* Error */}
         <Animated.View
+          key="viewError"
           pointerEvents={this.state.mostrandoError ? "auto" : "none"}
           style={[styles.contenedor_Error, {
-            opacity: this.anim_Error.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 1]
-            })
+            opacity: this.anim_Error
           }]}>
           {viewError}
         </Animated.View>
 
         {/* Empty */}
         <Animated.View
+          key="viewEmpty"
           pointerEvents={this.state.mostrandoEmpty ? "auto" : "none"}
           style={[styles.contenedor_Empty, {
-            opacity: this.anim_Empty.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0, 1]
-            })
+            opacity: this.anim_Empty
           }]}>
           {viewEmpty}
         </Animated.View>
@@ -176,6 +189,7 @@ const styles = StyleSheet.create({
   contenedor_Empty: {
     width: '100%',
     height: '100%',
+    position: 'absolute',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
@@ -183,6 +197,7 @@ const styles = StyleSheet.create({
   contenedor_Error: {
     width: '100%',
     height: '100%',
+    position: 'absolute',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'

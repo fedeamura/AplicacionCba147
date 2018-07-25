@@ -1,21 +1,18 @@
-import React, { Component } from "react";
+
 import App from "Cordoba/src/UI/App";
 import DB from "Cordoba/src/DAO/DB";
 
-export default class Rules_Ajustes extends React.Component {
-  constructor() {
-    super();
-  }
-
-  static setIntroVista = () => {
+const metodos = {
+  //Intro vista
+  setIntroVista: () => {
     DB.setItem("introVista", 'true').then(() => {
 
     }).catch((error) => {
 
     });
-  }
+  },
 
-  static esIntroVista = () => {
+  esIntroVista: () => {
     return new Promise((resolve, reject) => {
       DB.getItem("introVista").then((val) => {
         if (val == undefined) {
@@ -26,13 +23,14 @@ export default class Rules_Ajustes extends React.Component {
         reject('Error procesando la solicitud');
       });
     });
-  }
+  },
 
-  static setBetaTester = (tester) => {
+  //Beta tester
+  setBetaTester: (tester) => {
     return DB.setItem("betaTester", '' + tester);
-  }
+  },
 
-  static isBetaTester = (tester) => {
+  isBetaTester: () => {
     return new Promise((resolve, reject) => {
       DB.getItem("betaTester").then((val) => {
         if (val == undefined) {
@@ -43,9 +41,28 @@ export default class Rules_Ajustes extends React.Component {
         reject('Error procesando la solicitud');
       });
     });
-  }
+  },
 
-  static setListadoRequerimientoInterfaz = (tipo) => {
+  //Ajustes para desarrollador
+  setAjustesParaDesarrolladorVisible: (visible) => {
+    return DB.setItem("ajustesDesarrolladorVisible", '' + visible);
+  },
+
+  esAjustesParaDesarrolladorVisible: () => {
+    return new Promise((resolve, reject) => {
+      DB.getItem("ajustesDesarrolladorVisible").then((val) => {
+        if (val == undefined) {
+          val = 'false';
+        }
+        resolve(val == 'true');
+      }).catch((error) => {
+        reject('Error procesando la solicitud');
+      });
+    });
+  },
+
+  //Tipo de UI para el listado de requerimientos
+  setListadoRequerimientoInterfaz: (tipo) => {
     return new Promise((resolve, reject) => {
       DB.setItem("listadoRequerimientoInterfaz", tipo + '').then(() => {
         resolve();
@@ -53,9 +70,9 @@ export default class Rules_Ajustes extends React.Component {
         reject('Error procesando la solicitud');
       });
     });
-  }
+  },
 
-  static getListadoRequerimientoInterfaz = () => {
+  getListadoRequerimientoInterfaz: () => {
     return new Promise((resolve, reject) => {
 
       DB.getItem("listadoRequerimientoInterfaz").then((val) => {
@@ -67,5 +84,14 @@ export default class Rules_Ajustes extends React.Component {
         reject('Error procesando la solicitud');
       });
     });
+  },
+
+  //Validar coneccion
+  validarConeccion: () => {
+    return new Promise((callback, reject) => {
+      callback();
+    });
   }
 }
+
+export default metodos;

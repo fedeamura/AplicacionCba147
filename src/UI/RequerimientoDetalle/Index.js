@@ -18,10 +18,10 @@ import MiStatusBar from "@Utils/MiStatusBar";
 import MiToolbar from "@Utils/MiToolbar";
 import MiCardDetalle from '@Utils/MiCardDetalle';
 import MiItemDetalle from '@Utils/MiItemDetalle';
+import MiGaleria from '@Utils/MiGaleria';
 
 //Rules
 import Rules_Requerimiento from '@Rules/Rules_Requerimiento';
-
 
 export default class RequerimientoDetalle extends React.Component {
   static navigationOptions = {
@@ -39,7 +39,18 @@ export default class RequerimientoDetalle extends React.Component {
       id: params.id,
       cargando: true,
       datos: undefined,
-      error: undefined
+      error: undefined,
+      imagenes: [
+        "https://i1.wp.com/www.roshfrans.com/wp-content/uploads/2015/08/Bache3.png?zoom=2&resize=1277%2C547",
+        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
+        "https://lucidezheterogenea.files.wordpress.com/2016/06/bache.jpg?w=496&h=299&crop=1",
+        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
+        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
+        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
+        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
+        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
+      ]
+
     };
 
     this.animContenido = new Animated.Value(0);
@@ -98,10 +109,8 @@ export default class RequerimientoDetalle extends React.Component {
     }).start();
   }
 
-  abrirImagen = (identificador) => {
-    App.navegar('VisorFoto', {
-      source: { uri: 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=2&size=600x600&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7Ccordoba+argentina' }
-    });
+  abrirImagen = (identificador, index) => {
+    this.setState({ visorImagenesVisible: true, indexImagenVisible: index });
   }
 
   abrirMapa = () => {
@@ -198,17 +207,7 @@ export default class RequerimientoDetalle extends React.Component {
                 </MiCardDetalle>
 
                 {/* Imagenes */}
-                <MiCardDetalle titulo='Imágenes'>
-                  <TouchableOpacity onPress={() => this.abrirImagen()}>
-                    <View style={{ width: 104, height: 104, borderRadius: 16, overflow: 'hidden' }}>
-                      <WebImage
-                        resizeMode="cover"
-                        style={{ width: '100%', height: '100%' }}
-                        source={{ uri: urlMapa }}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                </MiCardDetalle>
+                {this.renderImagenes()}
 
                 {/* Informacion organica */}
                 <MiCardDetalle titulo='Area encargada'>
@@ -260,10 +259,52 @@ export default class RequerimientoDetalle extends React.Component {
 
         {/* Keyboard */}
         < Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]} ></Animated.View >
+
+        {/* Galeria de imagenes */}
+        <MiGaleria
+          urls={this.state.imagenes}
+          visible={this.state.visorImagenesVisible == true}
+          onClose={() => { this.setState({ visorImagenesVisible: false }) }}
+          index={this.state.indexImagenVisible} />
+
       </View >
     );
   }
+
+  renderImagenes() {
+
+    return <MiCardDetalle titulo='Imágenes' padding={false}>
+
+      <ScrollView horizontal={true}>
+
+        <View style={{ display: 'flex', flexDirection: 'row', padding: 8 }}>
+          {
+            this.state.imagenes.map((url, index) => {
+
+              return (
+                <TouchableOpacity
+                  onPress={() => this.abrirImagen(url, index)}
+                  style={{ width: 104, height: 104, borderRadius: 16, overflow: 'hidden', margin: 8 }}>
+                  <View style={{ width: 104, height: 104, borderRadius: 16, overflow: 'hidden', backgroundColor: '#ccc' }}>
+                    <WebImage
+                      resizeMode="cover"
+                      style={{ width: '100%', height: '100%' }}
+                      source={{ uri: url }}
+                    />
+                  </View>
+                </TouchableOpacity>)
+
+            })
+          }
+
+        </View>
+      </ScrollView>
+
+    </MiCardDetalle>
+
+  }
 }
+
 
 const style = StyleSheet.create({
   contenedor: {

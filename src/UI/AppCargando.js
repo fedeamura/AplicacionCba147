@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  Text,
   View,
+  StatusBar
 } from "react-native";
 import WebImage from 'react-native-web-image'
 
@@ -25,6 +25,9 @@ export default class AppCargando extends React.Component {
   render() {
     return (
       <View style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+
+        <StatusBar backgroundColor="white" barStyle="dark-content" />
+
         <WebImage
           resizeMode="contain"
           style={{ width: '100%', height: '100%', margin: 72 }}

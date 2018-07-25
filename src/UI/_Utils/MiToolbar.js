@@ -11,21 +11,32 @@ export default class MiToolbar extends React.Component {
     super(props);
   }
 
+  static defaultProps = {
+    ...React.Component.defaultProps,
+    mostrarBotonBack: true,
+    onBackPress: () => { },
+    customContent: undefined
+  }
+
   render() {
     const initData = global.initData;
+    const backgroundColor = this.props.backgroundColor || initData.toolbar_BackgroundColor;
+    const dark = this.props.dark || initData.toolbar_Dark;
     return (
       <Toolbar style={[styles.toolbar, {
-        backgroundColor: initData.toolbar_BackgroundColor,
+        backgroundColor: backgroundColor,
         height: initData.toolbar_Height
       }, this.props.style]}
         elevation={0}
-        dark={initData.toolbar_Dark}>
+        dark={dark}>
 
-        <ToolbarBackAction
-          onPress={this.props.onBackPress}
-        />
+        {this.props.mostrarBotonBack == true && (
+          <ToolbarBackAction
+            onPress={this.props.onBackPress}
+          />
+        )}
 
-        {!('customContent' in this.props) && (
+        {this.props.customContent == undefined && (
           <ToolbarContent title={this.props.titulo || ''} subtitle={this.props.subtitulo} />
         )}
 

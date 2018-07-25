@@ -2,11 +2,9 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  Alert,
-  BackAndroid,
   ScrollView
 } from "react-native";
-import WebImage from 'react-native-web-image';
+
 import {
   Dialog,
   Paragraph,
@@ -23,11 +21,11 @@ import MiToolbarMenu from "@Utils/MiToolbarMenu";
 import PaginaInicio from "@Paginas/Requerimientos/Index";
 import PaginaPerfil from "@Paginas/Perfil/Index";
 import PaginaAjustes from "@Paginas/Ajustes/Index";
+import MiPanelError from "@Utils/MiPanelError";
 
-const texto_Titulo = 'Inicio';
-const texto_Menu_MisRequerimientos = 'Mis requerimientos';
-const texto_Menu_MiPerfil = 'Mi perfil';
-const texto_Menu_Ajustes = 'Ajustes';
+//Rules
+import Rules_Usuario from "@Rules/Rules_Usuario";
+
 
 export default class Inicio extends React.Component {
   static navigationOptions = {
@@ -54,6 +52,7 @@ export default class Inicio extends React.Component {
           iconoColor: 'white',
           valor: 0,
           contenido: (<PaginaInicio />)
+          // botones: (<View><Text>Hola</Text></View>)
         },
         {
           backgroundColor: '#f68a1e',
@@ -79,7 +78,10 @@ export default class Inicio extends React.Component {
           valor: 2,
           contenido: (<PaginaAjustes />)
         }
-      ]
+      ],
+      cargando: true,
+      validadoRenaper: false,
+      mostrandoPanelRenaper: false
     };
 
     this._didFocusSubscription = props.navigation.addListener('didFocus', payload => {
@@ -98,20 +100,92 @@ export default class Inicio extends React.Component {
       return true;
     }
 
-    if (this.state.dialogoConfirmarSalidaVisible != true) {
-      this.setState({ dialogoConfirmarSalidaVisible: true });
-      return true;
-    }
+    this.setState({ dialogoConfirmarSalidaVisible: true });
+    return true;
+  }
+
+  componentDidMount = () => {
+    this.consultarUsuarioValidadoRenaper();
+  }
+
+  consultarUsuarioValidadoRenaper = () => {
+    this.setState({ cargando: true, error: undefined, mostrandoPanelRenaper: false }, () => {
+      Rules_Usuario.esUsuarioValidadoRenaper()
+        .then((validado) => {
+          this.setState({
+            cargando: false,
+            validadoRenaper: validado,
+            mostrandoPanelRenaper: validado == false
+          });
+        })
+        .catch((error) => {
+          this.setState({
+            cargando: false,
+            validadoRenaper: false,
+            mostrandoPanelRenaper: true,
+            error: error
+          });
+        });
+    });
+  }
+
+  onBtnValidarClick = () => {
+    App.navegar('UsuarioValidarDatosRenaper', {
+      callback: () => {
+        this.consultarUsuarioValidadoRenaper();
+      }
+    });
+  }
+
+  onBtnRecargarClick = () => {
+    this.consultarUsuarioValidadoRenaper();
   }
 
   render() {
+    if (this.state.cargando == true) return null;
 
     const initData = global.initData;
     const colorToolbar = initData.toolbar_Dark ? 'white' : 'black';
+
+    //Mostrando panel validar renaper
+    if (this.state.mostrandoPanelRenaper == true) {
+
+      if (this.state.error != undefined) {
+        //Error consultando usuario
+        const textoError = undefined;
+        const textoDetalle = this.state.error;
+
+        return <View>
+          <MiPanelError
+            titulo={textoError}
+            detalle={textoDetalle}
+            mostrarBoton={true}
+            icono="alert-circle-outline"
+            onBotonPress={this.onBtnRecargarClick}
+            textoBoton={texto_Boton_VolverConsultarUsuarioValidado} />
+
+          {this.renderDialogoConfirmarSalida()}
+        </View>
+      } else {
+        //Usuario no validado
+        const textoError = texto_UsuarioNoValidado;
+        const textoDetalle = texto_UsuarioNoValidadoDetalle;
+        return <View>
+          <MiPanelError
+            titulo={textoError}
+            detalle={textoDetalle}
+            mostrarBoton={true}
+            onBotonPress={this.onBtnValidarClick}
+            textoBoton={texto_Boton_ValidarUsuario}
+          />
+
+          {this.renderDialogoConfirmarSalida()}
+        </View>;
+      }
+    }
+
     return (
       <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
-
-        {/* <AndroidBackButton onPress={this.back} /> */}
 
         <MiStatusBar />
 
@@ -153,7 +227,7 @@ export default class Inicio extends React.Component {
           this.setState({
             dialogoConfirmarSalidaVisible: false
           }, () => {
-            BackAndroid.exitApp();
+            BackHandler.exitApp();
           })
         }}>Si</ButtonPeper>
       </DialogActions>
@@ -162,7 +236,6 @@ export default class Inicio extends React.Component {
 }
 
 const texto_DialogoConfirmarSalir = '¿Esta seguro que desea salir de la aplicación #CBA147?';
-
 
 // renderFooter() {
 //   return <View style={{
@@ -184,3 +257,16 @@ const styles = StyleSheet.create({
     height: '100%'
   }
 })
+
+
+//Textos
+const texto_Titulo = 'Inicio';
+const texto_Menu_MisRequerimientos = 'Mis requerimientos';
+const texto_Menu_MiPerfil = 'Mi perfil';
+const texto_Menu_Ajustes = 'Ajustes';
+
+//Sin validar
+const texto_UsuarioNoValidado = "Usuario no validado";
+const texto_UsuarioNoValidadoDetalle = "Para utilizar la aplicación debes validar tus datos contra el registro nacional de personas.";
+const texto_Boton_ValidarUsuario = "Validar su usuario";
+const texto_Boton_VolverConsultarUsuarioValidado = "Actualizar";

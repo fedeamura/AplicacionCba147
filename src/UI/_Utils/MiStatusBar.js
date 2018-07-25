@@ -10,6 +10,7 @@ export default class MiStatusBar extends React.Component {
     }
 
     render() {
+
         const initData = global.initData;
         const barStyle = initData.statusBar_Dark ? "light-content" : "dark-content";
 

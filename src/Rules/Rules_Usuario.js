@@ -1,14 +1,11 @@
 import React from "react";
+
+//Data
 import DB from "Cordoba/src/DAO/DB";
 
-export default class Rules_Usuario extends React.Component {
+const metodos = {
 
-  constructor() {
-    super();
-    this.key_token = "token";
-  }
-
-  static login = (user, pass) => {
+  login: (user, pass) => {
     return new Promise((resolve, reject) => {
       let token = "test";
       DB.setItem("token", token).then(() => {
@@ -64,9 +61,9 @@ export default class Rules_Usuario extends React.Component {
       //     reject('Error procesando la solicitud');
       //   });
     });
-  }
+  },
 
-  static isLogin = () => {
+  isLogin: () => {
     return new Promise((resolve, reject) => {
       DB.getItem("token")
         .then(response => {
@@ -158,11 +155,14 @@ export default class Rules_Usuario extends React.Component {
       //   resolve(false);
       // });
     });
-  }
+  },
 
-  static cerrarSesion = () => {
+  cerrarSesion: () => {
     return new Promise((resolve, reject) => {
       try {
+
+        //No olvidarse de rovocar el token en el servidor
+
         DB.removeItem("token");
         global.token = undefined;
         resolve();
@@ -170,16 +170,19 @@ export default class Rules_Usuario extends React.Component {
         reject('Error procesando la solicitud');
       }
     });
-  }
+  },
 
-  static getDatos = () => {
+  getDatos: () => {
     return new Promise((resolve, reject) => {
+
       setTimeout(() => {
+        // reject('lalala');
         resolve({
           Nombre: 'Federico',
           Apellido: 'Amura',
           Dni: 35476866,
           Cuil: '20354768667',
+          Username: 'fede.amura',
           SexoMasculino: false,
           FechaNacimiento: '01/05/1991',
           DomicilioLegal: '27 de abril 464 13B, Cordoba, Argentina',
@@ -187,30 +190,36 @@ export default class Rules_Usuario extends React.Component {
           TelefonoCelular: '351-7449132',
           TelefonoFijo: '351-4226236',
           ValidadoEmail: true,
-          ValidadoRenaper: false
+          ValidadoRenaper: false,
+          IdentificadorFotoPersonal: undefined
         });
       }, 500);
     });
-  }
+  },
 
-  static esUsuarioValidadoRenaper = () => {
-    return new Promise((callback, callbackError) => {
+  esUsuarioValidadoRenaper: () => {
+    return new Promise((callback, reject) => {
+      //Consulto
       setTimeout(() => {
-        callback(global.validado || false);
+        callback(true);
+        // reject('Todo mal');
+        // callback(true);
+        // callback(global.validado || false);
       }, 100);
     });
-  }
+  },
 
-  static validarDatos = (usuario) => {
+  validarDatos: (usuario) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
-        callback(usuario);
+        callbackError('Datos invalidos');
+        // callback(usuario);
         // callbackError('El usuario ya existe');
       }, 1000);
     });
-  }
+  },
 
-  static actualizarDatosPersonales = (comando) => {
+  actualizarDatosPersonales: (comando) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         global.validado = true;
@@ -218,22 +227,54 @@ export default class Rules_Usuario extends React.Component {
         // callbackError('El usuario ya existe');
       }, 1000);
     });
-  }
+  },
 
-  static crearUsuario = (usuario) => {
+  actualizarDatosContacto: (comando) => {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback();
+      }, 1000);
+    });
+  },
+
+  crearUsuario: (usuario) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
         // callbackError('Error procesando la solicitud');
       }, 2000);
     });
-  }
+  },
 
-  static recuperarCuenta = (username, email) => {
+  recuperarCuenta: (username, email) => {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback();
+      }, 2000);
+    });
+  },
+
+  cambiarUsername: (username) => {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback();
+      }, 2000);
+    });
+  },
+  cambiarPassword: (passwordAnterior, passwordNueva) => {
+    return new Promise((callback, callbackError) => {
+      setTimeout(() => {
+        callback();
+      }, 2000);
+    });
+  },
+  cambiarFoto: (foto) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
       }, 2000);
     });
   }
-}
+};
+
+export default metodos;

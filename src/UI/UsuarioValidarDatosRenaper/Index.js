@@ -5,6 +5,7 @@ import {
   Alert,
   Animated,
   ScrollView,
+  BackHandler,
   Keyboard,
 } from "react-native";
 import {
@@ -24,6 +25,7 @@ import App from "Cordoba/src/UI/App";
 import MiStatusBar from '@Utils/MiStatusBar';
 import MiToolbar from '@Utils/MiToolbar';
 import FormDatosPersonales from '@UI/UsuarioNuevo/FormDatosPersonales';
+import MiPanelError from "@Utils/MiPanelError";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -41,12 +43,28 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     this.state = {
       datosUsuario: undefined,
       cargando: false,
-      error: undefined,
       dialogoExitoVisible: false,
       dialogoConfirmarSalidaVisible: false
     };
 
     this.keyboardHeight = new Animated.Value(0);
+
+    this._didFocusSubscription = props.navigation.addListener('didFocus', payload => {
+      BackHandler.addEventListener('hardwareBackPress', this.back);
+    });
+
+    this._willBlurSubscription = props.navigation.addListener('willBlur', payload => {
+      BackHandler.removeEventListener('hardwareBackPress', this.back);
+    });
+  }
+
+  back = () => {
+    if (this.state.cargando == true) {
+      return true;
+    }
+
+    this.setState({ dialogoConfirmarSalidaVisible: true });
+    return true;
   }
 
   componentWillMount() {
@@ -77,10 +95,16 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     }).start();
   }
 
+  componentDidMount() {
+    this.buscarDatosPersonales();
+  }
+
   buscarDatosPersonales = () => {
     this.setState({ cargando: true }, () => {
       Rules_Usuario.getDatos().then((datos) => {
         this.setState({ cargando: false, datosUsuario: datos });
+      }).catch((error) => {
+        this.setState({ cargando: false, error: error });
       });
     })
   }
@@ -91,20 +115,6 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
 
   ocultarDialogoExito = () => {
     this.setState({ dialogoExitoVisible: false });
-  }
-
-  cerrar = () => {
-    let preguntarCerrar = false;
-    if (this.state.algoInsertadoEnDatosPersonales == true) {
-      preguntarCerrar = true;
-    }
-
-    if (preguntarCerrar == true) {
-      this.setState({ dialogoConfirmarSalidaVisible: true });
-      return;
-    }
-
-    App.goBack();
   }
 
   onFormularioDatosPersonalesAlgoInsertado = (algoInsertado) => {
@@ -121,6 +131,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
         FechaNacimiento: datos.FechaNacimiento,
         SexoMasculino: datos.SexoMasculino
       };
+
       Rules_Usuario.actualizarDatosPersonales(comando)
         .then((data) => {
           this.setState({ cargando: false, dialogoExitoVisible: true });
@@ -149,39 +160,19 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
 
     return (
       <View
-        onLayout={this.buscarDatosPersonales}
         style={styles.contenedor}>
 
         {/* StatusBar */}
         <MiStatusBar />
 
         {/* Toolbar */}
-        <MiToolbar titulo={texto_Titulo} onBackPress={this.cerrar} />
+        <MiToolbar titulo={texto_Titulo} mostrarBotonBack={false} />
 
         {/* Contenido */}
         <View style={[styles.contenedor_Formulario, { backgroundColor: initData.backgroundColor }]}>
-          <ScrollView
-            keyboardShouldPersistTaps="always">
 
-            <View style={styles.scrollViewContent}>
-
-              {this.state.datosUsuario == undefined && this.state.cargando == true && (
-                <Spinner color="green" />
-              )}
-
-              {this.state.datosUsuario != undefined && (
-
-                <FormDatosPersonales
-                  noValidar={true}
-                  cargando={this.state.cargando}
-                  datosIniciales={this.state.datosUsuario}
-                  onAlgoInsertado={this.onFormularioDatosPersonalesAlgoInsertado}
-                  onReady={this.onDatosPersonalesReady} />
-              )}
-
-            </View>
-          </ScrollView>
-
+          {/* Contenido */}
+          {this.renderContent()}
 
           {/* Sombra del toolbar */}
           <LinearGradient
@@ -200,6 +191,35 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     );
   }
 
+  renderContent() {
+
+    if (this.state.datosUsuario == undefined) {
+      return <Spinner color="green"/>
+    };
+
+    if (this.state.error != undefined) {
+      return <MiPanelError
+        detalle={this.state.error}
+        mostrarBoton={true}
+        textoBoton="Reintentar"
+        onBotonPress={this.buscarDatosPersonales}
+      />
+    }
+
+    return <ScrollView
+      keyboardShouldPersistTaps="always" >
+
+      < View style={styles.scrollViewContent}>
+        <FormDatosPersonales
+          noValidar={true}
+          cargando={this.state.cargando}
+          datosIniciales={this.state.datosUsuario}
+          onAlgoInsertado={this.onFormularioDatosPersonalesAlgoInsertado}
+          onReady={this.onDatosPersonalesReady} />
+      </View>
+    </ScrollView>
+
+  }
   renderDialogoExito() {
     {/* Dialogo cambios version */ }
     return <Dialog
@@ -238,7 +258,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
           this.setState({
             dialogoConfirmarSalidaVisible: false
           }, () => {
-            App.goBack();
+            BackHandler.exitApp();
           })
         }}>Si</ButtonPeper>
       </DialogActions>
@@ -277,4 +297,4 @@ const styles = StyleSheet.create({
 });
 
 const texto_Titulo = 'Validar datos de Usuario';
-const texto_DialogoCancelarFormulario = '¿Desea cancelar la validacion de su usuario?';
+const texto_DialogoCancelarFormulario = '¿Desea cancelar la validacion de su usuario y salir de #CBA147?';

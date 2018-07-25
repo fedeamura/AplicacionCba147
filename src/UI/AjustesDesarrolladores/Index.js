@@ -2,10 +2,14 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  ScrollView
+  ScrollView,
+  Alert,
+  NativeModules,
+  Clipboard
 } from "react-native";
 import {
   Text,
+  Button
 } from "native-base";
 import {
   Checkbox
@@ -21,6 +25,7 @@ import MiCardDetalle from '@Utils/MiCardDetalle';
 
 //Rules
 import Rules_Ajustes from "@Rules/Rules_Ajustes";
+import Rules_Notificaciones from "@Rules/Rules_Notificaciones";
 
 export default class AjustesDesarrolladores extends React.Component {
 
@@ -30,6 +35,10 @@ export default class AjustesDesarrolladores extends React.Component {
     this.state = {
       betaTester: false
     };
+  }
+
+  static defaultProps = {
+    ...React.Component.defaultProps
   }
 
   componentWillMount() {
@@ -44,10 +53,39 @@ export default class AjustesDesarrolladores extends React.Component {
     });
   }
 
-  cerrar = ()=>{
+  verIntroduccion = () => {
+    App.navegar('Introduccion');
+  }
+
+  onRecargarAppClick = () => {
+    NativeModules.DevMenu.reload();
+  }
+
+  onTestNotificacionLocalClick = () => {
+    Rules_Notificaciones.autoEnviarNotificacion()
+      .then(() => {
+        
+      })
+      .catch(() => {
+        Alert.alert('', error || 'Error procesando la solicitud');
+      });
+  }
+
+  cerrar = () => {
     App.goBack();
   }
-  
+
+  onBotonCancelarAjustesParaDesarrolladorClick = () => {
+    Rules_Ajustes.setAjustesParaDesarrolladorVisible(false);
+
+    const { params } = this.props.navigation.state;
+    if (params != undefined && 'onAjustesParaDesarrolladorNoMasVisible' in params && params.onAjustesParaDesarrolladorNoMasVisible != undefined) {
+      params.onAjustesParaDesarrolladorNoMasVisible();
+    }
+
+    App.goBack();
+  }
+
   render() {
     const initData = global.initData;
 
@@ -60,11 +98,20 @@ export default class AjustesDesarrolladores extends React.Component {
         {/* Toolbar */}
         <MiToolbar titulo='Ajustes para desarrolladores' onBackPress={this.cerrar} />
 
-        <View style={styles.contenedor}>
+        <View style={{ flex: 1 }}>
 
           <ScrollView contentContainerStyle={{ padding: 16 }}>
-            {/* General  */}
-            <MiCardDetalle padding={false}>
+
+
+            {/* General */}
+            <MiCardDetalle titulo="General" padding={false}>
+              <MiItemDetalle
+                titulo="Recargar App"
+                subtitulo="Haga click aquí para volver a cargar el JS de la App"
+                style={{ padding: 16 }}
+                onPress={this.onRecargarAppClick} />
+
+              <View style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.1)' }} />
 
               <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                 <MiItemDetalle
@@ -78,14 +125,58 @@ export default class AjustesDesarrolladores extends React.Component {
                   <Checkbox
                     checked={this.state.betaTester}
                     color="green"
-                    onPress={() => { }}
+                    onPress={this.onBetaTesterClick}
                   />
                 </View>
 
                 <View style={{ width: 16 }} />
               </View>
 
+              <View style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.1)' }} />
+
+              {/* Intro */}
+              <MiItemDetalle
+                style={{ padding: 16 }}
+                onPress={this.verIntroduccion}
+                titulo="Ver intro"
+                subtitulo='Haga click aquí para volver a ver la introducción' />
+
             </MiCardDetalle>
+
+
+
+            {/* Notificaciones */}
+            <MiCardDetalle titulo="Notificaciones" padding={false}>
+
+              <MiItemDetalle
+                titulo="Token actual"
+                style={{ padding: 16 }}
+                onPress={() => {
+                  Clipboard.setString(global.notificationToken);
+                }}
+                subtitulo={global.notificationToken || 'Sin definir'} />
+
+              <View style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.1)' }} />
+
+              <MiItemDetalle
+                style={{ padding: 16 }}
+                titulo="Test notificación"
+                subtitulo="Auto-enviar una notificación"
+                onPress={this.onTestNotificacionLocalClick} />
+
+            </MiCardDetalle>
+
+            {/* Ajustes debug */}
+            <View style={{ marginTop: 32, marginBottom: 16 }}>
+
+              <Button
+                bordered
+                rounded
+                style={{ alignSelf: 'center', borderColor: 'green' }}
+                onPress={this.onBotonCancelarAjustesParaDesarrolladorClick}><Text style={{ color: 'green', textAlign: 'center' }}>Ocultar ajustes para desarrolladores</Text></Button>
+            </View>
+
+
           </ScrollView>
           {/* Sombra del toolbar */}
           <LinearGradient

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "135272098755",
+    "firebase_url": "https://cba147log.firebaseio.com",
+    "project_id": "cba147log",
+    "storage_bucket": "cba147log.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:135272098755:android:109f4289d5302b88",
+        "android_client_info": {
+          "package_name": "com.cordoba"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "135272098755-v1a18ujdghv9tius0uargtq9kvfjn8vp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7WvnS5JdGU7a_MvGi0PUWYZzoCRsPp-Q"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

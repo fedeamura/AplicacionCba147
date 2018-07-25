@@ -8,28 +8,29 @@ import {
 } from "react-native";
 import {
   Text,
+  Button
 } from "native-base";
 import {
   Dialog,
   Button as ButtonPeper,
   DialogActions,
   DialogContent,
-  DialogTitle,
   Paragraph,
   TouchableRipple,
-  Checkbox
 } from "react-native-paper";
 import WebImage from 'react-native-web-image';
-import MiItemDetalle from '@Utils/MiItemDetalle';
-import MiCardDetalle from '@Utils/MiCardDetalle';
+import Snackbar from 'react-native-snackbar';
 
 //Mis componentes
 import App from "@UI/App";
+import MiItemDetalle from '@Utils/MiItemDetalle';
+import MiCardDetalle from '@Utils/MiCardDetalle';
 
 //Rukes
 import Rules_Ajustes from "@Rules/Rules_Ajustes";
 import Rules_Usuario from "@Rules/Rules_Usuario";
 
+const cantidadTapsParaVerAjustesDesarrollador = 7;
 export default class PaginaAjustes extends React.Component {
 
   constructor(props) {
@@ -38,12 +39,19 @@ export default class PaginaAjustes extends React.Component {
     this.state = {
       dialogoCambiosVisible: false,
       dialogoCerrarSesionVisible: false,
-      contadorAjustesDesarroladorClick: 0
+      contadorAjustesDesarroladorClick: 0,
+      ajustesParaDesarrolladorVisible: false
     };
   }
 
   componentWillMount() {
 
+  }
+
+  componentDidMount() {
+    Rules_Ajustes.esAjustesParaDesarrolladorVisible().then((visible) => {
+      this.setState({ ajustesParaDesarrolladorVisible: visible });
+    });
   }
 
   cerrarSesion = () => {
@@ -65,16 +73,43 @@ export default class PaginaAjustes extends React.Component {
     });
   }
 
-  verIntroduccion = () => {
-    App.navegar('Introduccion');
-  }
 
   onClickVersion = () => {
-    this.setState({ contadorAjustesDesarroladorClick: this.state.contadorAjustesDesarroladorClick + 1 });
+    if (this.state.contadorAjustesDesarroladorClick == cantidadTapsParaVerAjustesDesarrollador) return;
+
+    let cantidad = this.state.contadorAjustesDesarroladorClick + 1
+    this.setState({
+      contadorAjustesDesarroladorClick: cantidad,
+      ajustesParaDesarrolladorVisible: cantidad == cantidadTapsParaVerAjustesDesarrollador
+    }, () => {
+
+      //Si cumpli la cantidad de clicks...
+      if (this.state.contadorAjustesDesarroladorClick === cantidadTapsParaVerAjustesDesarrollador) {
+
+        //Guardo
+        Rules_Ajustes.setAjustesParaDesarrolladorVisible(true);
+
+        //Informo
+        Snackbar.show({
+          title: 'Los ajustes para desarrollador son ahora visibles',
+          action: {
+            title: 'Deshabilitar',
+            color: 'green',
+            onPress: () => {
+              this.setState({ contadorAjustesDesarroladorClick: 0, ajustesParaDesarrolladorVisible: false });
+            },
+          },
+        });
+      }
+    });
   }
 
   abrirAjustesDesarrolladores = () => {
-    App.navegar('AjustesDesarrolladores');
+    App.navegar('AjustesDesarrolladores', {
+      onAjustesParaDesarrolladorNoMasVisible: () => {
+        this.setState({ contadorAjustesDesarroladorClick: 0, ajustesParaDesarrolladorVisible: false });
+      }
+    });
   }
 
   render() {
@@ -85,7 +120,7 @@ export default class PaginaAjustes extends React.Component {
     return (
       <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
 
-        <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <ScrollView contentContainerStyle={{ padding: 16}}>
 
           {/* Sesion Activa */}
           <MiCardDetalle
@@ -111,59 +146,11 @@ export default class PaginaAjustes extends React.Component {
 
           </MiCardDetalle>
 
-          {/* General  */}
-          <MiCardDetalle padding={false} titulo='General'>
-
-            {/* Intro */}
-            <MiItemDetalle
-              style={{ padding: 16 }}
-              onPress={this.verIntroduccion}
-              titulo="Introduccion"
-              subtitulo='Haga click aquí para volver a ver la introducción' />
-
-
-            {/* <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-              <MiItemDetalle
-                style={{ padding: 16, flex: 1 }}
-                onPress={this.onBetaTesterClick}
-                titulo="Beta test"
-                subtitulo={this.state.betaTester ? 'Haga click aquí para dejar de ser beta tester' : 'Haga click aquí para ser beta tester'} />
-
-              <View style={{ minWidth: 48, minHeight: 48, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-
-                <Checkbox
-                  checked={this.state.betaTester}
-                  color="green"
-                  onPress={() => { }}
-                />
-              </View>
-
-              <View style={{ width: 16 }} />
-            </View> */}
-
-            {/* Ajustes debug */}
-            {this.state.contadorAjustesDesarroladorClick >= 5 && (
-
-              <View>
-
-                <View style={{ backgroundColor: 'rgba(0,0,0,0.1)', height: 1 }} />
-
-                <MiItemDetalle
-                  style={{ padding: 16 }}
-                  onPress={this.abrirAjustesDesarrolladores}
-                  titulo="Ajustes para Desarrolladores"
-                  subtitulo='Haga click aquí para ir a los ajustes para desarrolladores' />
-              </View>
-
-            )}
-
-          </MiCardDetalle>
-
+         
           {/* Acerca de... */}
           <MiCardDetalle padding={false} titulo='Sobre nosotros'>
             <MiItemDetalle
               style={{ padding: 16 }}
-              titulo="Desarrollo de aplicacion"
               subtitulo='Esta aplicación fue desarrollada por la Municipalidad de Cordoba, en la Direccion de Informatica' />
 
           </MiCardDetalle>
@@ -198,6 +185,19 @@ export default class PaginaAjustes extends React.Component {
           <TouchableWithoutFeedback onPress={this.onClickVersion}>
             <Text style={{ alignSelf: 'center', marginTop: 16, marginBottom: 16 }}>Vesion 1.5</Text>
           </TouchableWithoutFeedback>
+
+          {/* Ajustes debug */}
+          {this.state.ajustesParaDesarrolladorVisible == true && (
+            <View style={{ marginTop: 32, marginBottom: 72 }}>
+
+              <Button
+                bordered
+                rounded
+                style={{ alignSelf: 'center', borderColor: 'green' }}
+                onPress={this.abrirAjustesDesarrolladores}><Text style={{ color: 'green' }}>Abrir ajustes para desarrolladores</Text></Button>
+            </View>
+
+          )}
 
           {/* <Button onPress={() => { App.navegar('PickerUbicacion') }}><Text>Ubicacion</Text></Button> */}
         </ScrollView>

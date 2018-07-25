@@ -11,11 +11,9 @@ import {
 import {
   Button
 } from "native-base";
-import ExtraDimensions from 'react-native-extra-dimensions-android';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
-import { TouchableRipple } from "react-native-paper";
 
 const tAnim = 500;
 const marginIcon = 16;
@@ -274,7 +272,7 @@ export default class MiToolbarMenu extends React.Component {
     return (
       <View
         onLayout={this.onLayout}
-        style={styles.contenedor}>
+        style={[styles.contenedor, { overflow: 'hidden' }]}>
 
         {this.state.visible == true && (
 
@@ -295,6 +293,9 @@ export default class MiToolbarMenu extends React.Component {
 
             {/* Boton Cerrar */}
             {this.renderBotonCerrar()}
+
+            {/* Botones derecha */}
+            {this.renderBotonesDerecha()}
 
             {/* Sombra  */}
             {this.renderSombra()}
@@ -357,7 +358,9 @@ export default class MiToolbarMenu extends React.Component {
             ]
 
           }]}>
-      <View style={[styles.encabezado_Opcion, { backgroundColor: opcion.backgroundColor }]}>
+      <View style={[styles.encabezado_Opcion, {
+        backgroundColor: opcion.backgroundColor
+      }]}>
         <TouchableWithoutFeedback
           style={{ width: '100%' }}
           onPressIn={() => { this.onPressIn(index) }}
@@ -522,6 +525,21 @@ export default class MiToolbarMenu extends React.Component {
         <Icon style={styles.btnClose} name={this.props.iconoCerrar} color={this.props.iconoCerrarColor || 'white'} />
       </Button>
     </Animated.View>
+  }
+
+  renderBotonesDerecha() {
+    // if (this.state.expandido == true) return null;
+
+    return (<Animated.View
+      style={{
+        position: 'absolute',
+        right: 0,
+        top: 0,
+        zIndex: 300,
+        opacity: this.anims[0].interpolate({ inputRange: [0, 1], outputRange: [1, 0] })
+      }}>
+      {this.state.opciones[this.state.opcion].botones}
+    </Animated.View>);
   }
 
   renderSombra() {

@@ -1,8 +1,6 @@
-import React from "react";
 
-export default class Rules_Servicio extends React.Component {
-
-  static get = () => {
+const metodos = {
+  get: () => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([
@@ -93,6 +91,6 @@ export default class Rules_Servicio extends React.Component {
 
     });
   }
-
-
 }
+
+export default metodos;

@@ -37,12 +37,19 @@ export default class MiItemDetalle extends React.Component {
               name={this.props.icono} />
           )}
 
-          <View>
+          <View style={{
+            flex: 1
+          }}>
             {this.props.titulo != undefined && (
-              <Text style={{ fontWeight: 'bold' }}>{this.props.titulo}</Text>
+              <Text style={{ fontWeight: 'bold', flexWrap: "wrap" }}>{this.props.titulo}</Text>
             )}
             {this.props.subtitulo != undefined && (
-              <Text style={{}}>{this.props.subtitulo}</Text>
+              <Text>{this.props.subtitulo}</Text>
+            )}
+            {this.props.textos != undefined && (
+              <View >
+                {this.props.textos.map((item) => { return <Text>{item}</Text> })}
+              </View>
             )}
           </View>
         </View>

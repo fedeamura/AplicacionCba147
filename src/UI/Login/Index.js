@@ -1,19 +1,16 @@
 import React from "react";
 import {
-  Platform,
   StyleSheet,
   View,
   Alert,
   Animated,
-  StatusBar,
   ScrollView,
   Keyboard,
   Dimensions
 } from "react-native";
 import {
   Button,
-  Text,
-  Spinner
+  Text
 } from "native-base";
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
@@ -22,6 +19,7 @@ import { Kohana } from "react-native-textinput-effects";
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
+import MiStatusBar from "@Utils/MiStatusBar";
 
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
@@ -194,19 +192,18 @@ export default class Login extends React.Component {
   }
 
   render() {
-    const backgroundColor_StatusBar = Platform.OS == 'ios' ? 'transparent' : 'black';
 
     return (
       <View
         style={styles.contenedor}
         onLayout={this.animarInicio}>
 
-        <StatusBar backgroundColor={backgroundColor_StatusBar} barStyle="light-content" />
+        <MiStatusBar />
 
         <WebImage
           resizeMode="cover"
           style={styles.imagenFondo}
-          source={{ uri: url_ImagenFondo }}
+          source={require('@Resources/imagen_fondo_login.jpg')}
         />
 
         <View style={styles.imagenFondo_Dim}></View>
@@ -489,7 +486,7 @@ const styles = StyleSheet.create({
 });
 
 const texto_Titulo = "Iniciar sesión";
-const url_ImagenFondo = "https://servicios2.cordoba.gov.ar/CBA147/Resources/Imagenes/fondo_login_oscura.jpg";
+const url_ImagenFondo = "http://www.regioncentronoticias.com/wp-content/uploads/2017/08/ARCHI_3643091200x771.jpgg";
 const url_ImagenLogo = "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw";
 const texto_Usuario = "Usuario";
 const texto_UsuarioRequerido = "DatoRequerido";

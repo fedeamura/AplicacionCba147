@@ -1,8 +1,9 @@
-import React from "react";
 
-export default class Rules_Requerimiento extends React.Component {
+//Rules
+import Rules_Ajustes from "./Rules_Ajustes";
 
-  static get = () => {
+const metodos = {
+  get: () => {
     return new Promise((resolve, reject) => {
       let rqs = [];
       rqs.push({ id: 1, estadoKeyValue: 1, estadoColor: '#E53935', estadoNombre: 'Nuevo', numero: "QAZWSX", año: 2017, fechaAlta: '10/10/2018' });
@@ -15,59 +16,78 @@ export default class Rules_Requerimiento extends React.Component {
         // reject('ouchilas');
         resolve(rqs);
       }, 500);
-      // const url =
-      //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeRequerimiento.asmx/ConsultarMisRequerimientos";
+    })
 
-      // console.log('Rules_Requerimiento - get');
-      // fetch(url, {
-      //   method: "POST",
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json"
-      //   },
-      //   body: JSON.stringify({
-      //     token: App.Variables.Token
-      //   })
-      // })
-      //   .then(response => response.json())
-      //   .then(responseJson => {
-      //     var data = responseJson.d;
-      //     console.log(data);
+    // const url =
+    //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeRequerimiento.asmx/ConsultarMisRequerimientos";
 
-      //     if (!data.Ok) {
-      //       console.log('Error');
-      //       console.log(data.Error);
+    // console.log('Rules_Requerimiento - get');
+    // fetch(url, {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({
+    //     token: App.Variables.Token
+    //   })
+    // })
+    //   .then(response => response.json())
+    //   .then(responseJson => {
+    //     var data = responseJson.d;
+    //     console.log(data);
 
-      //       reject(data.Error);
-      //       return;
-      //     }
+    //     if (!data.Ok) {
+    //       console.log('Error');
+    //       console.log(data.Error);
 
-      //     resolve(data.Return);
-      //   })
-      //   .catch(error => {
-      //     console.log('Error');
-      //     console.log(error);
-      //     reject('Error procesando la solicitud');
-      // });
-    });
+    //       reject(data.Error);
+    //       return;
+    //     }
 
-  }
+    //     resolve(data.Return);
+    //   })
+    //   .catch(error => {
+    //     console.log('Error');
+    //     console.log(error);
+    //     reject('Error procesando la solicitud');
+    // });
+  },
 
-  static insertar = (comando) => {
+  insertar: (comando) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
       }, 5000);
     });
-  }
+  },
 
-  static getDetalle = (id) => {
-    return new Promise((callback, callbackError) => {
+  getEstados: () => {
+    return new Promise((callback, reject) => {
+      setTimeout(() => {
+        let estados = [{
+          Id: 1,
+          KeyValue: 1,
+          Color: 'red',
+          Nombre: 'Nuevo'
+        }, {
+          Id: 2,
+          KeyValue: 2,
+          Color: 'yellow',
+          Nombre: 'En proceso'
+        }]
+        callback(estados);
+      }, 500);
+    })
+  },
+
+  getDetalle: (id) => {
+    return new Promise((callback, reject) => {
       setTimeout(() => {
         callback({});
       }, 500);
-    });
+    })
   }
-
-  
 }
+
+export default metodos;

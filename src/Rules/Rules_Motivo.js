@@ -1,8 +1,5 @@
-import React from "react";
-
-export default class Rules_Motivo extends React.Component {
-
-  static get = (idServicio) => {
+const metodos = {
+  get: (idServicio) => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([
@@ -73,9 +70,9 @@ export default class Rules_Motivo extends React.Component {
       //     callbackError("Error procesando la solicitud");
       //   });
     });
-  }
+  },
 
-  static getParaBuscar = () => {
+  getParaBuscar: () => {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([
@@ -170,3 +167,5 @@ export default class Rules_Motivo extends React.Component {
     });
   }
 }
+
+export default metodos;

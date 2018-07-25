@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  StyleSheet,
   Text,
   View,
   Animated,
@@ -55,6 +54,7 @@ export default class AppMantenimiento extends React.Component {
           opacity: this.state.animMostar
         }}
       >
+        <StatusBar backgroundColor="white" barStyle="dark-content" />
 
         {/* <WebImage
           resizeMode="cover"

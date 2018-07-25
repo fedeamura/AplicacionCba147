@@ -3,6 +3,9 @@ import {
   Platform,
   View,
   Alert,
+  Easing,
+  Animated,
+  Linking,
   LayoutAnimation,
   StatusBar
 } from "react-native";
@@ -13,7 +16,7 @@ import {
 import {
   Provider as PaperProvider
 } from "react-native-paper";
-import codePush from "react-native-code-push";
+import firebase from 'react-native-firebase';
 
 //Mis Componentes
 import Introduccion from "@UI/Introduccion/Index";
@@ -25,9 +28,9 @@ import RequerimientoNuevo from "@UI/RequerimientoNuevo/Index";
 import RequerimientoDetalle from "@UI/RequerimientoDetalle/Index";
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
-import VisorFoto from "@UI/VisorFoto/Index";
 import AjustesDesarrolladores from "@UI/AjustesDesarrolladores/Index";
 import UsuarioValidarDatosRenaper from '@UI/UsuarioValidarDatosRenaper/Index';
+import UsuarioEditarDatosContacto from '@UI/UsuarioEditarDatosContacto/Index';
 
 import AppCargando from "./AppCargando";
 import AppError from "./AppError";
@@ -36,8 +39,56 @@ import AppMantenimiento from "./AppMantenimiento";
 //Rules
 import Rules_Init from "@Rules/Rules_Init";
 import Rules_Ajustes from "../Rules/Rules_Ajustes";
+import Rules_Notificaciones from "@Rules/Rules_Notificaciones";
 
-//Defino el las screens de la app
+const transitionConfig = () => {
+  return {
+    transitionSpec: {
+      duration: 500,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+      useNativeDriver: true,
+    },
+    screenInterpolator: sceneProps => {
+      const { layout, position, scene } = sceneProps
+
+      const thisSceneIndex = scene.index;
+
+      const width = layout.initWidth;
+      const height = layout.initHeight;
+
+      // const opacity = position.interpolate({
+      //   inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1,],
+      //   outputRange: [0, 0, 1]
+      // });
+
+      // const translateY = position.interpolate({
+      //   inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
+      //   outputRange: [height, 0, 0]
+      // })
+
+
+
+      // const scale = position.interpolate({
+      //   inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
+      //   outputRange: [1, 1, 0.9]
+      // })
+
+      return {
+        transform: [
+          {
+            translateX: position.interpolate({
+              inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
+              outputRange: [width, 0, 0]
+            })
+          }
+        ]
+      }
+    },
+  }
+}
+
+//Defino el Stack de la App
 const RootStack = StackNavigator(
   {
     Introduccion: {
@@ -67,11 +118,11 @@ const RootStack = StackNavigator(
     PickerListado: {
       screen: MiPicker
     },
-    VisorFoto: {
-      screen: VisorFoto
-    },
     UsuarioValidarDatosRenaper: {
       screen: UsuarioValidarDatosRenaper
+    },
+    UsuarioEditarDatosContacto: {
+      screen: UsuarioEditarDatosContacto
     },
     AjustesDesarrolladores: {
       screen: AjustesDesarrolladores
@@ -80,6 +131,7 @@ const RootStack = StackNavigator(
   {
     headerMode: "none",
     initialRouteName: "Login",
+    transitionConfig,
     cardStyle: {
       shadowOpacity: 1
     }
@@ -104,84 +156,110 @@ export default class App extends React.Component {
     };
   }
 
+  _handleOpenURL(event) {
+    console.log(event.url);
+  }
+
   componentDidMount() {
-    Rules_Ajustes.isBetaTester().then((test) => {
-      this.actualizarApp(test)
-        .then(() => {
-          //Busco la data inicial
-          Rules_Init.getInitData()
-            .then((initData) => {
-              global.initData = initData;
+    Linking.addEventListener('url', this._handleOpenURL);
 
-              this.setState({
-                cargando: false,
-                initData: initData,
-                error: undefined
-              });
-            })
-            .catch((error) => {
-              global.initData = undefined;
-              this.setState({
-                cargando: false,
-                initData: undefined,
-                error: 'Error procesando la solicitud'
-              });
+
+    Rules_Init.actualizarApp()
+      .then(() => {
+        //Busco la data inicial
+        Rules_Init.getInitData()
+          .then((initData) => {
+
+            global.initData = initData;
+
+            this.setState({
+              cargando: false,
+              initData: initData,
+              error: undefined
             });
-
-        }).catch((error) => {
-          global.initData = undefined;
-          this.setState({
-            cargando: false,
-            initData: undefined,
-            error: 'Error procesando la solicitud'
+          })
+          .catch((error) => {
+            this.informarError(error);
           });
-        });
+      })
+      .catch((error) => {
+        this.informarError(error);
+      });
+
+    firebase.messaging().getToken()
+      .then(fcmToken => {
+        if (fcmToken) {
+          global.notificationToken = fcmToken;
+        } else {
+          global.notificationToken = undefined;
+        }
+      });
+
+    firebase.messaging().hasPermission()
+      .then(enabled => {
+        if (enabled) {
+
+        } else {
+          firebase.messaging().requestPermission()
+            .then(() => {
+              // User has authorised  
+            })
+            .catch(error => {
+              Alert.alert('', 'Para recibir notificaciones debe conceder el permiso en Ajustes');
+              // User has rejected permissions  
+            });
+        }
+      });
+
+    //App abierta desde notificacion
+    firebase.notifications().getInitialNotification().then((notificationOpen) => {
+      if (notificationOpen) {
+
+        const notification = notificationOpen.notification;
+
+        //Transformo
+        let data = Rules_Notificaciones.transformarNotificacion(notification);
+
+        //Guardo en global... para que el componente de Inicio (Mis requerimiento) maneje lo que hay que hacer
+        //Lo mando para despues porque hay que validar el usuario logeado y esperar que acceda.
+        global.notificacionInicial = data;
+      }
+    });
+
+    const channel = new firebase.notifications.Android.Channel('channelId', '#CBA147', firebase.notifications.Android.Importance.Max).setDescription('#CBA147');
+    firebase.notifications().android.createChannel(channel);
+
+    //Al aparecer una notificacion (En foreground)
+    this.notificationListener = firebase.notifications().onNotification((notification) => {
+
+      //Transformo y mando a notificar
+      let data = Rules_Notificaciones.transformarNotificacion(notification);
+      if (data == undefined) return;
+
+      Rules_Notificaciones.notificar(data);
+    });
+
+    //Al hacer click en una notificacion
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+      const notification = notificationOpen.notification;
+      Rules_Notificaciones.manejar(notification.data);
     });
   }
 
-  actualizarApp(test) {
-    //Keys iOS
-    const key_ios = 'PfHTHuI72bZjyvJHN7-1mPEBLFxsrkFMKlHdf';
-    const key_ios_test = 'onBKUESFsmHzCJxKPyXArfjMnG_W46fa5311-742e-48ec-9cca-e112c82a5ff2';
 
-    //Key Android
-    const key_android = 'yRjO-uUfAoarYJSJWHdTV1P5LYXmHyiWzMHdf';
-    const key_android_test = 'EyHcx3BBhsiNHBOQWHtWhTLdlaUr46fa5311-742e-48ec-9cca-e112c82a5ff2';
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this._handleOpenURL);
 
-    //Key actual
-    const key = Platform.OS == 'ios' ? (test ? key_ios_test : key_ios) : (test ? key_android_test : key_android);
+    this.notificationListener();
+    this.notificationOpenedListener();
+  }
 
-    return new Promise((callback, callbackError) => {
-      codePush.sync(
-        {
-          deploymentKey: key,
-          installMode: codePush.InstallMode.IMMEDIATE
-        },
-        //Status change
-        (syncStatus) => {
-          switch (syncStatus) {
-            case codePush.SyncStatus.CHECKING_FOR_UPDATE:
-              break;
-            case codePush.SyncStatus.DOWNLOADING_PACKAGE:
-              break;
-            case codePush.SyncStatus.INSTALLING_UPDATE:
-              break;
-            case codePush.SyncStatus.UP_TO_DATE:
-              callback();
-              break;
-            case codePush.SyncStatus.UPDATE_IGNORED:
-              callback();
-              break;
-            case codePush.SyncStatus.UPDATE_INSTALLED:
-              callback();
-              break;
-            case codePush.SyncStatus.UNKNOWN_ERROR:
-              callbackError('Error procesando la solicitud');
-              break;
-          }
-        },
-        (progress) => { }
-      );
+  informarError = (error) => {
+    global.initData = undefined;
+    this.setState({
+      cargando: false,
+      initData: undefined,
+      error: error || 'Error procesando la solicitud'
     });
   }
 
@@ -224,7 +302,6 @@ export default class App extends React.Component {
     }
   }
 
-
   render() {
     //Cargando
     if (this.state.cargando == true) {
@@ -245,8 +322,10 @@ export default class App extends React.Component {
       <PaperProvider>
         <View
           keyboardShouldPersistTaps="handled"
-          style={{ height: '100%', width: '100%' }}>
-          <StatusBar backgroundColor={'white'} barStyle="dark-content" />
+          style={{ height: '100%', width: '100%', backgroundColor: 'white' }}>
+
+          <StatusBar backgroundColor="white" barStyle="dark-content" />
+
           <RootStack ref={(ref) => { global.navigator = ref; }} />
         </View>
       </PaperProvider>
