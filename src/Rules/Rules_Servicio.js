@@ -1,6 +1,6 @@
 
 const metodos = {
-  get: () => {
+  get: function() {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([

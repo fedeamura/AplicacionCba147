@@ -5,7 +5,7 @@ import DB from "Cordoba/src/DAO/DB";
 
 const metodos = {
 
-  login: (user, pass) => {
+  login: function (user, pass) {
     return new Promise((resolve, reject) => {
       let token = "test";
       DB.setItem("token", token).then(() => {
@@ -63,7 +63,7 @@ const metodos = {
     });
   },
 
-  isLogin: () => {
+  isLogin: function () {
     return new Promise((resolve, reject) => {
       DB.getItem("token")
         .then(response => {
@@ -157,7 +157,7 @@ const metodos = {
     });
   },
 
-  cerrarSesion: () => {
+  cerrarSesion: function () {
     return new Promise((resolve, reject) => {
       try {
 
@@ -172,7 +172,7 @@ const metodos = {
     });
   },
 
-  getDatos: () => {
+  getDatos: function () {
     return new Promise((resolve, reject) => {
 
       setTimeout(() => {
@@ -197,7 +197,7 @@ const metodos = {
     });
   },
 
-  esUsuarioValidadoRenaper: () => {
+  esUsuarioValidadoRenaper: function () {
     return new Promise((callback, reject) => {
       //Consulto
       setTimeout(() => {
@@ -209,7 +209,7 @@ const metodos = {
     });
   },
 
-  validarDatos: (usuario) => {
+  validarDatos: function (usuario) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callbackError('Datos invalidos');
@@ -219,7 +219,7 @@ const metodos = {
     });
   },
 
-  actualizarDatosPersonales: (comando) => {
+  actualizarDatosPersonales: function (comando) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         global.validado = true;
@@ -229,7 +229,7 @@ const metodos = {
     });
   },
 
-  actualizarDatosContacto: (comando) => {
+  actualizarDatosContacto: function (comando) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
@@ -237,7 +237,7 @@ const metodos = {
     });
   },
 
-  crearUsuario: (usuario) => {
+  crearUsuario: function (usuario) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
@@ -246,7 +246,7 @@ const metodos = {
     });
   },
 
-  recuperarCuenta: (username, email) => {
+  recuperarCuenta: function (username, email) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
@@ -254,27 +254,30 @@ const metodos = {
     });
   },
 
-  cambiarUsername: (username) => {
+  cambiarUsername: function (username) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
       }, 2000);
     });
   },
-  cambiarPassword: (passwordAnterior, passwordNueva) => {
+
+  cambiarPassword: function (passwordAnterior, passwordNueva) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
       }, 2000);
     });
   },
-  cambiarFoto: (foto) => {
+
+  cambiarFoto: function (foto) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
       }, 2000);
     });
   }
+  
 };
 
 export default metodos;

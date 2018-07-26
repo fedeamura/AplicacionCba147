@@ -7,7 +7,7 @@ import Rules_Usuario from "@Rules/Rules_Usuario";
 
 const metodos = {
 
-  notificar: (data) => {
+  notificar: function (data) {
     try {
       const notification = new firebase.notifications.Notification({
         sound: 'default',
@@ -30,7 +30,7 @@ const metodos = {
     }
   },
 
-  crearNotificacionDePrueba: () => {
+  crearNotificacionDePrueba: function () {
     Rules_Notificaciones.notificar({
       Titulo: 'Titulo',
       Detalle: 'Detalle',
@@ -39,7 +39,7 @@ const metodos = {
     })
   },
 
-  transformarNotificacion: (notificacion) => {
+  transformarNotificacion: function (notificacion) {
     try {
       if (notificacion == undefined) {
         notificacion = {};
@@ -64,7 +64,7 @@ const metodos = {
     }
   },
 
-  manejar: (notificacion) => {
+  manejar: function (notificacion) {
     Rules_Usuario.isLogin()
       .then((login) => {
         if (login != true) return;
@@ -81,7 +81,7 @@ const metodos = {
       });
   },
 
-  autoEnviarNotificacion: () => {
+  autoEnviarNotificacion: function () {
     return new Promise((callback, callbackError) => {
       const url = 'https://fcm.googleapis.com/fcm/send';
 

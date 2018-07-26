@@ -5,7 +5,8 @@ import codePush from "react-native-code-push";
 import Rules_Ajustes from "@Rules/Rules_Ajustes";
 
 const metodos = {
-  actualizarApp: () => {
+
+  actualizarApp: function () {
     return new Promise((callback, reject) => {
 
       //Valido si soy beta tester
@@ -61,7 +62,7 @@ const metodos = {
 
   },
 
-  getInitData: () => {
+  getInitData: function () {
 
     return new Promise((callback, callbackError) => {
       setTimeout(() => {

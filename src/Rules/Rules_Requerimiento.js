@@ -3,7 +3,7 @@
 import Rules_Ajustes from "./Rules_Ajustes";
 
 const metodos = {
-  get: () => {
+  get: function () {
     return new Promise((resolve, reject) => {
       let rqs = [];
       rqs.push({ id: 1, estadoKeyValue: 1, estadoColor: '#E53935', estadoNombre: 'Nuevo', numero: "QAZWSX", año: 2017, fechaAlta: '10/10/2018' });
@@ -54,7 +54,7 @@ const metodos = {
     // });
   },
 
-  insertar: (comando) => {
+  insertar: function (comando) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback();
@@ -62,7 +62,7 @@ const metodos = {
     });
   },
 
-  getEstados: () => {
+  getEstados: function () {
     return new Promise((callback, reject) => {
       setTimeout(() => {
         let estados = [{
@@ -81,7 +81,7 @@ const metodos = {
     })
   },
 
-  getDetalle: (id) => {
+  getDetalle: function (id) {
     return new Promise((callback, reject) => {
       setTimeout(() => {
         callback({});

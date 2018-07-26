@@ -1,5 +1,5 @@
 const metodos = {
-  get: (idServicio) => {
+  get: function (idServicio) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([
@@ -72,7 +72,7 @@ const metodos = {
     });
   },
 
-  getParaBuscar: () => {
+  getParaBuscar: function () {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
         callback([

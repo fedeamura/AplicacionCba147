@@ -3,8 +3,9 @@ import App from "Cordoba/src/UI/App";
 import DB from "Cordoba/src/DAO/DB";
 
 const metodos = {
+
   //Intro vista
-  setIntroVista: () => {
+  setIntroVista: function () {
     DB.setItem("introVista", 'true').then(() => {
 
     }).catch((error) => {
@@ -12,7 +13,7 @@ const metodos = {
     });
   },
 
-  esIntroVista: () => {
+  esIntroVista: function () {
     return new Promise((resolve, reject) => {
       DB.getItem("introVista").then((val) => {
         if (val == undefined) {
@@ -26,11 +27,11 @@ const metodos = {
   },
 
   //Beta tester
-  setBetaTester: (tester) => {
+  setBetaTester: function (tester) {
     return DB.setItem("betaTester", '' + tester);
   },
 
-  isBetaTester: () => {
+  isBetaTester: function () {
     return new Promise((resolve, reject) => {
       DB.getItem("betaTester").then((val) => {
         if (val == undefined) {
@@ -44,11 +45,11 @@ const metodos = {
   },
 
   //Ajustes para desarrollador
-  setAjustesParaDesarrolladorVisible: (visible) => {
+  setAjustesParaDesarrolladorVisible: function (visible) {
     return DB.setItem("ajustesDesarrolladorVisible", '' + visible);
   },
 
-  esAjustesParaDesarrolladorVisible: () => {
+  esAjustesParaDesarrolladorVisible: function () {
     return new Promise((resolve, reject) => {
       DB.getItem("ajustesDesarrolladorVisible").then((val) => {
         if (val == undefined) {
@@ -62,7 +63,7 @@ const metodos = {
   },
 
   //Tipo de UI para el listado de requerimientos
-  setListadoRequerimientoInterfaz: (tipo) => {
+  setListadoRequerimientoInterfaz: function (tipo) {
     return new Promise((resolve, reject) => {
       DB.setItem("listadoRequerimientoInterfaz", tipo + '').then(() => {
         resolve();
@@ -72,7 +73,7 @@ const metodos = {
     });
   },
 
-  getListadoRequerimientoInterfaz: () => {
+  getListadoRequerimientoInterfaz: function () {
     return new Promise((resolve, reject) => {
 
       DB.getItem("listadoRequerimientoInterfaz").then((val) => {
@@ -87,7 +88,7 @@ const metodos = {
   },
 
   //Validar coneccion
-  validarConeccion: () => {
+  validarConeccion: function () {
     return new Promise((callback, reject) => {
       callback();
     });

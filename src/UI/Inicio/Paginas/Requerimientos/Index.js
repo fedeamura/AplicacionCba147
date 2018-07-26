@@ -9,11 +9,8 @@ import {
     Text,
 } from "native-base";
 import {
-    Checkbox,
     FAB,
-    TouchableRipple
 } from "react-native-paper";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 //Mis componentes
 import App from "@UI/App";
@@ -22,7 +19,6 @@ import ItemRequerimiento from "@Utils/Requerimiento/CardItem";
 import MiPanelError from "@Utils/MiPanelError";
 
 //Rules
-import Rules_Usuario from "@Rules/Rules_Usuario";
 import Rules_Requerimiento from "@Rules/Rules_Requerimiento";
 import Rules_Notificaciones from "@Rules/Rules_Notificaciones";
 
@@ -32,16 +28,18 @@ export default class PaginaInicio_Requerimientos extends React.Component {
         super(props);
 
         this.state = {
-            estados: undefined,
-            viewVisible: true,
             cargando: true,
             error: undefined,
-            requerimientos: [],
-            filtrosVisible: false,
-            filtrosEstado: []
+            requerimientos: []
         };
 
         this.animBoton = new Animated.Value(0);
+
+        this.mostrarBotonNuevo = this.mostrarBotonNuevo.bind(this);
+        this.ocultarBotonNuevo = this.ocultarBotonNuevo.bind(this);
+        this.buscarRequerimientos = this.buscarRequerimientos.bind(this);
+        this.abrirNuevoRequerimiento = this.abrirNuevoRequerimiento.bind(this);
+        this.verDetalleRequerimiento = this.verDetalleRequerimiento.bind(this);
     }
 
     componentDidMount() {
@@ -53,34 +51,26 @@ export default class PaginaInicio_Requerimientos extends React.Component {
             //Mando a manejar
             Rules_Notificaciones.manejar(data);
         }
-
-        Rules_Requerimiento.getEstados().then((estados) => {
-            for (let i = 0; i < estados.length; i++) {
-                estados[i].Checked = false;
-            }
-
-            this.setState({ estados: estados });
-        });
     }
 
-    mostrarBotonNuevo = () => {
+    mostrarBotonNuevo() {
         Animated.timing(this.animBoton, {
             toValue: 1,
             duration: 300
         }).start();
     }
 
-    ocultarBotonNuevo = () => {
+    ocultarBotonNuevo() {
         Animated.timing(this.animBoton, {
             toValue: 0,
             duration: 300
         }).start();
     }
 
-    buscarRequerimientos = () => {
+    buscarRequerimientos() {
         this.setState({
             cargando: true
-        }, () => {
+        }, function() {
             this.ocultarBotonNuevo();
 
             Rules_Requerimiento.get()
@@ -98,8 +88,8 @@ export default class PaginaInicio_Requerimientos extends React.Component {
                         }
                     });
 
-                }).catch((error) => {
-
+                })
+                .catch((error) => {
                     this.setState({
                         cargando: false,
                         requerimientos: [],
@@ -108,11 +98,10 @@ export default class PaginaInicio_Requerimientos extends React.Component {
                         this.ocultarBotonNuevo();
                     });
                 })
-        });
+        }.bind(this));
     }
 
-    abrirNuevoRequerimiento = () => {
-        console.debug('Nuevo requerimiento');
+    abrirNuevoRequerimiento() {
 
         App.navegar('RequerimientoNuevo', {
             callback: () => {
@@ -125,7 +114,7 @@ export default class PaginaInicio_Requerimientos extends React.Component {
         });
     }
 
-    verDetalleRequerimiento = (id) => {
+    verDetalleRequerimiento(id) {
         App.navegar('RequerimientoDetalle', { id: id });
     }
 
@@ -145,13 +134,9 @@ export default class PaginaInicio_Requerimientos extends React.Component {
                     refreshing={this.state.cargando}
                     error={this.state.cargando == false && this.state.error != undefined}
                     data={this.state.requerimientos}
-                
+
                     //Item
                     renderItem={(item) => {
-                        if (this.state.filtrosEstado.length != 0) {
-                            if (item.item.estadoKeyValue != 1) return null;
-                        }
-
                         return <ItemRequerimiento
                             onPress={this.verDetalleRequerimiento}
                             numero={item.item.numero}
