@@ -4,9 +4,11 @@ import {
   StyleSheet,
   View,
   Animated,
+  Alert,
   Easing,
   Keyboard,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  BackHandler
 } from "react-native";
 import {
   Button
@@ -14,6 +16,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import LinearGradient from 'react-native-linear-gradient';
 import _ from 'lodash';
+import autobind from 'autobind-decorator'
 
 const tAnim = 500;
 const marginIcon = 16;
@@ -46,33 +49,57 @@ export default class MiToolbarMenu extends React.Component {
     this.state = {
       opcion: props.opcion || 0,
       index: index || 0,
-      expandido: this.props.expandido || false,
+      expandido: false,
       animando: false,
       animandoExpandir: false,
       animandoSeleccionar: false,
       opciones: props.opciones || [],
-      // hOpcion: this.hOpcion,
-      // hToolbar: this.hToolbar,
-      // yCollapse: this.yCollapse,
-      // ySombraCollapse: this.hToolbar,
-      // ySombraExpandido: this.state.hScreen,
       hScreen: 500,
       visible: false
     };
 
     this.animSombra = new Animated.Value(expandido ? 0 : 1);
+    this.animInicio = new Animated.Value(0);
+    this.animInicio2 = new Animated.Value(0);
   }
 
-  onLayout = (event) => {
-    var { x, y, width, height } = event.nativeEvent.layout;
+  componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.back);
+  }
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.back);
+  }
 
-    this.setState({ hScreen: height }, () => {
+  @autobind
+  back() {
+    if (this.state.expandido == true) {
+      this.seleccionar(this.state.opcion);
+      return true;
+    }
+
+    return false;
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return JSON.stringify(this.state) != JSON.stringify(nextState)
+  }
+
+  @autobind
+  onLayout(event) {
+    var { height } = event.nativeEvent.layout;
+
+    this.setState({ hScreen: height }, function () {
       this.initDimens();
       this.setState({ visible: true });
-    });
+    }.bind(this));
+
+    Animated.sequence([
+      Animated.timing(this.animInicio, { toValue: 1, duration: 500 }),
+      Animated.timing(this.animInicio2, { toValue: 1, duration: 500 }),
+    ]).start();
   }
 
-  initOpciones = (props) => {
+  initOpciones(props) {
     this.anims = [];
     this.animsBackground = [];
     this.animsSombras = [];
@@ -80,15 +107,15 @@ export default class MiToolbarMenu extends React.Component {
 
     let expandido = props.expandido || false;
 
-    _.each(props.opciones, (opcion) => {
+    _.each(props.opciones, function (opcion) {
       this.anims.push(new Animated.Value(expandido ? 1 : 0));
       this.animsBackground.push(new Animated.Value(expandido ? 1 : 0));
       this.animsSombras.push(new Animated.Value(expandido ? 1 : 0));
       this.animsPress.push(new Animated.Value(0));
-    });
+    }.bind(this));
   }
 
-  initDimens = () => {
+  initDimens() {
 
     //Calculo el tamaño de la opcion
     this.hOpcion = (this.state.hScreen) / this.state.opciones.length;
@@ -113,29 +140,8 @@ export default class MiToolbarMenu extends React.Component {
     this.ySombraExpandido = this.state.hScreen;
   }
 
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.expandido) {
-      this.expandir();
-    } else {
-      this.seleccionar(this.state.opcion);
-    }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return JSON.stringify(this.state) != JSON.stringify(nextState)
-  }
-
-  keyboardWillShow = (event) => {
-    this.teclado = true;
-
-    Animated.timing(this.keyboardHeight, {
-      duration: event.duration,
-      toValue: event.endCoordinates.height,
-    }).start();
-  }
-
-  seleccionar = (opcion) => {
+  @autobind
+  seleccionar(opcion) {
     let index = undefined;
 
     for (let i = 0; i < this.props.opciones.length; i++) {
@@ -145,6 +151,10 @@ export default class MiToolbarMenu extends React.Component {
       }
     }
 
+    if (this.props.onSeleccionChange != undefined) {
+      this.props.onSeleccionChange(index, opcion);
+    }
+
     this.setState({
       animando: true,
       animandoSeleccionar: true,
@@ -152,12 +162,12 @@ export default class MiToolbarMenu extends React.Component {
       opcion: opcion,
       index: index,
       expandido: false
-    }, () => {
+    }, function () {
 
       this.actualizarSombras();
 
       let animsPendientes = [];
-      _.each(this.anims, (anim) => {
+      _.each(this.anims, function (anim) {
         animsPendientes.push(
           Animated.timing(anim, {
             duration: tAnim,
@@ -165,40 +175,45 @@ export default class MiToolbarMenu extends React.Component {
             easing: Easing.bezier(0.645, 0.045, 0.355, 1),
             useNativeDriver: true
           }));
-      });
+      }.bind(this));
 
-      _.each(this.animsBackground, (anim) => {
+      _.each(this.animsBackground, function (anim) {
         animsPendientes.push(
           Animated.timing(anim, {
             duration: tAnim,
             toValue: 0
           }));
-      });
+      }.bind(this));
 
-      Animated.parallel(animsPendientes).start(() => {
+      Animated.parallel(animsPendientes).start(function () {
         this.setState({
           animandoSeleccionar: false,
           animando: false
         });
-      });
-    });
+      }.bind(this));
+    }.bind(this));
   }
 
-  expandir = () => {
+  @autobind
+  expandir() {
 
     Keyboard.dismiss();
+
+    if (this.props.onExpandido != undefined) {
+      this.props.onExpandido();
+    }
 
     this.setState({
       animando: true,
       animandoSeleccionar: false,
       animandoExpandir: true,
       expandido: true
-    }, () => {
+    }, function () {
 
       this.actualizarSombras();
 
       let animsPendientes = [];
-      _.each(this.anims, (anim) => {
+      _.each(this.anims, function (anim) {
         animsPendientes.push(
           Animated.timing(anim, {
             duration: tAnim,
@@ -206,26 +221,27 @@ export default class MiToolbarMenu extends React.Component {
             easing: Easing.bezier(0.645, 0.045, 0.355, 1),
             useNativeDriver: true
           }));
-      });
+      }.bind(this));
 
-      _.each(this.animsBackground, (anim) => {
+      _.each(this.animsBackground, function (anim) {
         animsPendientes.push(
           Animated.timing(anim, {
             duration: tAnim,
             toValue: 1
           }));
-      });
+      }.bind(this));
 
-      Animated.parallel(animsPendientes).start(() => {
+      Animated.parallel(animsPendientes).start(function () {
         this.setState({
           animando: false,
           animandoExpandir: false
         });
-      });
-    });
+      }.bind(this));
+    }.bind(this));
   }
 
-  actualizarSombras = () => {
+  @autobind
+  actualizarSombras() {
     let animsPendientes = [];
 
     for (let i = 0; i < this.state.opciones.length; i++) {
@@ -241,11 +257,11 @@ export default class MiToolbarMenu extends React.Component {
       }))
     }
 
-
     Animated.parallel(animsPendientes).start();
   }
 
-  onPressOpcion = (opcion, index) => {
+  @autobind
+  onPressOpcion(opcion, index) {
     if (this.state.opciones.length == 0) return;
 
     this.onPressUp(index);
@@ -259,32 +275,45 @@ export default class MiToolbarMenu extends React.Component {
     this.seleccionar(index);
   }
 
-  onPressIn = (index) => {
+  onPressIn(index) {
     Animated.timing(this.animsPress[index], { toValue: 1, duration: 300 }).start();
   }
 
-  onPressUp = (index) => {
+  onPressUp(index) {
     Animated.timing(this.animsPress[index], { toValue: 0, duration: 300 }).start();
   }
 
+
   render() {
+
+    const initData = global.initData;
 
     return (
       <View
         onLayout={this.onLayout}
-        style={[styles.contenedor, { overflow: 'hidden' }]}>
+        style={[styles.contenedor, { overflow: 'hidden', backgroundColor: initData.backgroundColor }]}>
 
         {this.state.visible == true && (
 
-          <View
-            style={styles.contenedor}>
+          <Animated.View
+            style={[styles.contenedor, {
+              transform: [
+                {
+                  translateY: this.animInicio.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-100, 0]
+                  })
+                }
+              ]
+            }]}>
 
-            <View style={[styles.encabezado_Opciones]}>
+            <View
+              style={[styles.encabezado_Opciones]}>
 
               {/* Las opciones */}
-              {this.state.opciones.map((opcion, index) => {
+              {this.state.opciones.map(function (opcion, index) {
                 return this.renderOpcion(opcion, index);
-              })}
+              }.bind(this))}
 
             </View>
 
@@ -303,7 +332,7 @@ export default class MiToolbarMenu extends React.Component {
             {/* Content */}
             {this.renderContent()}
 
-          </View >
+          </Animated.View >
         )}
 
       </View>
@@ -363,9 +392,9 @@ export default class MiToolbarMenu extends React.Component {
       }]}>
         <TouchableWithoutFeedback
           style={{ width: '100%' }}
-          onPressIn={() => { this.onPressIn(index) }}
-          onPressOut={() => { this.onPressUp(index) }}
-          onPress={() => { this.onPressOpcion(opcion, index); }}>
+          onPressIn={this.onPressIn.bind(this, index)}
+          onPressOut={this.onPressUp.bind(this, index)}
+          onPress={this.onPressOpcion.bind(this, opcion, index)}>
           <Animated.View style={
             [
               styles.encabezado_OpcionInterior,
@@ -484,11 +513,8 @@ export default class MiToolbarMenu extends React.Component {
           }]}>
       <Button
         style={styles.btnLeftBtn}
-        transparent onPress={() => {
-          if (this.props.iconoIzquierdaOnPress != undefined) {
-            this.props.iconoIzquierdaOnPress();
-          }
-        }}>
+        transparent
+        onPress={this.expandir}>
         <Icon
           style={[
             styles.btnLeftIcon, {
@@ -503,7 +529,7 @@ export default class MiToolbarMenu extends React.Component {
     if (this.props.mostrarBotonCerrar != true) return <View />;
 
     return <Animated.View
-      pointerEvents={this.state.expandido && !this.state.animando ? "auto" : "none"}
+      pointerEvents={this.state.expandido == true ? "auto" : "none"}
       style={
         [
           styles.btnLeft,
@@ -519,9 +545,10 @@ export default class MiToolbarMenu extends React.Component {
           }
         ]
       }>
-      <Button style={styles.btnLeftBtn} transparent onPress={() => {
-        this.seleccionar(this.state.opcion);
-      }}>
+      <Button
+        style={styles.btnLeftBtn}
+        transparent
+        onPress={this.seleccionar.bind(this, this.state.opcion)}>
         <Icon style={styles.btnClose} name={this.props.iconoCerrar} color={this.props.iconoCerrarColor || 'white'} />
       </Button>
     </Animated.View>
@@ -563,24 +590,32 @@ export default class MiToolbarMenu extends React.Component {
   }
 
   renderContent() {
+    const initData = global.initData;
+
+  
     let content = undefined;
     if (this.state.opcion != undefined) {
-      _.each(this.state.opciones, (opcion) => {
+      _.each(this.state.opciones, function (opcion) {
         if (opcion.valor == this.state.opcion) {
           content = opcion.contenido;
         }
-      });
+      }.bind(this));
     }
 
     return <View
       style={[
         styles.content,
         {
+          backgroundColor:initData.backgroundColor,
           marginTop: this.hToolbar,
           zIndex: this.state.animandoSeleccionar == false && this.state.expandido == false ? 100 : -1
         }]}
       key={this.state.opcion}>
-      {content}
+      <Animated.View style={{
+        opacity: this.animInicio2
+      }}>
+        {content}
+      </Animated.View>
     </View>;
   }
 }

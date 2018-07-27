@@ -88,7 +88,7 @@ function validarNombre(val) {
 }
 
 function validarUsername(val) {
-    let letrasPermitidas = "abcdefghijklmnñopqrstuvwxyz._-";
+    let letrasPermitidas = "abcdefghijklmnñopqrstuvwxyz._-1234567890";
 
     for (var i = 0; i < val.length; i++) {
         let letra = '' + val.charAt(i).toLowerCase();

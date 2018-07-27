@@ -8,14 +8,13 @@ import {
 import {
     Button,
     Text,
-    Spinner
 } from "native-base";
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNFS from 'react-native-fs';
+import autobind from 'autobind-decorator'
 
 //Mis componentes
-import App from "@UI/App";
 import MiView from "@Utils/MiView";
 
 export default class RequerimientoNuevo_PasoFoto extends React.Component {
@@ -44,141 +43,156 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
         }
     }
 
-    agregarFoto = () => {
+    @autobind
+    agregarFoto() {
         Alert.alert('', 'Agregar foto', [
             { text: 'Galeria', onPress: this.agregarFotoDesdeGaleria },
             { text: 'Cámara', onPress: this.agregarFotoDesdeCamara }
         ]);
     }
 
-    agregarFotoDesdeCamara = () => {
+    @autobind
+    agregarFotoDesdeCamara() {
         var options = {
             title: 'Elegir foto'
         };
 
         this.setState({
             cargando: true
-        }, () => {
+        }, function () {
             // Mando a buscar la foto
-            ImagePicker.launchCamera(options, (response) => {
-                if (response.didCancel) {
-                    this.setState({
-                        cargando: false
-                    });
-                    return;
-                }
-                else if (response.error) {
-                    this.setState({
-                        cargando: false,
-                        foto: undefined
-                    });
+            ImagePicker.launchCamera(options,
+                function (response) {
+                    if (response.didCancel) {
+                        this.setState({
+                            cargando: false
+                        });
+                        return;
+                    }
 
-                    Alert.alert('', 'Error procesando la solicitud. Error: ' + response.error);
-                    return
-                }
+                    if (response.error) {
+                        this.setState({
+                            cargando: false,
+                            foto: undefined
+                        });
 
+                        Alert.alert('', 'Error procesando la solicitud. Error: ' + response.error);
+                        return
+                    }
 
-                this.procesarImagen(response.uri);
-            });
+                    this.procesarImagen(response.uri);
+                }.bind(this));
 
-        });
+        }.bind(this));
     }
 
-
-
-    agregarFotoDesdeGaleria = () => {
+    @autobind
+    agregarFotoDesdeGaleria() {
         var options = {
             title: 'Elegir foto'
         };
 
         this.setState({
             cargando: true
-        }, () => {
+        }, function () {
             // Mando a buscar la foto
-            ImagePicker.launchImageLibrary(options, (response) => {
-                if (response.didCancel) {
-                    this.setState({
-                        cargando: false
-                    });
-                    return;
-                }
-                else if (response.error) {
-                    this.setState({
-                        cargando: false,
-                        foto: undefined
-                    });
+            ImagePicker.launchImageLibrary(options,
+                function (response) {
+                    if (response.didCancel) {
+                        this.setState({
+                            cargando: false
+                        });
+                        return;
+                    }
 
-                    Alert.alert('', 'Error procesando la solicitud');
-                    return
-                }
+                    if (response.error) {
+                        this.setState({
+                            cargando: false
+                        });
 
-                this.procesarImagen(response.uri);
-            });
+                        Alert.alert('', 'Error procesando la solicitud. Error: ' + response.error);
+                        return
+                    }
 
-        });
+                    this.procesarImagen(response.uri);
+                }.bind(this));
+
+        }.bind(this));
 
     }
 
-    procesarImagen = (img) => {
+    @autobind
+    procesarImagen(img) {
         // Achico la imagen
         ImageResizer.createResizedImage(img, 1000, 1000, 'JPEG', 80)
-            .then((response2) => {
+            .then(function (responseResize) {
                 // Convierto la imagen a base64
-                RNFS.readFile(response2.uri, 'base64')
-                    .then(base64 => {
+                RNFS.readFile(responseResize.uri, 'base64')
+                    .then(function (base64) {
+
                         let foto = 'data:image/jpeg;base64,' + base64;
                         this.setState({
                             cargando: false,
                             foto: foto
                         }, this.informarFoto);
-                    }).catch(() => {
-                        Alert.alert('', 'Error procesando la solicitud');
+                    }.bind(this))
+                    .catch(function () {
+                        Alert.alert('', 'Error procesando la solicitud. Leyendo');
                         this.setState({
-                            cargando: false,
-                            foto: undefined
+                            cargando: false
                         });
-                    });
-            })
-            .catch((err) => {
-                Alert.alert('', 'Error procesando la solicitud');
+                    }.bind(this));
+            }.bind(this))
+            .catch(function (err) {
+                Alert.alert('', 'Error procesando la solicitud. Resize');
                 this.setState({
-                    cargando: false,
-                    foto: undefined
+                    cargando: false
                 });
-            });
+            }.bind(this));
+
+       
     }
 
 
-    cancelarFoto = () => {
-        this.setState({ viewSeleccionadoVisible: false }, () => {
-            setTimeout(() => {
-                this.setState({ foto: undefined, viewSeleccionarVisible: true }, () => {
-                    this.props.onFoto(undefined);
-                });
-            }, 300);
-        })
+    @autobind
+    cancelarFoto() {
+        this.setState({ viewSeleccionadoVisible: false },
+
+            function () {
+                setTimeout(function () {
+                    this.setState({ foto: undefined, viewSeleccionarVisible: true },
+                        function () {
+                            this.props.onFoto(undefined);
+                        }.bind(this));
+                }.bind(this), 300);
+            })
     }
 
-    informarFoto = () => {
-        this.setState({ viewSeleccionarVisible: false }, () => {
-            setTimeout(() => {
-                this.setState({ viewSeleccionadoVisible: true });
-            }, 300);
-        });
+    @autobind
+    informarFoto() {
+        this.setState({ viewSeleccionarVisible: false },
+            function () {
+                setTimeout(function () {
+                    this.setState({ viewSeleccionadoVisible: true });
+                }.bind(this), 300);
+            }.bind(this));
 
         this.props.onFoto(this.state.foto);
     }
 
-    informarReady = () => {
+    @autobind
+    informarReady() {
         this.props.onReady();
     }
 
-    abrirImagen = () => {
-        App.navegar('VisorFoto', {
-            source: { uri: this.state.foto }
-        });
+    @autobind
+    abrirImagen() {
+        // App.navegar('VisorFoto', {
+        //     source: { uri: this.state.foto }
+        // });
     }
 
+    @autobind
     render() {
         return (
             <View>

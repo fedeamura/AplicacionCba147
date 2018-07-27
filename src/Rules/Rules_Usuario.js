@@ -193,7 +193,7 @@ const metodos = {
           ValidadoRenaper: false,
           IdentificadorFotoPersonal: undefined
         });
-      }, 500);
+      }, 1000);
     });
   },
 
@@ -212,7 +212,8 @@ const metodos = {
   validarDatos: function (usuario) {
     return new Promise((callback, callbackError) => {
       setTimeout(() => {
-        callbackError('Datos invalidos');
+        callback(usuario);
+        // callbackError('Datos invalidos');
         // callback(usuario);
         // callbackError('El usuario ya existe');
       }, 1000);

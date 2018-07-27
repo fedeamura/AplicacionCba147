@@ -47,6 +47,17 @@ export default class Login extends React.Component {
     this.anim_ErrorUsername = new Animated.Value(0);
     this.anim_ErrorPassword = new Animated.Value(0);
     this.keyboardHeight = new Animated.Value(0);
+
+    this.keyboardWillShow = this.keyboardWillShow.bind(this);
+    this.keyboardWillHide = this.keyboardWillHide.bind(this);
+    this.animarInicio = this.animarInicio.bind(this);
+    this.consultarLogin = this.consultarLogin.bind(this);
+    this.mostrarFormulario = this.mostrarFormulario.bind(this);
+    this.onUsernameChange = this.onUsernameChange.bind(this);
+    this.onPasswordChange = this.onPasswordChange.bind(this);
+    this.login = this.login.bind(this);
+    this.nuevoUsuario = this.nuevoUsuario.bind(this);
+    this.recuperarCuenta = this.recuperarCuenta.bind(this);
   }
 
   componentWillMount() {
@@ -59,7 +70,7 @@ export default class Login extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
-  keyboardWillShow = (event) => {
+  keyboardWillShow(event) {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -68,7 +79,7 @@ export default class Login extends React.Component {
     }).start();
   }
 
-  keyboardWillHide = (event) => {
+  keyboardWillHide(event) {
     this.teclado = false;
 
     Animated.timing(this.keyboardHeight, {
@@ -77,64 +88,62 @@ export default class Login extends React.Component {
     }).start();
   }
 
-  animarInicio = () => {
+  animarInicio() {
     Animated.spring(this.anim_Logo, {
       toValue: 1
     }).start(this.consultarLogin);
   }
 
-  consultarLogin = () => {
-    Rules_Ajustes.esIntroVista().then((vista) => {
-      if (vista == false) {
-        App.navegar('Introduccion', {
-          callback: () => {
-            this.consultarLogin();
-          }
-        });
-      } else {
-        Rules_Usuario.isLogin()
-          .then((login) => {
-            if (login) {
-              Animated.spring(this.anim_Logo, { toValue: 0 }).start(() => App.replace('Inicio'));
-              return;
-            }
-
-            Animated.spring(this.anim_Form, {
-              toValue: 1
-            }).start();
-          })
-          .catch((error) => {
-            Alert.alert('', error, [{ text: 'Reintentar', onPress: this.consultarLogin }]);
+  consultarLogin() {
+    Rules_Ajustes.esIntroVista()
+      .then(function (vista) {
+        if (vista == false) {
+          App.navegar('Introduccion', {
+            callback: function () {
+              this.consultarLogin();
+            }.bind(this)
           });
-      }
-    }).catch(() => {
+        } else {
+          Rules_Usuario.isLogin()
+            .then(function (login) {
+              if (login) {
+                Animated.spring(this.anim_Logo, { toValue: 0 }).start(function () { App.replace('Inicio') }.bind(this));
+                return;
+              }
 
-    });
+              Animated.spring(this.anim_Form, {
+                toValue: 1
+              }).start();
 
+            }.bind(this))
+            .catch(function (error) {
+              Alert.alert('', error, [{ text: 'Reintentar', onPress: this.consultarLogin }]);
+            }.bind(this));
+        }
+      }.bind(this))
+      .catch(function () {
 
-
-
-
+      }.bind(this));
   }
 
-  mostrarFormulario = () => {
+  mostrarFormulario() {
     Animated.timing(this.anim_Form, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  onUsernameChange = (text) => {
+  onUsernameChange(text) {
     this.setState({ username: text });
     Animated.timing(this.anim_ErrorUsername, { toValue: 0, duration: 300 }).start();
   }
 
-  onPasswordChange = (text) => {
+  onPasswordChange(text) {
     this.setState({ password: text });
     Animated.timing(this.anim_ErrorPassword, { toValue: 0, duration: 300 }).start();
   }
 
-  login = () => {
+  login() {
 
     //Valido el form
     let tieneUsername = this.state.username != undefined && this.state.username != "";
@@ -147,19 +156,20 @@ export default class Login extends React.Component {
 
     //Cierro keyboard y empiezo a animar
     Keyboard.dismiss();
-    setTimeout(() => {
+    setTimeout(function () {
       //Achico el formulario
-      Animated.spring(this.anim_Form, { toValue: 0 }).start((() => {
+      Animated.spring(this.anim_Form, { toValue: 0 }).start(function () {
         this.setState({
           cargando: true
-        }, () => {
+        }, function () {
           Rules_Usuario.login(this.state.username, this.state.password)
-            .then(() => {
-              Animated.spring(this.anim_Logo, { toValue: 0 }).start(() => {
-                App.replace('Inicio');
-              });
-            })
-            .catch((error) => {
+            .then(function () {
+              Animated.spring(this.anim_Logo, { toValue: 0 })
+                .start(function () {
+                  App.replace('Inicio');
+                }.bind(this));
+            }.bind(this))
+            .catch(function (error) {
 
               this.setState({
                 cargando: false
@@ -172,22 +182,22 @@ export default class Login extends React.Component {
                 [
                   {
                     text: "Aceptar",
-                    onPress: () => { }
+                    onPress: function () { }
                   }
                 ],
                 { cancelable: true }
               );
-            });
-        })
-      }));
-    }, 300);
+            }.bind(this));
+        }.bind(this))
+      }.bind(this));
+    }.bind(this), 300);
   }
 
-  nuevoUsuario = () => {
+  nuevoUsuario() {
     App.navegar('UsuarioNuevo');
   }
 
-  recuperarCuenta = () => {
+  recuperarCuenta() {
     App.navegar('RecuperarCuenta');
   }
 
@@ -203,7 +213,7 @@ export default class Login extends React.Component {
         <WebImage
           resizeMode="cover"
           style={styles.imagenFondo}
-          source={require('@Resources/imagen_fondo_login.jpg')}
+          source={{ uri: url_ImagenFondo }}
         />
 
         <View style={styles.imagenFondo_Dim}></View>
@@ -302,7 +312,7 @@ export default class Login extends React.Component {
                   editable={!this.state.cargandoLogin}
                   secureTextEntry={true}
                   value={this.state.password}
-                  onChangeText={val => { this.onPasswordChange(val); }}
+                  onChangeText={this.onPasswordChange}
                   style={styles.input}
                   label={texto_Password}
                   iconClass={MaterialsIcon}
@@ -486,8 +496,8 @@ const styles = StyleSheet.create({
 });
 
 const texto_Titulo = "Iniciar sesión";
-const url_ImagenFondo = "http://www.regioncentronoticias.com/wp-content/uploads/2017/08/ARCHI_3643091200x771.jpgg";
-const url_ImagenLogo = "https://lh3.googleusercontent.com/0oKhFnzCvEBACju9oJs5vaqpHcTPTrJUt0ZSx20J6VelB0GBlSKKYdjVJbAxT2z2TUeG=w300-rw";
+const url_ImagenFondo = "https://i.imgur.com/ggQxfwB.jpg";
+const url_ImagenLogo = "https://i.imgur.com/GAMvKv8.png";
 const texto_Usuario = "Usuario";
 const texto_UsuarioRequerido = "DatoRequerido";
 const texto_Password = "Contraseña";

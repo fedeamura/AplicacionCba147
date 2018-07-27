@@ -7,6 +7,7 @@ import {
 import {
   Text, Spinner,
 } from "native-base";
+import autobind from 'autobind-decorator'
 
 export default class RequerimientoNuevo extends React.Component {
   constructor(props) {
@@ -38,13 +39,15 @@ export default class RequerimientoNuevo extends React.Component {
     }).start();
   }
 
-  onPressIn = () => {
+  @autobind
+  onPressIn() {
     Animated.spring(this.animPress, {
       toValue: 1
     }).start();
   }
 
-  onPressOut = () => {
+  @autobind
+  onPressOut() {
     Animated.spring(this.animPress, {
       toValue: 0
     }).start();
@@ -52,19 +55,13 @@ export default class RequerimientoNuevo extends React.Component {
 
   render() {
 
-    const initData = global.initData.requerimientoNuevo;
-
     let colorCirculo = this.props.colorFondoCirculo || 'white';
     let colorCirculoCompletado = this.props.colorFondoCirculoCompletado || 'green';
 
     return (
       <TouchableWithoutFeedback
-        onPressIn={() => {
-          this.onPressIn();
-        }}
-        onPressOut={() => {
-          this.onPressOut();
-        }}
+        onPressIn={this.onPressIn}
+        onPressOut={this.onPressOut}
         onPress={this.props.onPress}>
 
         <Animated.View

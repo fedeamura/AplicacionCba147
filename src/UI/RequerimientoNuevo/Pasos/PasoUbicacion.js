@@ -8,11 +8,11 @@ import {
 } from "native-base";
 import WebImage from 'react-native-web-image'
 import LinearGradient from 'react-native-linear-gradient';
+import autobind from 'autobind-decorator'
 
 //Mis componentes
 import App from "@UI/App";
 import MiView from "@Utils/MiView";
-import MiItemDetalle from '@Utils/MiItemDetalle';
 
 export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
 
@@ -28,41 +28,48 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
 
     static defaultProps = {
         ...React.Component.defaultProps,
-        onReady: () => { },
-        onUbicacion: () => { }
+        onReady: function () { },
+        onUbicacion: function () { }
     }
 
-    onUbicacion = (ubicacion) => {
-        this.setState({ ubicacion: ubicacion, viewSeleccionarVisible: false }, () => {
-            this.informarUbicacion();
+    @autobind
+    onUbicacion(ubicacion) {
+        this.setState({ ubicacion: ubicacion, viewSeleccionarVisible: false },
+            function () {
+                this.informarUbicacion();
 
-            setTimeout(() => {
-                this.setState({ viewSeleccionadoVisible: true });
-            }, 300);
-        });
+                setTimeout(function () {
+                    this.setState({ viewSeleccionadoVisible: true });
+                }.bind(this), 300);
+            });
     }
 
-    cancelarUbicacion = () => {
-        this.setState({ ubicacion: undefined, viewSeleccionadoVisible: false }, () => {
-            this.informarUbicacion();
+    @autobind
+    cancelarUbicacion() {
+        this.setState({ ubicacion: undefined, viewSeleccionadoVisible: false },
+            function () {
+                this.informarUbicacion();
 
-            setTimeout(() => {
-                this.setState({ viewSeleccionarVisible: true });
-            }, 300);
-        });
+                setTimeout(function () {
+                    this.setState({ viewSeleccionarVisible: true });
+                }.bind(this), 300);
+            });
     }
 
-    seleccionarUbicacion = () => {
+    @autobind
+    seleccionarUbicacion() {
         App.navegar('PickerUbicacion', {
             onUbicacionSeleccionada: this.onUbicacion
         });
     }
 
-    informarUbicacion = () => {
+    @autobind
+    informarUbicacion() {
         this.props.onUbicacion(this.state.ubicacion);
     }
 
-    informarReady = () => {
+    @autobind
+    informarReady() {
         this.props.onReady();
     }
 

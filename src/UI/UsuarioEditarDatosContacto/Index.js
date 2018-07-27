@@ -18,6 +18,7 @@ import {
 } from "react-native-paper";
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import autobind from 'autobind-decorator'
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
@@ -74,7 +75,8 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
-  keyboardWillShow = (event) => {
+  @autobind
+  keyboardWillShow(event) {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -83,7 +85,8 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     }).start();
   }
 
-  keyboardWillHide = (event) => {
+  @autobind
+  keyboardWillHide(event) {
     this.teclado = false;
 
 
@@ -93,9 +96,10 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     }).start();
   }
 
-  buscarDatos = () => {
+  @autobind
+  buscarDatos() {
     Rules_Usuario.getDatos()
-      .then((datos) => {
+      .then(function (datos) {
 
 
         let telFijoArea = undefined;
@@ -129,12 +133,13 @@ export default class UsuarioEditarDatosContacto extends React.Component {
           telefonoCelularCaracteristica: celArea,
           telefonoCelularNumero: celNumero
         });
-      })
-      .catch((error) => {
+      }.bind(this))
+      .catch(function (error) {
         this.setState({ cargando: false, error: error });
-      });;
+      }.bind(this));
   }
 
+  @autobind
   guardarCambios() {
 
     const algunError =
@@ -154,9 +159,10 @@ export default class UsuarioEditarDatosContacto extends React.Component {
       Alert.alert('', 'Ingrese el e-mail',
         [
           {
-            text: 'Aceptar', onPress: () => {
+            text: 'Aceptar',
+            onPress: function () {
               this.inputEmail._root.focus();
-            }
+            }.bind(this)
           }
         ]
       );
@@ -174,9 +180,10 @@ export default class UsuarioEditarDatosContacto extends React.Component {
       Alert.alert('', 'Complete el telefono celular',
         [
           {
-            text: 'Aceptar', onPress: () => {
+            text: 'Aceptar',
+            onPress: function () {
               // this.inputEmail._root.focus();
-            }
+            }.bind(this)
           }
         ]
       );
@@ -194,9 +201,10 @@ export default class UsuarioEditarDatosContacto extends React.Component {
       Alert.alert('', 'Complete el telefono fijo',
         [
           {
-            text: 'Aceptar', onPress: () => {
+            text: 'Aceptar',
+            onPress: function () {
               // this.inputEmail._root.focus();
-            }
+            }.bind(this)
           }
         ]
       );
@@ -204,21 +212,21 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     }
 
     Keyboard.dismiss();
-    this.setState({ cargando: true }, () => {
+    this.setState({ cargando: true }, function () {
       Rules_Usuario.actualizarDatosContacto({})
-        .then(() => {
-
+        .then(function () {
           this.setState({ cargando: false, dialogoExitoVisible: true });
-        })
-        .catch((error) => {
+        }.bind(this))
+        .catch(function (error) {
           Alert.alert('', error || 'Error procesando la solicitud');
           this.setState({ cargando: false });
-        })
+        }.bind(this))
 
-    });
+    }.bind(this));
 
   }
 
+  @autobind
   informarExito() {
     const { params } = this.props.navigation.state;
     if (params != undefined && params.callback != undefined) {
@@ -227,15 +235,103 @@ export default class UsuarioEditarDatosContacto extends React.Component {
 
     this.setState({
       dialogoExitoVisible: false
-    }, () => {
+    }, function () {
       App.goBack();
-    })
+    });
   }
-  cerrar = () => {
+
+  @autobind
+  cerrar() {
     if (this.state.cargando == true) return;
 
     App.goBack();
   }
+
+  @autobind
+  onEmailRef(ref) {
+    this.inputEmail = ref;
+  }
+
+  @autobind
+  onEmailChange(val) {
+    this.setState({ email: val });
+  }
+
+  @autobind
+  onEmailError(error) {
+    this.setState({ emailError: error });
+  }
+
+
+  @autobind
+  onTelFijoCaracteristicaRef(ref) {
+    this.inputTelefonoFijoCaracteristica = ref;
+  }
+
+  @autobind
+  onTelFijoCatacteristicaChange(val) {
+    this.setState({ telefonoFijoCaracteristica: val });
+  }
+
+  @autobind
+  onTelFijoCatacteristicaError(error) {
+    this.setState({ telefonoFijoCaracteristicaError: error });
+  }
+
+
+  @autobind
+  onTelFijoNumeroRef(ref) {
+    this.inputTelefonoFijoNumero = ref;
+  }
+
+  @autobind
+  onTelFijoNumeroChange(val) {
+    this.setState({ telefonoFijoNumero: val });
+  }
+
+  @autobind
+  onTelFijoNumeroError(error) {
+    this.setState({ telefonoFijoNumeroError: error });
+  }
+
+
+  @autobind
+  onCelularCaracteristicaRef(ref) {
+    this.inputTelefonoCelularCaracteristica = ref;
+  }
+
+  @autobind
+  onCelularCatacteristicaChange(val) {
+    this.setState({ telefonoCelularCaracteristica: val });
+  }
+
+  @autobind
+  onCelularCatacteristicaError(error) {
+    this.setState({ telefonoCelularCaracteristicaError: error });
+  }
+
+
+  @autobind
+  onCelularNumeroRef(ref) {
+    this.inputTelefonoCelularNumero = ref;
+  }
+
+  @autobind
+  onCelularNumeroChange(val) {
+    this.setState({ telefonoCelularNumero: val });
+  }
+
+  @autobind
+  onCelularNumeroError(error) {
+    this.setState({ telefonoCelularNumeroError: error });
+  }
+
+  
+  @autobind
+  ocultarTeclado() {
+    Keyboard.dismiss();
+  }
+
 
   render() {
     const initData = global.initData;
@@ -290,7 +386,7 @@ export default class UsuarioEditarDatosContacto extends React.Component {
           <View style={{ marginTop: 16 }}>
             <Button
               rounded
-              style={styles.botonRegistrar} onPress={() => { this.guardarCambios() }}>
+              style={styles.botonRegistrar} onPress={this.guardarCambios}>
               <Text>Guardar cambios</Text>
             </Button>
           </View>
@@ -332,18 +428,16 @@ export default class UsuarioEditarDatosContacto extends React.Component {
         <Icon name="email" style={{ fontSize: 24, marginTop: 16, marginRight: 8, marginLeft: 8 }} />
 
         <MiInputTextValidar
-          onRef={(ref) => { this.inputEmail = ref; }}
+          onRef={this.onEmailRef}
           valorInicial={this.state.email}
           placeholder='E-mail...'
           keyboardType="email-address"
           returnKeyType="done"
           autoCorrect={false}
-          onSubmitEditing={() => {
-            Keyboard.dismiss();
-          }}
+          onSubmitEditing={this.ocultarTeclado}
           validaciones={{ requerido: true, minLength: 4, maxLength: 50, tipo: 'email' }}
-          onChange={(val) => { this.setState({ email: val }); }}
-          onError={(error) => { this.setState({ emailError: error }) }}
+          onChange={this.onEmailChange}
+          onError={this.onEmailError}
           style={{ flex: 1 }}
         />
       </View>
@@ -354,54 +448,42 @@ export default class UsuarioEditarDatosContacto extends React.Component {
         <Icon name="phone" style={{ fontSize: 24, marginTop: 16, marginRight: 8, marginLeft: 8 }} />
 
         <MiInputTextValidar
-          onRef={(ref) => { this.inputTelefonoCelularCaracteristica = ref; }}
+          onRef={this.onCelularCaracteristicaRef}
           valorInicial={this.state.telefonoCelularCaracteristica}
           placeholder='Área'
           returnKeyType="done"
           keyboardType="numeric"
           autoCorrect={false}
-          onSubmitEditing={() => {
-            Keyboard.dismiss();
-          }}
+          onSubmitEditing={this.ocultarTeclado}
           style={{ minWidth: 70, maxWidth: 70, marginRight: 16 }}
           validaciones={{
             minLength: 2,
             maxLength: 5,
             tipo: 'numeroEntero',
-            mensajes: {
-              minLength: () => { return '*' },
-              maxLength: () => { return '*' },
-              tipo: '*'
-            }
+            mensajes: mensajesTelCaracteristica
           }}
-          onChange={(val) => { this.setState({ telefonoCelularCaracteristica: val }); }}
-          onError={(error) => { this.setState({ telefonoCelularCaracteristicaError: error }) }}
+          onChange={this.onCelularCatacteristicaChange}
+          onError={this.onCelularCatacteristicaError}
         />
 
         <Text style={{ marginTop: 16, marginRight: 8 }}>15</Text>
         <MiInputTextValidar
-          onRef={(ref) => { this.inputTelefonoCelularNumero = ref; }}
+          onRef={this.onCelularNumeroRef}
           valorInicial={this.state.telefonoCelularNumero}
           placeholder='Número'
           keyboardType="numeric"
           returnKeyType="done"
           autoCorrect={false}
-          onSubmitEditing={() => {
-            Keyboard.dismiss();
-          }}
+          onSubmitEditing={this.ocultarTeclado}
           style={{ flex: 1 }}
           validaciones={{
             minLength: 5,
             maxLength: 12,
             tipo: 'numeroEntero',
-            mensajes: {
-              minLength: () => { return 'Muy corto' },
-              maxLength: () => { return 'Muy largo' },
-              tipo: 'Número inválido'
-            }
+            mensajes: mensajesTelNumero
           }}
-          onChange={(val) => { this.setState({ telefonoCelularNumero: val }); }}
-          onError={(error) => { this.setState({ telefonoCelularNumeroError: error }) }}
+          onChange={this.onCelularNumeroChange}
+          onError={this.onCelularNumeroError}
         />
       </View>
 
@@ -412,53 +494,41 @@ export default class UsuarioEditarDatosContacto extends React.Component {
         <Icon name="phone" style={{ fontSize: 24, marginTop: 16, marginRight: 8, marginLeft: 8 }} />
 
         <MiInputTextValidar
-          onRef={(ref) => { this.inputTelefonoFijoCaracteristica = ref; }}
+          onRef={this.onTelFijoCaracteristicaRef}
           valorInicial={this.state.telefonoFijoCaracteristica}
           placeholder='Área'
           keyboardType="numeric"
           returnKeyType="done"
           autoCorrect={false}
-          onSubmitEditing={() => {
-            Keyboard.dismiss();
-          }}
+          onSubmitEditing={this.ocultarTeclado}
           style={{ minWidth: 60, maxWidth: 60, marginRight: 16 }}
           validaciones={{
             minLength: 2,
             maxLength: 5,
             tipo: 'numeroEntero',
-            mensajes: {
-              minLength: () => { return '*' },
-              maxLength: () => { return '*' },
-              tipo: '*'
-            }
+            mensajes: mensajesTelCaracteristica
           }}
-          onChange={(val) => { this.setState({ telefonoFijoCaracteristica: val }); }}
-          onError={(error) => { this.setState({ telefonoFijoCaracteristicaError: error }) }}
+          onChange={this.onTelFijoCatacteristicaChange}
+          onError={this.onTelFijoCatacteristicaError}
         />
 
         <MiInputTextValidar
-          onRef={(ref) => { this.inputUsernameNuevo = ref; }}
+          onRef={this.onTelFijoNumeroRef}
           valorInicial={this.state.telefonoFijoNumero}
           placeholder='Número'
           keyboardType="numeric"
           returnKeyType="done"
           autoCorrect={false}
-          onSubmitEditing={() => {
-            Keyboard.dismiss();
-          }}
+          onSubmitEditing={this.ocultarTeclado}
           style={{ flex: 1 }}
           validaciones={{
             minLength: 5,
             maxLength: 12,
             tipo: 'numeroEntero',
-            mensajes: {
-              minLength: () => { return 'Muy corto' },
-              maxLength: () => { return 'Muy largo' },
-              tipo: 'Número inválido'
-            }
+            mensajes: mensajesTelNumero
           }}
-          onChange={(val) => { this.setState({ telefonoFijoNumero: val }); }}
-          onError={(error) => { this.setState({ telefonoFijoNumeroError: error }) }}
+          onChange={this.onTelFijoNumeroChange}
+          onError={this.onTelFijoNumeroError}
         />
       </View>
     </View>;
@@ -472,9 +542,7 @@ export default class UsuarioEditarDatosContacto extends React.Component {
       botones={[
         {
           texto: 'Aceptar',
-          onPress: () => {
-            this.informarExito();
-          }
+          onPress: this.informarExito
         }
       ]}
     >
@@ -482,6 +550,19 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     </MiDialogo>
   }
 }
+
+
+const mensajesTelCaracteristica = {
+  minLength: function () { return '*' },
+  maxLength: function () { return '*' },
+  tipo: '*'
+};
+
+const mensajesTelNumero = {
+  minLength: function () { return 'Muy corto' },
+  maxLength: function () { return 'Muy largo' },
+  tipo: 'Número inválido'
+};
 
 const styles = StyleSheet.create({
   contenedor: {

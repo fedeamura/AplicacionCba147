@@ -5,6 +5,7 @@ import {
   Animated,
   StyleSheet,
   ScrollView,
+  BackHandler,
   Keyboard
 } from "react-native";
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,8 +18,7 @@ import {
   DialogContent
 } from 'react-native-paper';
 import _ from 'lodash';
-// import AndroidBackButton from "react-native-android-back-button"
-import { BackHandler } from "react-native";
+import autobind from 'autobind-decorator'
 
 //Mis componentes
 import App from "@UI/App";
@@ -67,16 +67,17 @@ export default class RequerimientoNuevo extends React.Component {
 
     this.keyboardHeight = new Animated.Value(0);
 
-    this._didFocusSubscription = props.navigation.addListener('didFocus', payload => {
+    this._didFocusSubscription = props.navigation.addListener('didFocus', function (payload) {
       BackHandler.addEventListener('hardwareBackPress', this.back);
-    });
+    }.bind(this));
 
-    this._willBlurSubscription = props.navigation.addListener('willBlur', payload => {
+    this._willBlurSubscription = props.navigation.addListener('willBlur', function (payload) {
       BackHandler.removeEventListener('hardwareBackPress', this.back);
-    });
+    }.bind(this));
   }
 
-  back = () => {
+  @autobind
+  back() {
     //Se esta mostrando el panel de registracion
     if (this.state.mostrarPanelResultado == true) {
 
@@ -119,42 +120,46 @@ export default class RequerimientoNuevo extends React.Component {
   }
 
   componentDidMount() {
-    Rules_Servicio.get().then((data) => {
-      data = _.orderBy(data, 'Nombre');
-      this.setState({ cargando: false, servicios: data });
-    }).catch(() => {
-      Alert.alert('', 'Error procesando la solicitud');
-    });
+    Rules_Servicio.get()
+      .then(function (data) {
+        data = _.orderBy(data, 'Nombre');
+        this.setState({ cargando: false, servicios: data });
+      }.bind(this))
+      .catch(function () {
+        Alert.alert('', 'Error procesando la solicitud');
+      });
   }
 
-  registrar = () => {
+  @autobind
+  registrar() {
     Keyboard.dismiss();
 
     this.setState({
       mostrarPanelResultado: true,
       registrando: true
-    }, () => {
+    }, function () {
       let comando = { param: 1 };
       Rules_Requerimiento.insertar(comando)
-        .then(() => {
+        .then(function () {
           this.setState({
             numero: 'QWSTGH/2018',
             registrando: false
           });
-        })
-        .catch((error) => {
+        }.bind(this))
+        .catch(function (error) {
           Alert.alert('', error);
 
           this.setState({
             mostrarPanelResultado: false,
             registrando: false
           })
-        });
+        }.bind(this));
 
     });
   }
 
-  keyboardWillShow = (event) => {
+  @autobind
+  keyboardWillShow(event) {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -163,7 +168,8 @@ export default class RequerimientoNuevo extends React.Component {
     }).start();
   }
 
-  keyboardWillHide = (event) => {
+  @autobind
+  keyboardWillHide(event) {
     this.teclado = false;
 
     Animated.timing(this.keyboardHeight, {
@@ -172,7 +178,8 @@ export default class RequerimientoNuevo extends React.Component {
     }).start();
   }
 
-  mostrarPaso = (paso) => {
+  @autobind
+  mostrarPaso(paso) {
     Keyboard.dismiss();
 
     this.setState({
@@ -180,7 +187,8 @@ export default class RequerimientoNuevo extends React.Component {
     });
   }
 
-  onPasoClick = (paso) => {
+  @autobind
+  onPasoClick(paso) {
     Keyboard.dismiss();
 
     if (this.state.pasoActual == paso) {
@@ -220,16 +228,82 @@ export default class RequerimientoNuevo extends React.Component {
     this.mostrarPaso(paso);
   }
 
-  onBtnVerDetalleClick = (id) => {
+  @autobind
+  onBtnVerDetalleClick(id) {
     App.goBack();
 
-    setTimeout(() => {
+    setTimeout(function () {
       const { params } = this.props.navigation.state;
 
       if (params != undefined && 'verDetalleRequerimiento' in params && params.verDetalleRequerimiento != undefined) {
         params.verDetalleRequerimiento(id);
       }
-    }, 300);
+    }.bind(this), 300);
+  }
+
+  @autobind
+  onToolbarBack() {
+    if (!this.back()) {
+      App.goBack();
+    }
+  }
+
+  @autobind
+  onPaso1Cargando(cargando) {
+    this.setState({ paso1Cargando: cargando })
+  }
+
+ 
+  @autobind
+  onPaso4Cargando(cargando) {
+    this.setState({ paso4Cargando: cargando })
+  }
+
+  @autobind
+  onMotivo(servicio, motivo) {
+    this.setState({
+      servicio: servicio,
+      motivo: motivo
+    });
+  }
+
+  @autobind
+  onPasi1Ready() {
+    this.mostrarPaso(2);
+  }
+
+  @autobind
+  onDescripcion(descripcion) {
+    this.setState({ descripcion: descripcion });
+  }
+
+  @autobind
+  onPaso2Ready() {
+    this.mostrarPaso(3);
+  }
+
+  @autobind
+  onUbicacion(ubicacion) {
+    this.setState({
+      ubicacion: ubicacion
+    });
+  }
+
+  @autobind
+  onPaso3Ready() {
+    this.mostrarPaso(4);
+  }
+
+  @autobind
+  onFoto(foto) {
+    this.setState({
+      foto: foto
+    });
+  }
+
+  @autobind
+  onPaso4Ready() {
+    this.mostrarPaso(5);
   }
 
   render() {
@@ -241,11 +315,7 @@ export default class RequerimientoNuevo extends React.Component {
         <MiStatusBar />
 
         {/* Toolbar */}
-        <MiToolbar titulo={texto_Titulo} onBackPress={() => {
-          if (!this.back()) {
-            App.goBack();
-          }
-        }} />
+        <MiToolbar titulo={texto_Titulo} onBackPress={this.onToolbarBack} />
 
         {/* Contenido */}
         <View style={[style.contenido, { backgroundColor: initData.backgroundColor }]} >
@@ -267,20 +337,9 @@ export default class RequerimientoNuevo extends React.Component {
             >
               <PasoServicio
                 servicios={this.state.servicios}
-
-
-                onCargando={(cargando) => {
-                  this.setState({ paso1Cargando: cargando })
-                }}
-                onMotivo={(servicio, motivo) => {
-                  this.setState({
-                    servicio: servicio,
-                    motivo: motivo
-                  });
-                }}
-                onReady={() => {
-                  this.mostrarPaso(2);
-                }}
+                onCargando={this.onPaso1Cargando}
+                onMotivo={this.onMotivo}
+                onReady={this.onPasi1Ready}
               />
             </Paso>
 
@@ -293,16 +352,12 @@ export default class RequerimientoNuevo extends React.Component {
               completado={this.state.descripcion != undefined && this.state.descripcion.trim() != ""}
             >
               <PasoDescripcion
-                onDescripcion={(descripcion) => {
-                  this.setState({ descripcion: descripcion });
-                }}
-                onReady={() => {
-                  this.mostrarPaso(3);
-                }}>
+                onDescripcion={this.onDescripcion}
+                onReady={this.onPaso2Ready}>
               </PasoDescripcion>
             </Paso>
 
-            {/* Paso 4 */}
+            {/* Paso 3 */}
             <Paso
               numero={3}
               titulo={texto_Titulo_Ubicacion}
@@ -311,14 +366,8 @@ export default class RequerimientoNuevo extends React.Component {
               completado={this.state.ubicacion != undefined}
             >
               <PasoUbicacion
-                onUbicacion={(ubicacion) => {
-                  this.setState({
-                    ubicacion: ubicacion
-                  });
-                }}
-                onReady={() => {
-                  this.mostrarPaso(4);
-                }}>
+                onUbicacion={this.onUbicacion}
+                onReady={this.onPaso3Ready}>
               </PasoUbicacion>
             </Paso>
 
@@ -332,17 +381,9 @@ export default class RequerimientoNuevo extends React.Component {
               completado={this.state.foto != undefined}
             >
               <PasoFoto
-                onFoto={(foto) => {
-                  this.setState({
-                    foto: foto
-                  });
-                }}
-                onCargando={(cargando) => {
-                  this.setState({ paso4Cargando: cargando })
-                }}
-                onReady={() => {
-                  this.mostrarPaso(5);
-                }}>
+                onFoto={this.onFoto}
+                onCargando={this.onPaso4Cargando}
+                onReady={this.onPaso4Ready}>
               </PasoFoto>
             </Paso>
 
@@ -359,9 +400,7 @@ export default class RequerimientoNuevo extends React.Component {
                 motivo={this.state.motivo}
                 descripcion={this.state.descripcion}
                 ubicacion={this.state.ubicacion}
-                onReady={() => {
-                  this.registrar();
-                }}>
+                onReady={this.registrar}>
               </PasoConfirmacion>
             </Paso>
 
@@ -393,11 +432,25 @@ export default class RequerimientoNuevo extends React.Component {
     );
   }
 
+  @autobind
+  ocultarDialogoConfirmarSalida() {
+    this.setState({ dialogoConfirmarSalidaVisible: false })
+  }
+
+  @autobind
+  onConfirmarSalida() {
+    this.setState({
+      dialogoConfirmarSalidaVisible: false
+    }, function () {
+      App.goBack();
+    });
+  }
+
   renderDialogoConfirmarSalida() {
     return <Dialog
       style={{ borderRadius: 16 }}
       visible={this.state.dialogoConfirmarSalidaVisible}
-      onDismiss={() => { this.setState({ dialogoConfirmarSalidaVisible: false }) }}
+      onDismiss={this.ocultarDialogoConfirmarSalida}
     >
       <DialogContent>
         <ScrollView style={{ maxHeight: 300, maxWidth: 400 }}>
@@ -405,14 +458,8 @@ export default class RequerimientoNuevo extends React.Component {
         </ScrollView>
       </DialogContent>
       <DialogActions>
-        <ButtonPeper onPress={() => { this.setState({ dialogoConfirmarSalidaVisible: false }) }}>No</ButtonPeper>
-        <ButtonPeper onPress={() => {
-          this.setState({
-            dialogoConfirmarSalidaVisible: false
-          }, () => {
-            App.goBack();
-          })
-        }}>Si</ButtonPeper>
+        <ButtonPeper onPress={this.ocultarDialogoConfirmarSalida}>No</ButtonPeper>
+        <ButtonPeper onPress={this.onConfirmarSalida}>Si</ButtonPeper>
       </DialogActions>
     </Dialog>
   }

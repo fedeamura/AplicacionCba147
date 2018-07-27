@@ -41,7 +41,7 @@ import Rules_Init from "@Rules/Rules_Init";
 import Rules_Ajustes from "../Rules/Rules_Ajustes";
 import Rules_Notificaciones from "@Rules/Rules_Notificaciones";
 
-const transitionConfig = () => {
+const transitionConfig = function() {
   return {
     transitionSpec: {
       duration: 500,
@@ -49,13 +49,12 @@ const transitionConfig = () => {
       timing: Animated.timing,
       useNativeDriver: true,
     },
-    screenInterpolator: sceneProps => {
+    screenInterpolator: function (sceneProps) {
       const { layout, position, scene } = sceneProps
 
       const thisSceneIndex = scene.index;
 
       const width = layout.initWidth;
-      const height = layout.initHeight;
 
       // const opacity = position.interpolate({
       //   inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1,],
@@ -84,7 +83,7 @@ const transitionConfig = () => {
           }
         ]
       }
-    },
+    }.bind(this),
   }
 }
 
@@ -154,6 +153,9 @@ export default class App extends React.Component {
       initData: undefined,
       error: undefined
     };
+
+    this.onToken = this.onToken.bind(this);
+    this.informarError = this.informarError.bind(this);
   }
 
   _handleOpenURL(event) {
@@ -163,12 +165,11 @@ export default class App extends React.Component {
   componentDidMount() {
     Linking.addEventListener('url', this._handleOpenURL);
 
-
     Rules_Init.actualizarApp()
-      .then(() => {
+      .then(function () {
         //Busco la data inicial
         Rules_Init.getInitData()
-          .then((initData) => {
+          .then(function (initData) {
 
             global.initData = initData;
 
@@ -177,74 +178,71 @@ export default class App extends React.Component {
               initData: initData,
               error: undefined
             });
-          })
-          .catch((error) => {
+          }.bind(this))
+          .catch(function (error) {
             this.informarError(error);
-          });
-      })
-      .catch((error) => {
+          }.bind(this));
+      }.bind(this))
+      .catch(function (error) {
         this.informarError(error);
-      });
+      }.bind(this));
 
-    firebase.messaging().getToken()
-      .then(fcmToken => {
-        if (fcmToken) {
-          global.notificationToken = fcmToken;
-        } else {
-          global.notificationToken = undefined;
-        }
-      });
+    firebase.messaging().getToken().then(function (fcmToken) {
+      this.onToken(fcmToken);
+    }.bind(this));
+
+    firebase.messaging().onTokenRefresh(function (fcmToken) {
+      this.onToken(fcmToken);
+    }.bind(this));
 
     firebase.messaging().hasPermission()
-      .then(enabled => {
-        if (enabled) {
-
-        } else {
+      .then(function (enabled) {
+        if (enabled == false) {
           firebase.messaging().requestPermission()
-            .then(() => {
+            .then(function () {
               // User has authorised  
-            })
-            .catch(error => {
+            }.bind(this))
+            .catch(function (error) {
               Alert.alert('', 'Para recibir notificaciones debe conceder el permiso en Ajustes');
-              // User has rejected permissions  
-            });
+            }.bind(this));
         }
-      });
+      }.bind(this));
 
     //App abierta desde notificacion
-    firebase.notifications().getInitialNotification().then((notificationOpen) => {
-      if (notificationOpen) {
+    firebase.notifications().getInitialNotification().then(function (notificationOpen) {
+      if (!notificationOpen) return;
 
-        const notification = notificationOpen.notification;
+      const notification = notificationOpen.notification;
 
-        //Transformo
-        let data = Rules_Notificaciones.transformarNotificacion(notification);
+      //Transformo
+      let data = Rules_Notificaciones.transformarNotificacion(notification);
 
-        //Guardo en global... para que el componente de Inicio (Mis requerimiento) maneje lo que hay que hacer
-        //Lo mando para despues porque hay que validar el usuario logeado y esperar que acceda.
-        global.notificacionInicial = data;
-      }
-    });
+      //Guardo en global... para que el componente de Inicio (Mis requerimiento) maneje lo que hay que hacer
+      //Lo mando para despues porque hay que validar el usuario logeado y esperar que acceda.
+      global.notificacionInicial = data;
+
+    }.bind(this));
 
     const channel = new firebase.notifications.Android.Channel('channelId', '#CBA147', firebase.notifications.Android.Importance.Max).setDescription('#CBA147');
     firebase.notifications().android.createChannel(channel);
 
     //Al aparecer una notificacion (En foreground)
-    this.notificationListener = firebase.notifications().onNotification((notification) => {
+    this.notificationListener = firebase.notifications().onNotification(function (notification) {
 
       //Transformo y mando a notificar
       let data = Rules_Notificaciones.transformarNotificacion(notification);
       if (data == undefined) return;
 
       Rules_Notificaciones.notificar(data);
-    });
+    }.bind(this));
 
     //Al hacer click en una notificacion
-    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened(function (notificationOpen) {
       const notification = notificationOpen.notification;
       Rules_Notificaciones.manejar(notification.data);
-    });
+    }.bind(this));
   }
+
 
 
   componentWillUnmount() {
@@ -254,7 +252,16 @@ export default class App extends React.Component {
     this.notificationOpenedListener();
   }
 
-  informarError = (error) => {
+  onToken(token) {
+    if (token == undefined) {
+      global.notificationToken = undefined;
+      return;
+    }
+
+    global.notificationToken = token;
+  }
+
+  informarError(error) {
     global.initData = undefined;
     this.setState({
       cargando: false,
@@ -293,12 +300,6 @@ export default class App extends React.Component {
       if (callback != undefined) {
         callback();
       }
-      // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-      // if(callback!=undefined){
-      //   setTimeout(()=>{
-      //     callback();
-      //   }, 300);
-      // }
     }
   }
 
@@ -326,7 +327,7 @@ export default class App extends React.Component {
 
           <StatusBar backgroundColor="white" barStyle="dark-content" />
 
-          <RootStack ref={(ref) => { global.navigator = ref; }} />
+          <RootStack ref={function (ref) { global.navigator = ref; }.bind(this)} />
         </View>
       </PaperProvider>
     );

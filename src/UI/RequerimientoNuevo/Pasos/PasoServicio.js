@@ -15,6 +15,7 @@ import CardCirculo from "@Utils/CardCirculo";
 import MiItemDetalle from "@Utils/MiItemDetalle";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import _ from 'lodash';
+import autobind from 'autobind-decorator'
 
 //Rules
 import Rules_Motivo from "@Rules/Rules_Motivo";
@@ -41,7 +42,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
     static defaultProps = {
         ...React.Component.defaultProps,
-        onCargando: () => { }
+        onCargando: function () { }
     }
 
     componentWillUpdate(prevProps, prevState) {
@@ -50,150 +51,162 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         }
     }
 
-    seleccionarServicio = (servicio) => {
-        this.setState({ cargando: true }, () => {
-            Rules_Motivo.get(servicio.Id).then((data) => {
-                data = _.orderBy(data, 'Nombre');
-                this.setState({ servicio: servicio, motivos: data, mostrarServicio: false }, () => {
-                    setTimeout(() => {
-                        this.setState({ cargando: false, mostrarMotivo: true });
-                    }, 300);
-                });
-            });
+    @autobind
+    seleccionarServicio(servicio) {
+        this.setState({ cargando: true }, function () {
+            Rules_Motivo.get(servicio.Id)
+                .then(function (data) {
+                    data = _.orderBy(data, 'Nombre');
+                    this.setState({ servicio: servicio, motivos: data, mostrarServicio: false },
+                        function () {
+                            setTimeout(function () {
+                                this.setState({ cargando: false, mostrarMotivo: true });
+                            }.bind(this), 300);
+                        });
+                }.bind(this));
         });
     }
 
-    cancelarServicio = () => {
-        this.setState({ mostrarMotivo: false }, () => {
-            setTimeout(() => {
+    @autobind
+    cancelarServicio() {
+        this.setState({ mostrarMotivo: false }, function () {
+            setTimeout(function () {
                 this.setState({ servicio: undefined, motivos: undefined, mostrarServicio: true });
-            }, 300);
+            }.bind(this), 300);
         })
     }
 
-    seleccionarMotivo = (motivo) => {
+    @autobind
+    seleccionarMotivo(motivo) {
         this.setState({
             motivo: motivo,
             mostrarMotivo: false
-        }, () => {
+        }, function () {
             this.informar();
 
-            setTimeout(() => {
+            setTimeout(function () {
                 this.setState({ mostrarResultado: true });
-            }, 300);
-        });
+            }.bind(this), 300);
+        }.bind(this));
     }
 
-    seleccionarServicioMotivo = (servicio, motivo) => {
+    @autobind
+    seleccionarServicioMotivo(servicio, motivo) {
         this.setState({
             servicio: servicio,
             motivo: motivo,
             mostrarServicio: false,
             mostrarMotivo: false
-        }, () => {
+        }, function () {
             this.informar();
 
-            setTimeout(() => {
+            setTimeout(function () {
                 this.setState({ mostrarResultado: true });
-            }, 300);
+            }.bind(this), 300);
         });
     }
 
-    cancelarMotivo = () => {
-        this.setState({ mostrarResultado: false, mostrarMotivo: false }, () => {
-            setTimeout(() => {
-                this.setState({ motivo: undefined, servicio: undefined, mostrarServicio: true }, () => {
+    @autobind
+    cancelarMotivo() {
+        this.setState({ mostrarResultado: false, mostrarMotivo: false }, function () {
+            setTimeout(function () {
+                this.setState({ motivo: undefined, servicio: undefined, mostrarServicio: true }, function () {
                     this.informar();
                 });
-            }, 300);
+            }.bind(this), 300);
         });
     }
 
-    verTodosLosServicios = () => {
+    @autobind
+    verTodosLosServicios() {
         App.navegar('PickerListado', {
             busqueda: true,
             backgroundColor: initData.backgroundColor,
             placeholderBusqueda: 'Buscar categoría...',
-            cumpleBusqueda: (item, texto) => {
+            cumpleBusqueda: function (item, texto) {
                 return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
             },
             data: this.state.servicios,
-            title: (item) => { return item.Nombre },
+            title: function (item) { return item.Nombre },
             onPress: this.seleccionarServicio
         })
     }
 
-    verTodosLosMotivos = () => {
+    @autobind
+    verTodosLosMotivos() {
         App.navegar('PickerListado', {
             busqueda: true,
             backgroundColor: initData.backgroundColor,
             placeholderBusqueda: 'Buscar motivo...',
-            cumpleBusqueda: (item, texto) => {
+            cumpleBusqueda: function (item, texto) {
                 return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
             },
             data: this.state.motivos,
-            title: (item) => { return item.Nombre },
+            title: function (item) { return item.Nombre },
             onPress: this.seleccionarMotivo
         });
     }
 
-    buscar = () => {
-        this.setState({ cargando: true }, () => {
-            Rules_Motivo.getParaBuscar().then((data) => {
-                this.setState({ cargando: false });
+    @autobind
+    buscar() {
+        this.setState({ cargando: true }, function () {
+            Rules_Motivo.getParaBuscar()
+                .then(function (data) {
+                    this.setState({ cargando: false });
 
-                App.navegar('PickerListado', {
-                    busqueda: true,
-                    backgroundColor: initData.backgroundColor,
-                    placeholderBusqueda: 'Buscar motivo...',
-                    cumpleBusqueda: (item, texto) => {
-                        return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
-                    },
-                    data: data,
-                    renderItem: (item) => {
-                        return <View>
-                            <View style={{ display: 'flex', flexDirection: 'row' }}>
-                                <Text style={{ fontWeight: 'bold', marginRight: 8 }}>Servicio:</Text>
-                                <Text>{item.ServicioNombre}</Text>
+                    App.navegar('PickerListado', {
+                        busqueda: true,
+                        backgroundColor: initData.backgroundColor,
+                        placeholderBusqueda: 'Buscar motivo...',
+                        cumpleBusqueda: function (item, texto) {
+                            return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                        },
+                        data: data,
+                        renderItem: function (item) {
+                            return <View>
+                                <View style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <Text style={{ fontWeight: 'bold', marginRight: 8 }}>Servicio:</Text>
+                                    <Text>{item.ServicioNombre}</Text>
+                                </View>
+                                <View style={{ display: 'flex', flexDirection: 'row' }}>
+                                    <Text style={{ fontWeight: 'bold', marginRight: 8 }}>Motivo:</Text>
+                                    <Text>{item.Nombre}</Text>
+                                </View>
                             </View>
-                            <View style={{ display: 'flex', flexDirection: 'row' }}>
-                                <Text style={{ fontWeight: 'bold', marginRight: 8 }}>Motivo:</Text>
-                                <Text>{item.Nombre}</Text>
-                            </View>
-                        </View>
-                    },
-                    onPress: (item) => {
-                        let servicio = {
-                            Id: 1,
-                            Nombre: 'Test'
-                        };
-                        let motivo = {
-                            Id: 1,
-                            Nombre: 'Test'
-                        };
+                        },
+                        onPress: function (item) {
+                            let servicio = {
+                                Id: 1,
+                                Nombre: 'Test'
+                            };
+                            let motivo = {
+                                Id: 1,
+                                Nombre: 'Test'
+                            };
 
-                        this.seleccionarServicioMotivo(servicio, motivo);
-                    }
-                });
-            });
+                            this.seleccionarServicioMotivo(servicio, motivo);
+                        }.bind(this)
+                    });
+                }.bind(this));
 
         })
     }
 
-    informar = () => {
+    @autobind
+    informar() {
         if (this.props.onMotivo == undefined) return;
         this.props.onMotivo(this.state.servicio, this.state.motivo);
     }
 
-    informarReady = () => {
+    @autobind
+    informarReady() {
         if (this.props.onReady == undefined) return;
         this.props.onReady(this.state.servicio, this.state.motivo);
     }
 
+
     render() {
         if (this.state.servicios == undefined) return null;
-
-        const initData = global.initData;
 
         return (
             <View style={{ minHeight: 250, opacity: this.state.height == 0 ? 0 : 1 }}>
@@ -204,14 +217,18 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         );
     }
 
+    @autobind
+    onLayout(event) {
+        var { width, height } = event.nativeEvent.layout;
+        this.setState({ height: height, width: (width - 32) });
+    }
+
     renderViewServiciosPrincipales() {
         const wCirculo = (this.state.width || 0) / 3;
         const iconoFontSize = 24;
         const textoFontSize = 12;
         const cardColorFondo = 'rgba(230,230,230,1)';
-        const cardColorFondoSeleccionado = 'green';
         const iconoColor = 'white';
-        const iconoColorSeleccionado = 'white';
 
         const serviciosPrincipales = [];
         for (let i = 0; i < this.state.servicios.length; i++) {
@@ -231,7 +248,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                 <View style={{ width: wCirculo }}>
                     <CardCirculo
                         key={servicio.Id}
-                        onPress={() => this.seleccionarServicio(servicio)}
+                        onPress={this.seleccionarServicio.bind(this, servicio)}
                         icono={servicio.Icono || 'flash'}
                         texto={servicio.Nombre || 'Sin datos'}
                         textoLines={2}
@@ -250,10 +267,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             <MiView visible={this.state.mostrarServicio}>
                 <View
                     style={{ padding: 16 }}
-                    onLayout={(event) => {
-                        var { x, y, width, height } = event.nativeEvent.layout;
-                        this.setState({ height: height, width: (width - 32) });
-                    }}>
+                    onLayout={this.onLayout}>
 
                     {/* Buscar */}
                     <View>
@@ -345,7 +359,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                     <View style={{ height: 8 }} />
                     {motivos.map((item) => {
                         return <ListItem
-                            onPress={() => { this.seleccionarMotivo(item); }}
+                            onPress={this.seleccionarMotivo.bind(this, item)}
                             style={{ marginLeft: 0 }}>
                             <Text>{item.Nombre}</Text>
                         </ListItem>;

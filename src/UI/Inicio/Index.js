@@ -2,7 +2,10 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  ScrollView
+  Alert,
+  Animated,
+  ScrollView,
+  BackHandler
 } from "react-native";
 
 import {
@@ -12,7 +15,7 @@ import {
   DialogActions,
   DialogContent
 } from 'react-native-paper';
-import { BackHandler } from "react-native";
+import autobind from 'autobind-decorator'
 
 //Mis componentes
 import App from "@UI/App";
@@ -84,61 +87,77 @@ export default class Inicio extends React.Component {
       mostrandoPanelRenaper: false
     };
 
-    this._didFocusSubscription = props.navigation.addListener('didFocus', payload => {
+    //Back
+    this._didFocusSubscription = props.navigation.addListener('didFocus', function (payload) {
       BackHandler.addEventListener('hardwareBackPress', this.back);
-    });
+    }.bind(this));
 
-    this._willBlurSubscription = props.navigation.addListener('willBlur', payload => {
+    this._willBlurSubscription = props.navigation.addListener('willBlur', function (payload) {
       BackHandler.removeEventListener('hardwareBackPress', this.back);
-    });
+    }.bind(this));
 
   }
 
-  back = () => {
+  componentDidMount() {
+    this.consultarUsuarioValidadoRenaper();
+  }
+
+
+  @autobind
+  back() {
     if (this.state.expandido == true) {
-      this.setState({ expandido: false });
-      return true;
+      return false;
     }
 
     this.setState({ dialogoConfirmarSalidaVisible: true });
     return true;
   }
 
-  componentDidMount = () => {
-    this.consultarUsuarioValidadoRenaper();
+  @autobind
+  consultarUsuarioValidadoRenaper() {
+    this.setState({ cargando: true, error: undefined, mostrandoPanelRenaper: false },
+      function () {
+        Rules_Usuario.esUsuarioValidadoRenaper()
+          .then(function (validado) {
+            this.setState({
+              cargando: false,
+              validadoRenaper: validado,
+              mostrandoPanelRenaper: validado == false
+            });
+          }.bind(this))
+          .catch(function (error) {
+            this.setState({
+              cargando: false,
+              validadoRenaper: false,
+              mostrandoPanelRenaper: true,
+              error: error
+            });
+          }.bind(this));
+      }.bind(this));
   }
 
-  consultarUsuarioValidadoRenaper = () => {
-    this.setState({ cargando: true, error: undefined, mostrandoPanelRenaper: false }, () => {
-      Rules_Usuario.esUsuarioValidadoRenaper()
-        .then((validado) => {
-          this.setState({
-            cargando: false,
-            validadoRenaper: validado,
-            mostrandoPanelRenaper: validado == false
-          });
-        })
-        .catch((error) => {
-          this.setState({
-            cargando: false,
-            validadoRenaper: false,
-            mostrandoPanelRenaper: true,
-            error: error
-          });
-        });
-    });
-  }
-
-  onBtnValidarClick = () => {
+  @autobind
+  onBtnValidarClick() {
     App.navegar('UsuarioValidarDatosRenaper', {
-      callback: () => {
+      callback: function () {
         this.consultarUsuarioValidadoRenaper();
-      }
+      }.bind(this)
     });
   }
 
-  onBtnRecargarClick = () => {
+  @autobind
+  onBtnRecargarClick() {
     this.consultarUsuarioValidadoRenaper();
+  }
+
+  @autobind
+  onToolbarMenuOpen() {
+    this.setState({ expandido: true });
+  }
+
+  @autobind
+  onToolbarMenuClose() {
+    this.setState({ expandido: false });
   }
 
   render() {
@@ -185,15 +204,16 @@ export default class Inicio extends React.Component {
     }
 
     return (
-      <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
+      <View
+        style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
 
         <MiStatusBar />
+
 
         <MiToolbarMenu
           toolbarHeight={initData.toolbar_Height}
           toolbarBackgroundColor={initData.toolbar_BackgroundColor}
           toolbarTituloColor={colorToolbar}
-          expandido={this.state.expandido}
           opciones={this.state.opciones}
           expandirAlHacerClick={false}
           mostrarBotonCerrar={true}
@@ -202,7 +222,8 @@ export default class Inicio extends React.Component {
           mostrarBotonIzquierda={true}
           iconoIzquierdaColor={colorToolbar}
           iconoIzquierda='menu'
-          iconoIzquierdaOnPress={() => { this.setState({ expandido: true }) }}
+          onExpandido={this.onToolbarMenuOpen}
+          onSeleccionChange={this.onToolbarMenuClose}
         />
 
         {this.renderDialogoConfirmarSalida()}
@@ -210,11 +231,25 @@ export default class Inicio extends React.Component {
     );
   }
 
+  @autobind
+  ocultarDialogoConfirmarSalida() {
+    this.setState({ dialogoConfirmarSalidaVisible: false })
+  }
+
+  @autobind
+  onConfirmarSalida() {
+    this.setState({
+      dialogoConfirmarSalidaVisible: false
+    }, function () {
+      BackHandler.exitApp();
+    }.bind(this))
+  }
+
   renderDialogoConfirmarSalida() {
     return <Dialog
       style={{ borderRadius: 16 }}
       visible={this.state.dialogoConfirmarSalidaVisible}
-      onDismiss={() => { this.setState({ dialogoConfirmarSalidaVisible: false }) }}
+      onDismiss={this.ocultarDialogoConfirmarSalida}
     >
       <DialogContent>
         <ScrollView style={{ maxHeight: 300, maxWidth: 400 }}>
@@ -222,34 +257,14 @@ export default class Inicio extends React.Component {
         </ScrollView>
       </DialogContent>
       <DialogActions>
-        <ButtonPeper onPress={() => { this.setState({ dialogoConfirmarSalidaVisible: false }) }}>No</ButtonPeper>
-        <ButtonPeper onPress={() => {
-          this.setState({
-            dialogoConfirmarSalidaVisible: false
-          }, () => {
-            BackHandler.exitApp();
-          })
-        }}>Si</ButtonPeper>
+        <ButtonPeper onPress={this.ocultarDialogoConfirmarSalida}>No</ButtonPeper>
+        <ButtonPeper onPress={this.onConfirmarSalida}>Si</ButtonPeper>
       </DialogActions>
     </Dialog>
   }
 }
 
 const texto_DialogoConfirmarSalir = '¿Esta seguro que desea salir de la aplicación #CBA147?';
-
-// renderFooter() {
-//   return <View style={{
-//     backgroundColor:'#01a15a',
-//     padding: 16, paddingTop: 8, paddingBottom: 8, display: 'flex', flexDirection: 'row', alignItems: 'center'
-//   }}>
-//     <WebImage
-//       style={{ height: 40, width: 40, marginRight: 8 }}
-//       resizeMode='contain'
-//       source={require("@Resources/cba147_logo.png")} />
-
-//     <Text style={{ fontSize: 20, color:'white' }}>Municipalidad de Córdoba</Text>
-//   </View>;
-// }
 
 const styles = StyleSheet.create({
   contenedor: {

@@ -3,9 +3,9 @@ import {
   View,
   Animated,
 } from "react-native";
-import { Card } from 'react-native-paper';
 import IndicadorPaso from "./IndicadorPaso";
 import MiCardDetalle from "@Utils/MiCardDetalle";
+import autobind from 'autobind-decorator'
 
 export default class RequerimientoNuevo_Paso extends React.Component {
   constructor(props) {
@@ -33,16 +33,23 @@ export default class RequerimientoNuevo_Paso extends React.Component {
     Animated.timing(this.animCargando, { toValue: nextProps.cargando == true ? 0.5 : 1, duration: 300 }).start();
   }
 
-  expandir = () => {
-    this.setState({ expandido: true }, () => {
+  @autobind
+  expandir() {
+    this.setState({ expandido: true }, function () {
       Animated.timing(this.anim, { duration: 300, toValue: 1 }).start();
-    })
+    }.bind(this));
   }
 
-  comprimir = () => {
-    this.setState({ expandido: false }, () => {
+  @autobind
+  comprimir() {
+    this.setState({ expandido: false }, function () {
       Animated.timing(this.anim, { duration: 300, toValue: 0 }).start();
-    });
+    }.bind(this));
+  }
+
+  @autobind
+  onPress() {
+    this.props.onPress(this.props.numero);
   }
 
   render() {
@@ -68,7 +75,7 @@ export default class RequerimientoNuevo_Paso extends React.Component {
           colorFondoCirculoCompletado='green'
           colorTextoCirculo='green'
           colorTextoCirculoCompletado='white'
-          onPress={() => this.props.onPress(this.props.numero)} />
+          onPress={this.onPress} />
 
         {this.state.expandido == true && (
           <View style={{ height: 1, width: '100%', backgroundColor: 'rgba(0,0,0,0.1)' }} />

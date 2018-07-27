@@ -9,6 +9,8 @@ import {
 import {
   Text, Spinner, Button
 } from "native-base";
+import { TouchableRipple } from "react-native-paper";
+
 import WebImage from 'react-native-web-image'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Snackbar from 'react-native-snackbar';
@@ -17,6 +19,7 @@ import ImageResizer from 'react-native-image-resizer';
 import RNFS from 'react-native-fs';
 
 //Mis componentes
+import App from "@UI/App";
 import MiCardDetalle from '@Utils/MiCardDetalle';
 import MiItemDetalle from '@Utils/MiItemDetalle';
 import MiPanelError from "@Utils/MiPanelError";
@@ -25,8 +28,6 @@ import MiInputTextValidar from "@Utils/MiInputTextValidar";
 
 //Rules
 import Rules_Usuario from '@Rules/Rules_Usuario';
-import App from "../../../App";
-import { TouchableRipple } from "../../../../../node_modules/react-native-paper";
 
 export default class PaginaPerfil extends React.Component {
 
@@ -50,26 +51,54 @@ export default class PaginaPerfil extends React.Component {
       passwordNuevaError: true,
       cargandoCambioPassword: false
     };
+
+    this.animCargando = new Animated.Value(1);
+
+    this.buscarDatos = this.buscarDatos.bind(this);
+    this.onBtnCambiarUsernameClick = this.onBtnCambiarUsernameClick.bind(this);
+    this.cambiarUsername = this.cambiarUsername.bind(this);
+    this.onBtnCambiarPasswordClick = this.onBtnCambiarPasswordClick.bind(this);
+    this.cambiarPassword = this.cambiarPassword.bind(this);
+    this.onBtnEditarDatosContactoClick = this.onBtnEditarDatosContactoClick.bind(this);
+    this.cambiarFotoPerfil = this.cambiarFotoPerfil.bind(this);
+    this.cambiarFotoPerfilDesdeCamara = this.cambiarFotoPerfilDesdeCamara.bind(this);
+    this.cambiarFotoPerfilDesdeGaleria = this.cambiarFotoPerfilDesdeGaleria.bind(this);
+    this.procesarImagenPerfil = this.procesarImagenPerfil.bind(this);
+
+    // this.renderDatosBasicos = this.renderDatosBasicos.bind(this);
+    // this.renderDatosAcceso = this.renderDatosAcceso.bind(this);
+    // this.renderDatosContacto = this.renderDatosContacto.bind(this);
+    // this.renderDialogoCambiarUsername = this.renderDialogoCambiarUsername.bind(this);
+    // this.renderDialogoCambiarPassword = this.renderDialogoCambiarPassword.bind(this);
   }
 
   componentDidMount() {
     this.buscarDatos();
   }
 
-  buscarDatos = () => {
-    this.setState({ cargando: true },
-      () => {
+  buscarDatos() {
+
+    Animated.timing(this.animCargando, { toValue: 1, duration: 300 }).start(function () {
+      this.setState({ cargando: true }, function () {
         Rules_Usuario.getDatos()
-          .then((datos) => {
-            this.setState({ cargando: false, datos: datos });
-          })
-          .catch((error) => {
-            this.setState({ cargando: false, error: error });
-          });;
-      });
+          .then(function (datos) {
+            this.setState({ cargando: false, datos: datos }, function () {
+              Animated.timing(this.animCargando, { toValue: 0, duration: 300 }).start();
+            }.bind(this));
+
+          }.bind(this))
+          .catch(function (error) {
+            this.setState({ cargando: false, error: error }, function () {
+              Animated.timing(this.animCargando, { toValue: 0, duration: 300 }).start();
+            }.bind(this));
+          }.bind(this));
+      }.bind(this));
+    }.bind(this));
+
+
   }
 
-  onBtnCambiarUsernameClick = () => {
+  onBtnCambiarUsernameClick() {
     this.setState({
       dialogoUsernameVisible: true,
       usernameNuevo: undefined,
@@ -78,33 +107,33 @@ export default class PaginaPerfil extends React.Component {
     });
   }
 
-  cambiarUsername = () => {
-    this.setState({ cargandoCambioUsername: true }, () => {
-      Rules_Usuario.cambiarUsername(this.state.usernameNuevo)
-        .then(() => {
-          this.setState({ dialogoUsernameVisible: false }, () => {
-            setTimeout(() => {
+  cambiarUsername() {
+    this.setState({ cargandoCambioUsername: true },
+      function () {
+        Rules_Usuario.cambiarUsername(this.state.usernameNuevo)
+          .then(function () {
+            this.setState({ dialogoUsernameVisible: false }, function () {
+              setTimeout(function () {
 
-              //Mando a buscar de nuevo
-              this.buscarDatos();
+                //Mando a buscar de nuevo
+                this.buscarDatos();
 
-              //Informo
-              Snackbar.show({
-                title: 'Nombre de usuario cambiado correctamente'
-              });
-            }, 300);
-          });
-        })
-        .catch((error) => {
-          this.setState({ cargandoCambioUsername: false });
+                //Informo
+                Snackbar.show({
+                  title: 'Nombre de usuario cambiado correctamente'
+                });
 
-          //Informo
-          Snackbar.show({ title: 'Error procesando la solicitud' });
-        });
-    });
+              }.bind(this), 300);
+            }.bind(this));
+          }.bind(this))
+          .catch(function (error) {
+            this.setState({ cargandoCambioUsername: false });
+            Snackbar.show({ title: 'Error procesando la solicitud' });
+          }.bind(this));
+      }.bind(this));
   }
 
-  onBtnCambiarPasswordClick = () => {
+  onBtnCambiarPasswordClick() {
     this.setState({
       dialogoPasswordVisible: true,
       passwordAnterior: undefined,
@@ -115,50 +144,51 @@ export default class PaginaPerfil extends React.Component {
     });
   }
 
-  cambiarPassword = () => {
-    this.setState({ cargandoCambioPassword: true }, () => {
-      Rules_Usuario.cambiarPassword(this.state.passwordAnterior, this.state.passwordNueva)
-        .then(() => {
-          this.setState({ dialogoPasswordVisible: false }, () => {
+  cambiarPassword() {
+    this.setState({ cargandoCambioPassword: true },
+      function () {
+        Rules_Usuario.cambiarPassword(this.state.passwordAnterior, this.state.passwordNueva)
+          .then(function () {
+            this.setState({ dialogoPasswordVisible: false }, function () {
+              //Informo
+              Snackbar.show({ title: 'Contraseña cambiada correctamente' });
+            }.bind(this));
+          }.bind(this))
+          .catch(function (error) {
+            this.setState({ cargandoCambioPassword: false });
+
             //Informo
-            Snackbar.show({ title: 'Contraseña cambiada correctamente' });
-          });
-        })
-        .catch((error) => {
-          this.setState({ cargandoCambioPassword: false });
-
-          //Informo
-          Snackbar.show({ title: 'Error procesando la solicitud' });
-        });
-    });
+            Snackbar.show({ title: 'Error procesando la solicitud' });
+          }.bind(this));
+      }.bind(this));
   }
 
-  onBtnEditarDatosContactoClick = () => {
+  onBtnEditarDatosContactoClick() {
     App.navegar('UsuarioEditarDatosContacto', {
-      callback: () => {
-        this.buscarDatos();
-      }
+      callback: function () {
+        this.buscarDatos()
+      }.bind(this)
     });
   }
 
-  cambiarFoto = () => {
+  cambiarFotoPerfil() {
     Alert.alert('', 'Cambiar foto de perfil', [
-      { text: 'Cancelar', onPress: () => { } },
-      { text: 'Galeria', onPress: this.cambiarFotoDesdeGaleria },
-      { text: 'Cámara', onPress: this.cambiarFotoDesdeCamara },
+      { text: 'Cancelar', onPress: function () { }.bind(this) },
+      { text: 'Galeria', onPress: this.cambiarFotoPerfilDesdeGaleria },
+      { text: 'Cámara', onPress: this.cambiarFotoPerfilDesdeCamara },
     ]);
   }
 
-  cambiarFotoDesdeCamara = () => {
+  cambiarFotoPerfilDesdeCamara() {
     var options = {
       title: 'Elegir foto'
     };
 
     this.setState({
       cargandoFoto: true
-    }, () => {
+    }, function () {
       // Mando a buscar la foto
-      ImagePicker.launchCamera(options, (response) => {
+      ImagePicker.launchCamera(options, function (response) {
         if (response.didCancel) {
           this.setState({
             cargandoFoto: false
@@ -175,22 +205,22 @@ export default class PaginaPerfil extends React.Component {
         }
 
 
-        this.procesarImagen(response.uri);
-      });
+        this.procesarImagenPerfil(response.uri);
+      }.bind(this));
 
-    });
+    }.bind(this));
   }
 
-  cambiarFotoDesdeGaleria = () => {
+  cambiarFotoPerfilDesdeGaleria() {
     var options = {
       title: 'Elegir foto'
     };
 
     this.setState({
       cargandoFoto: true
-    }, () => {
+    }, function () {
       // Mando a buscar la foto
-      ImagePicker.launchImageLibrary(options, (response) => {
+      ImagePicker.launchImageLibrary(options, function (response) {
         if (response.didCancel) {
           this.setState({
             cargandoFoto: false
@@ -205,21 +235,19 @@ export default class PaginaPerfil extends React.Component {
           Alert.alert('', 'Error procesando la solicitud');
           return
         }
+        this.procesarImagenPerfil(response.uri);
 
-        this.procesarImagen(response.uri);
-      });
-
-    });
-
+      }.bind(this));
+    }.bind(this));
   }
 
-  procesarImagen = (img) => {
+  procesarImagenPerfil(img) {
     // Achico la imagen
     ImageResizer.createResizedImage(img, 1000, 1000, 'JPEG', 80)
-      .then((response2) => {
+      .then(function (responseResize) {
         // Convierto la imagen a base64
-        RNFS.readFile(response2.uri, 'base64')
-          .then(base64 => {
+        RNFS.readFile(responseResize.uri, 'base64')
+          .then(function (base64) {
             let foto = 'data:image/jpeg;base64,' + base64;
 
             Rules_Usuario.cambiarFoto(foto)
@@ -243,31 +271,51 @@ export default class PaginaPerfil extends React.Component {
             //   cargandoFoto: false,
             //   foto: foto
             // }, this.informarFoto);
-          }).catch(() => {
+          }.bind(this))
+          .catch(function () {
             Alert.alert('', 'Error procesando la solicitud');
             this.setState({
               cargandoFoto: false
             });
-          });
-      })
-      .catch((err) => {
+          }.bind(this));
+      }.bind(this))
+      .catch(function (err) {
         Alert.alert('', 'Error procesando la solicitud');
         this.setState({
           cargandoFoto: false
         });
-      });
+      }.bind(this));
   }
 
-
   render() {
-
     const initData = global.initData;
 
-    if (this.state.cargando == true) {
-      return (<View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
+    return <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
+
+      {this.renderContent()}
+      {this.renderCargando()}
+
+    </View >
+  }
+
+  renderCargando() {
+    const initData = global.initData;
+
+    return (
+      <Animated.View
+        pointerEvents={this.cargando == true ? 'auto' : 'none'}
+        style={[styles.contenedor, { backgroundColor: initData.backgroundColor }, {
+          position:'absolute',
+          opacity: this.animCargando
+        }]}>
         <Spinner color="green" />
-      </View >);
-    }
+      </Animated.View >
+    );
+
+  }
+
+  renderContent() {
+    const initData = global.initData;
 
     if (this.state.error != undefined) {
       return <MiPanelError
@@ -293,8 +341,10 @@ export default class PaginaPerfil extends React.Component {
 
         <ScrollView>
           <View style={styles.scrollView}>
+
             <View style={styles.imagen}>
-              <TouchableRipple onPress={this.cambiarFoto}>
+
+              <TouchableRipple onPress={this.cambiarFotoPerfil}>
                 <View style={{ display: 'flex', justifyContent: 'center' }}>
 
                   <WebImage
@@ -334,6 +384,7 @@ export default class PaginaPerfil extends React.Component {
 
       </View >
     );
+
   }
 
   renderDatosBasicos() {

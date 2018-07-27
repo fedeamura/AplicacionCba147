@@ -52,6 +52,13 @@ export default class Login extends React.Component {
     };
 
     this.keyboardHeight = new Animated.Value(0);
+
+    this.keyboardWillShow = this.keyboardWillShow.bind(this);
+    this.keyboardWillHide = this.keyboardWillHide.bind(this);
+    this.registrar = this.registrar.bind(this);
+    this.cerrar = this.cerrar.bind(this);
+    this.onFormularioDatosPersonalesAlgoInsertado = this.onFormularioDatosPersonalesAlgoInsertado.bind(this);
+    this.onDatosPersonalesReady = this.onDatosPersonalesReady.bind(this);
   }
 
   componentWillMount() {
@@ -64,7 +71,7 @@ export default class Login extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
-  keyboardWillShow = (event) => {
+  keyboardWillShow(event) {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -73,7 +80,7 @@ export default class Login extends React.Component {
     }).start();
   }
 
-  keyboardWillHide = (event) => {
+  keyboardWillHide(event) {
     this.teclado = false;
 
 
@@ -83,7 +90,9 @@ export default class Login extends React.Component {
     }).start();
   }
 
-  registrar = (data) => {
+  registrar(data) {
+
+    Keyboard.dismiss();
 
     //Armo el comando
     let comando = {
@@ -104,24 +113,26 @@ export default class Login extends React.Component {
       datosExtra: data,
       mostrarPanelResultado: true,
       registrando: true
-    }, () => {
+    }, function () {
 
       //Mando a registrar
-      Rules_Usuario.crearUsuario(comando).then(() => {
-        this.setState({
-          registrando: false
-        });
-      }).catch((error) => {
-        Alert.alert('', error);
-        this.setState({
-          mostrarPanelResultado: false,
-          registrando: false
-        });
-      });
-    });
+      Rules_Usuario.crearUsuario(comando)
+        .then(function () {
+          this.setState({
+            registrando: false
+          });
+        }.bind(this))
+        .catch(function (error) {
+          Alert.alert('', error);
+          this.setState({
+            mostrarPanelResultado: false,
+            registrando: false
+          });
+        }.bind(this));
+    }.bind(this));
   }
 
-  cerrar = () => {
+  cerrar() {
     let preguntarCerrar = false;
     if (this.state.datosPersonales == undefined && this.state.algoInsertadoEnDatosPersonales == true) {
       preguntarCerrar = true;
@@ -133,31 +144,36 @@ export default class Login extends React.Component {
 
     if (preguntarCerrar == true) {
       Alert.alert('', texto_DialogoCancelarFormulario, [
-        { text: texto_DialogoCancelarFormulario_Si, onPress: () => App.goBack() },
-        { text: texto_DialogoCancelarFormulario_No }
-      ]);
+        {
+          text: texto_DialogoCancelarFormulario_Si,
+          onPress: function () { App.goBack() }.bind(this)
+        },
+        {
+          text: texto_DialogoCancelarFormulario_No
+        }
+      ], { cancelable: true });
       return;
     }
 
     App.goBack();
   }
 
-  onFormularioDatosPersonalesAlgoInsertado = (algoInsertado) => {
+  onFormularioDatosPersonalesAlgoInsertado(algoInsertado) {
     this.setState({ algoInsertadoEnDatosPersonales: algoInsertado })
   }
 
-  onDatosPersonalesReady = (datos) => {
+  onDatosPersonalesReady(datos) {
     Animated.timing(this.state.animDatosPersonales, {
       toValue: 0,
       duration: 500
-    }).start(() => {
-      this.setState({ datosPersonales: datos }, () => {
+    }).start(function () {
+      this.setState({ datosPersonales: datos }, function () {
         Animated.timing(this.state.animDatosExtra, {
           toValue: 1,
           duration: 500
         }).start();
-      });
-    });
+      }.bind(this));
+    }.bind(this));
   }
 
   render() {

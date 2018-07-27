@@ -6,6 +6,7 @@ import {
     Button,
     Text,
 } from "native-base";
+import autobind from 'autobind-decorator'
 
 //Mis componentes
 import App from "@UI/App";
@@ -27,7 +28,8 @@ export default class RequerimientoNuevo_PasoConfirmacion extends React.Component
         onReady: () => { },
     }
 
-    informarReady = () => {
+    @autobind
+    informarReady() {
         this.props.onReady();
     }
 

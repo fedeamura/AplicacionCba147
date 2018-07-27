@@ -2,13 +2,12 @@ import React from "react";
 import {
   StyleSheet,
   View,
+  Keyboard,
   Alert
 } from "react-native";
 import {
   Button,
-  Text,
-  Input,
-  Item,
+  Text
 } from "native-base";
 import { Card, CardContent } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -24,6 +23,8 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
       completado: false,
       error: false,
       //Acceso
+      username: props.cuil || '',
+      usernameError: undefined,
       contraseña: undefined,
       contraseñaError: false,
       repetirContraseña: undefined,
@@ -40,15 +41,30 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
       telefonoCelularNumero: undefined,
       telefonoCelularNumeroError: false
     };
+
+    this.validarCampos = this.validarCampos.bind(this);
+    this.onUsernameChange = this.onUsernameChange.bind(this);
+    this.onContraseñaChange = this.onContraseñaChange.bind(this);
+    this.onRepetirContraseñaChange = this.onRepetirContraseñaChange.bind(this);
+    this.onEmailChange = this.onEmailChange.bind(this);
+    this.onTelefonoFijoCaracteristicaChange = this.onTelefonoFijoCaracteristicaChange.bind(this);
+    this.onTelefonoFijoNumeroChange = this.onTelefonoFijoNumeroChange.bind(this);
+    this.onTelefonoCelularCaracteristicaChange = this.onTelefonoCelularCaracteristicaChange.bind(this);
+    this.onTelefonoCelularNumeroChange = this.onTelefonoCelularNumeroChange.bind(this);
+    this.registrar = this.registrar.bind(this);
   }
 
-  validarCampos = () => {
+
+  validarCampos() {
     let tieneContraseña = this.state.contraseña != undefined && this.state.contraseña != "";
     let tieneRepetirContraseña = this.state.repetirContraseña != undefined && this.state.repetirContraseña != "";
     let tieneEmail = this.state.email != undefined && this.state.email != "";
 
     let completado = tieneEmail && tieneContraseña && tieneRepetirContraseña;
     let tieneError =
+      this.state.usernameError == true ||
+      this.state.contraseñaError == true ||
+      this.state.repetirContraseñaError == true ||
       this.state.emailError == true ||
       this.state.telefonoFijoCaracteristicaError == true ||
       this.state.telefonoFijoNumeroError == true ||
@@ -61,90 +77,107 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     });
   }
 
-  onContraseñaChange = (val) => {
+  onUsernameChange(val) {
+    this.setState({
+      username: val
+    }, this.validarCampos);
+  }
+
+  onContraseñaChange(val) {
     this.setState({
       contraseña: val
     }, this.validarCampos);
   }
 
-  onRepetirContraseñaChange = (val) => {
+  onRepetirContraseñaChange(val) {
     this.setState({
       repetirContraseña: val
     }, this.validarCampos);
   }
 
-  onEmailChange = (val) => {
+  onEmailChange(val) {
     this.setState({
       email: val
     }, this.validarCampos);
   }
 
-  onTelefonoFijoCaracteristicaChange = (val) => {
+  onTelefonoFijoCaracteristicaChange(val) {
     this.setState({
       telefonoFijoCaracteristica: val
     }, this.validarCampos);
   }
 
-  onTelefonoFijoNumeroChange = (val) => {
+  onTelefonoFijoNumeroChange(val) {
     this.setState({
       telefonoFijoNumero: val
     }, this.validarCampos);
   }
 
-  onTelefonoCelularCaracteristicaChange = (val) => {
+  onTelefonoCelularCaracteristicaChange(val) {
     this.setState({
       telefonoCelularCaracteristica: val
     }, this.validarCampos);
   }
 
-  onTelefonoCelularNumeroChange = (val) => {
+  onTelefonoCelularNumeroChange(val) {
     this.setState({
       telefonoCelularNumero: val
     }, this.validarCampos);
   }
 
-  registrar = () => {
+  registrar() {
+
     //Valido password
     if (this.state.contraseña == undefined || this.state.contraseña == "") {
-      Alert.alert('', texto_Error_IngreseContraseña, [{
-        text: 'Aceptar', onPress: () => {
-          this.inputContraseña._root.focus();
+      Alert.alert('', texto_Error_IngreseContraseña, [
+        {
+          text: 'Aceptar',
+          onPress: function () {
+            this.inputContraseña._root.focus();
+          }.bind(this)
         }
-      }]);
+      ]);
       return;
     }
 
     //Valido repetir passowrd
     if (this.state.repetirContraseña == undefined || this.state.repetirContraseña == "") {
-      Alert.alert('', texto_Error_IngreseRepetirContraseña, [{
-        text: 'Aceptar', onPress: () => {
-          this.inputRepetirContraseña._root.focus();
+      Alert.alert('', texto_Error_IngreseRepetirContraseña, [
+        {
+          text: 'Aceptar',
+          onPress: function () {
+            this.inputRepetirContraseña._root.focus();
+          }.bind(this)
         }
-      }]);
+      ]);
       return;
     }
 
     //Valido que coincidan las pass
     if (this.state.contraseña != this.state.repetirContraseña) {
-      Alert.alert('', texto_Error_ContraseñasNoCoinciden, [{
-        text: 'Aceptar', onPress: () => {
-          this.inputRepetirContraseña._root.focus();
+      Alert.alert('', texto_Error_ContraseñasNoCoinciden, [
+        {
+          text: 'Aceptar',
+          onPress: function () {
+            this.inputRepetirContraseña._root.focus();
+          }.bind(this)
         }
-      }]);
+      ]);
       return;
     }
 
     //Valido email
     if (this.state.email == undefined || this.state.email == "") {
-      Alert.alert('', texto_Error_IngreseEmail, [{
-        text: 'Aceptar', onPress: () => {
-          this.inputEmail._root.focus();
+      Alert.alert('', texto_Error_IngreseEmail, [
+        {
+          text: 'Aceptar',
+          onPress: function () {
+            this.inputEmail._root.focus();
+          }.bind(this)
         }
-      }]);
+      ]);
       return;
     }
-
-
 
     //Valido que esten ambos campos de telefono celular si es que ingreso algunio
     let tieneTelefonoCelularCaracteristica = this.state.telefonoCelularCaracteristica != undefined && this.state.telefonoCelularCaracteristica != "";
@@ -161,11 +194,13 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
           input = this.inputTelefonoCelularNumero._root;
         }
 
-        Alert.alert('', mensaje, [{
-          text: 'Aceptar', onPress: () => {
-            input.focus();
-          }
-        }]);
+        Alert.alert('', mensaje, [
+          {
+            text: 'Aceptar',
+            onPress: function () {
+              input.focus();
+            }.bind(this)
+          }]);
         return;
       }
     }
@@ -185,11 +220,14 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
           input = this.inputTelefonoFijoNumero._root;
         }
 
-        Alert.alert('', mensaje, [{
-          text: 'Aceptar', onPress: () => {
-            input.focus();
-          }
-        }]);
+        Alert.alert('', mensaje, [
+          {
+            text: 'Aceptar',
+            onPress: function () {
+              input.focus();
+            }
+          }.bind(this)
+        ]);
         return;
       }
     }
@@ -209,6 +247,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
       return;
     }
 
+    Keyboard.dismiss();
     if (this.props.onReady != undefined) {
       this.props.onReady({
         password: this.state.contraseña,
@@ -219,6 +258,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     }
   }
 
+
   render() {
 
     return (
@@ -227,37 +267,48 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
         <Card style={styles.card}>
           <CardContent>
             <Text style={{ marginLeft: 4, fontWeight: 'bold' }}>{texto_TituloUsername}</Text>
-            <Item><Input value={this.props.cuil || 'Sin datos'} disabled={true} /></Item>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 8, marginRight: 16 }}>
-              <Icon name="info-outline" style={{ marginRight: 8, fontSize: 20 }} />
-              <Text style={{ fontSize: 14 }}>{texto_HelpUsername}</Text>
+            <MiInputTextValidar
+              onRef={function (ref) { this.inputUsername = ref; }.bind(this)}
+              placeholder={texto_TituloUsername}
+              returnKeyType="done"
+              autoCorrect={false}
+              onSubmitEditing={function () { this.inputContraseña._root.focus() }.bind(this)}
+              keyboardType="default"
+              validaciones={{ minLength: 8, maxLength: 20, tipo: 'username' }}
+              onChange={this.onUsernameChange}
+              onError={function (error) {
+                this.setState({ usernameError: error })
+              }.bind(this)}
+            />
+            <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8, marginRight: 16 }}>
+              <Icon name="info-outline" style={{ marginRight: 8, fontSize: 20, marginLeft: 8 }} />
+              <Text style={{ fontSize: 14, flex: 1 }}>{texto_HelpUsername}</Text>
             </View>
 
             <View style={{ marginTop: 16 }}></View>
             <MiInputTextValidar
-              onRef={(ref) => { this.inputContraseña = ref; }}
+              onRef={function (ref) { this.inputContraseña = ref; }.bind(this)}
               placeholder={texto_HintPassword}
               returnKeyType="done"
               autoCorrect={false}
-              onSubmitEditing={() => { this.inputRepetirContraseña._root.focus() }}
+              onSubmitEditing={function () { this.inputRepetirContraseña._root.focus() }.bind(this)}
               keyboardType="default"
               secureTextEntry={true}
               validaciones={{ requerido: true, minLength: 8, maxLength: 20 }}
               onChange={this.onContraseñaChange}
-              onError={(error) => { this.setState({ contraseñaError: error }) }}
+              onError={function (error) { this.setState({ contraseñaError: error }) }.bind(this)}
             />
 
             <MiInputTextValidar
-              onRef={(ref) => { this.inputRepetirContraseña = ref; }}
+              onRef={function (ref) { this.inputRepetirContraseña = ref; }.bind(this)}
               placeholder={texto_HintRepetirPassword}
               returnKeyType="done"
               autoCorrect={false}
-              onSubmitEditing={() => { }}
               keyboardType="default"
               secureTextEntry={true}
               validaciones={{ requerido: true, minLength: 8, maxLength: 20 }}
               onChange={this.onRepetirContraseñaChange}
-              onError={(error) => { this.setState({ repetirContraseñaError: error }, this.validar) }}
+              onError={function (error) { this.setState({ repetirContraseñaError: error }) }.bind(this)}
             />
 
           </CardContent>
@@ -268,15 +319,15 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
           <CardContent>
 
             <MiInputTextValidar
-              onRef={(ref) => { this.inputEmail = ref; }}
+              onRef={function (ref) { this.inputEmail = ref; }.bind(this)}
               placeholder={texto_HintEmail}
               returnKeyType="done"
               autoCorrect={false}
-              onSubmitEditing={() => { this.inputTelefonoFijoCaracteristica._root.focus() }}
+              onSubmitEditing={function () { this.inputTelefonoFijoCaracteristica._root.focus() }.bind(this)}
               keyboardType="default"
               validaciones={{ requerido: true, tipo: 'email' }}
               onChange={this.onEmailChange}
-              onError={(error) => { this.setState({ emailError: error }, this.validarCampos) }}
+              onError={function (error) { this.setState({ emailError: error }) }.bind(this)}
             />
 
             {/* Telefono celular */}
@@ -286,29 +337,35 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
               <Text style={{ marginLeft: 8, marginTop: 16 }}>0</Text>
               <MiInputTextValidar
                 style={{ flex: 1, marginRight: 16 }}
-                onRef={(ref) => { this.inputTelefonoCelularCaracteristica = ref; }}
+                onRef={function (ref) { this.inputTelefonoCelularCaracteristica = ref; }.bind(this)}
                 placeholder={texto_HintTelefonoCelular_Caracteristica}
                 returnKeyType="done"
                 autoCorrect={false}
-                onSubmitEditing={() => { this.inputTelefonoCelularNumero._root.focus() }}
+                onSubmitEditing={function () { this.inputTelefonoCelularNumero._root.focus() }.bind(this)}
                 keyboardType="numeric"
-                validaciones={{ requerido: false, minLength: 2, maxLength: 5, tipo: 'numeroEntero', mensajes: { minLength: (val) => { return '2 caracteres' } } }}
+                validaciones={{
+                  requerido: false, minLength: 2, maxLength: 5, tipo: 'numeroEntero',
+                  mensajes: {
+                    minLength: function (val) { return '*' }.bind(this),
+                    maxLength: function (val) { return '*' }.bind(this),
+                    tipo: '*'
+                  }
+                }}
                 onChange={this.onTelefonoCelularCaracteristicaChange}
-                onError={(error) => { this.setState({ telefonoCelularCaracteristicaError: error }, this.validarCampos) }}
+                onError={function (error) { this.setState({ telefonoCelularCaracteristicaError: error }) }.bind(this)}
               />
               <Text style={{ marginLeft: 8, marginTop: 16 }}>15</Text>
 
               <MiInputTextValidar
                 style={{ flex: 3 }}
-                onRef={(ref) => { this.inputTelefonoCelularNumero = ref; }}
+                onRef={function (ref) { this.inputTelefonoCelularNumero = ref; }.bind(this)}
                 placeholder={texto_hintTelefonoCelular_Numero}
                 returnKeyType="done"
                 autoCorrect={false}
-                onSubmitEditing={() => { }}
                 keyboardType="numeric"
                 validaciones={{ requerido: false, minLength: 5, maxLength: 12, tipo: 'numeroEntero' }}
                 onChange={this.onTelefonoCelularNumeroChange}
-                onError={(error) => { this.setState({ telefonoCelularNumeroError: error }, this.validarCampos) }}
+                onError={function (error) { this.setState({ telefonoCelularNumeroError: error }) }.bind(this)}
               />
 
             </View>
@@ -320,28 +377,35 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
               <Text style={{ marginLeft: 8, marginTop: 16 }}>0</Text>
               <MiInputTextValidar
                 style={{ flex: 1, marginRight: 16 }}
-                onRef={(ref) => { this.inputTelefonoFijoCaracteristica = ref; }}
+                onRef={function (ref) { this.inputTelefonoFijoCaracteristica = ref; }.bind(this)}
                 placeholder={texto_HintTelefonoFijo_Caracteristica}
                 returnKeyType="done"
                 autoCorrect={false}
-                onSubmitEditing={() => { this.inputTelefonoFijoNumero._root.focus() }}
+                onSubmitEditing={function () { this.inputTelefonoFijoNumero._root.focus() }.bind(this)}
                 keyboardType="numeric"
-                validaciones={{ requerido: false, minLength: 2, maxLength: 5, tipo: 'numeroEntero', mensajes: { minLength: (val) => { return '2 caracteres' } } }}
+                validaciones={{
+                  requerido: false, minLength: 2, maxLength: 5, tipo: 'numeroEntero',
+                  mensajes: {
+                    minLength: function (val) { return '*' }.bind(this),
+                    maxLength: function (val) { return '*' }.bind(this),
+                    tipo: '*'
+                  }
+                }}
                 onChange={this.onTelefonoFijoCaracteristicaChange}
-                onError={(error) => { this.setState({ telefonoFijoCaracteristicaError: error }, this.validarCampos) }}
+                onError={function (error) { this.setState({ telefonoFijoCaracteristicaError: error }) }.bind(this)}
               />
 
               <MiInputTextValidar
                 style={{ flex: 3 }}
-                onRef={(ref) => { this.inputTelefonoFijoNumero = ref; }}
+                onRef={function (ref) { this.inputTelefonoFijoNumero = ref; }.bind(this)}
                 placeholder={texto_hintTelefonoFijo_Numero}
                 returnKeyType="done"
                 autoCorrect={false}
-                onSubmitEditing={() => { this.inputTelefonoCelularCaracteristica._root.focus() }}
+                onSubmitEditing={function () { this.inputTelefonoCelularCaracteristica._root.focus() }.bind(this)}
                 keyboardType="numeric"
                 validaciones={{ requerido: false, minLength: 5, maxLength: 12, tipo: 'numeroEntero' }}
                 onChange={this.onTelefonoFijoNumeroChange}
-                onError={(error) => { this.setState({ telefonoFijoNumeroError: error }, this.validarCampos) }}
+                onError={function (error) { this.setState({ telefonoFijoNumeroError: error }) }.bind(this)}
               />
 
             </View>
@@ -379,17 +443,17 @@ const styles = StyleSheet.create({
 
 const texto_TituloDatosAcceso = 'Datos de acceso';
 const texto_TituloUsername = 'Nombre de Usuario';
-const texto_HelpUsername = 'Su nombre de usuario es su número de CUIL';
+const texto_HelpUsername = 'Si desea puede agregar un nombre de usuario. Tenga en cuenta que ademas siempre podra acceder a su usuario con su número de CUIL';
 const texto_HintPassword = 'Contraseña';
 const texto_HintRepetirPassword = 'Repita su contraseña';
 
 const texto_TituloDatosContacto = 'Datos de contacto';
 const texto_HintEmail = 'E-Mail';
 const texto_TituloTelefonoFijo = 'Telefono Fijo';
-const texto_HintTelefonoFijo_Caracteristica = 'Àrea';
+const texto_HintTelefonoFijo_Caracteristica = 'Area';
 const texto_hintTelefonoFijo_Numero = 'Número';
 const texto_TituloTelefonoCelular = 'Telefono Célular';
-const texto_HintTelefonoCelular_Caracteristica = 'Àrea';
+const texto_HintTelefonoCelular_Caracteristica = 'Area';
 const texto_hintTelefonoCelular_Numero = 'Número';
 
 const texto_BotonRegistrar = 'Registrar';

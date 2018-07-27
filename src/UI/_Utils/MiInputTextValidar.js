@@ -1,6 +1,7 @@
 import React from "react";
 import {
   View,
+  Alert,
   Animated,
 } from "react-native";
 import {
@@ -9,6 +10,7 @@ import {
   Item,
 } from "native-base";
 import { validar } from '@Utils/MiValidador'
+import autobind from 'autobind-decorator'
 
 export default class MiInputTextValidar extends React.Component {
 
@@ -16,6 +18,7 @@ export default class MiInputTextValidar extends React.Component {
     super(props);
 
     this.state = {
+      animando: false,
       valor: props.valorInicial,
       error: undefined
     };
@@ -24,70 +27,64 @@ export default class MiInputTextValidar extends React.Component {
     this.animError = new Animated.Value(0);
   }
 
-  shouldComponentUpdate = (nextProps, nextState) => {
+  shouldComponentUpdate(nextProps, nextState) {
     return JSON.stringify(nextState) != JSON.stringify(this.state);
   }
 
-  onValorChange = (val) => {
+  @autobind
+  onChange(val) {
     this.setState({
-      valor: val
-      // error: this.validar(val)
-    }, () => {
-      // this.animarError();
+      valor: val,
+      error: validar(val, this.props.validaciones || {})
+    }, function () {
       this.informarVal();
-      // this.informarError();
       this.informarTieneAlgo();
-
-      clearTimeout(this.timer);
-
-      this.timer = setTimeout(() => {
-        this.validarError();
-      }, 300);
-    });
-  }
-
-  validarError = () => {
-    this.setState({
-      // valor: val
-      error: this.validar(this.state.valor)
-    }, () => {
-      this.animarError();
-      // this.informarVal();
       this.informarError();
-      // this.informarTieneAlgo();
-    });
+      this.animarError();
+    }.bind(this));
   }
 
+  @autobind
   animarError() {
-    let nextValue = this.state.error != undefined ? 1 : 0;
-    if (this.animarError._value == nextValue) return;
+    clearTimeout(this.timerAnim);
+    this.timerAnim = setTimeout(function () {
+      let nextValue = this.state.error != undefined ? 1 : 0;
+      if (this.animarError._value == nextValue) return;
 
-    Animated.timing(this.animError, {
-      toValue: nextValue,
-      duration: 500
-    }).start();
+      Animated.timing(this.animError, {
+        toValue: nextValue,
+        duration: 500
+      }).start();
+
+    }.bind(this), 300);
   }
 
-  validar(val) {
-    return validar(val, this.props.validaciones || {});
-  }
-
+  @autobind
   informarVal() {
     if (this.props.onChange != undefined) {
       this.props.onChange(this.state.valor);
     }
   }
 
+  @autobind
   informarError() {
     if (this.props.onError != undefined) {
       this.props.onError(this.state.error != undefined);
     }
   }
 
+  @autobind
   informarTieneAlgo() {
     let tieneAlgo = this.state.valor != undefined || this.state.valor != "";
     if (this.props.tieneAlgo != undefined) {
       this.props.tieneAlgo(tieneAlgo);
+    }
+  }
+
+  @autobind
+  onRef(ref) {
+    if (this.props.onRef != undefined) {
+      this.props.onRef(ref);
     }
   }
 
@@ -97,12 +94,7 @@ export default class MiInputTextValidar extends React.Component {
       <View style={[{}, this.props.style]}>
         <Item error={this.state.error != undefined}>
           <Input
-            ref={(ref) => {
-              if (this.props.onRef != undefined) {
-                this.props.onRef(ref);
-              }
-            }}
-            onFocusOut={this.onFocusOut}
+            ref={this.onRef}
             secureTextEntry={this.props.secureTextEntry}
             returnKeyType={this.props.returnKeyType}
             onSubmitEditing={this.props.onSubmitEditing}
@@ -111,7 +103,7 @@ export default class MiInputTextValidar extends React.Component {
             keyboardType={this.props.keyboardType}
             placeholder={this.props.placeholder}
             value={this.state.valor != undefined ? ("" + this.state.valor) : ''}
-            onChangeText={(val) => { this.onValorChange(val) }} />
+            onChangeText={this.onChange} />
         </Item>
 
         <Animated.View style={{
@@ -127,6 +119,7 @@ export default class MiInputTextValidar extends React.Component {
             {this.state.error || '   '}
           </Text>
         </Animated.View>
+
 
       </View>
     );

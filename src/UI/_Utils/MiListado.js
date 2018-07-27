@@ -7,6 +7,7 @@ import {
   Animated,
   Text
 } from "react-native";
+import autobind from 'autobind-decorator'
 
 export default class MiListado extends React.Component {
   constructor(props) {
@@ -27,9 +28,9 @@ export default class MiListado extends React.Component {
     ...React.Component.defaultProps,
     renderEmpty: undefined,
     renderError: undefined,
-    renderHeader: () => { return null },
+    renderHeader: function () { return null },
     numColumns: 1,
-    keyExtractor: () => { return 'a' }
+    keyExtractor: function () { return 'a' }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -62,34 +63,49 @@ export default class MiListado extends React.Component {
     });
   }
 
-  mostrarError = () => {
+  @autobind
+  mostrarError() {
     Animated.timing(this.anim_Error, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  ocultarError = () => {
+  @autobind
+  ocultarError() {
     Animated.timing(this.anim_Error, {
       duration: 500,
       toValue: 0
     }).start();
   }
 
-  mostrarEmpty = () => {
+  @autobind
+  mostrarEmpty() {
     Animated.timing(this.anim_Empty, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  ocultarEmpty = () => {
+  @autobind
+  ocultarEmpty() {
     Animated.timing(this.anim_Empty, {
       duration: 500,
       toValue: 0
     }).start();
   }
 
+
+  @autobind
+  onRef(ref) {
+    if (this.props.refListado == undefined) return;
+    this.props.refListado(ref);
+  }
+
+  @autobind
+  generarKey(item) {
+    return this.props.numColumns + '_' + this.props.keyExtractor(item);
+  }
 
   render() {
 
@@ -125,23 +141,14 @@ export default class MiListado extends React.Component {
 
         {/* Listado */}
         <FlatList
-          ref={(ref) => {
-            if (this.props.refListado == undefined) return;
-            this.props.refListado(ref);
-          }}
+          ref={this.onRef}
           style={[styles.listado]}
           data={this.props.data}
           numColumns={this.props.numColumns}
-          ListHeaderComponent={() => {
-            return this.props.renderHeader();
-          }}
+          ListHeaderComponent={this.props.renderHeader}
           contentContainerStyle={this.props.style}
-          keyExtractor={(item) => {
-            return this.props.numColumns + '_' + this.props.keyExtractor(item);
-          }}
-          renderItem={item => {
-            return this.props.renderItem(item);
-          }}
+          keyExtractor={this.generarKey}
+          renderItem={this.props.renderItem}
           onRefresh={this.props.onRefresh}
           refreshing={this.props.refreshing}
         />

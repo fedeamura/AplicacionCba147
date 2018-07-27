@@ -74,43 +74,45 @@ export default class PaginaInicio_Requerimientos extends React.Component {
             this.ocultarBotonNuevo();
 
             Rules_Requerimiento.get()
-                .then((requerimientos) => {
-
+                .then(function(requerimientos) {
                     this.setState({
                         cargando: false,
                         error: undefined,
                         requerimientos: requerimientos
-                    }, () => {
+                    }, function() {
                         if (requerimientos.length == 0) {
                             this.ocultarBotonNuevo();
                         } else {
                             this.mostrarBotonNuevo();
                         }
-                    });
+                    }.bind(this));
 
-                })
-                .catch((error) => {
+                }.bind(this))
+                .catch(function(error) {
                     this.setState({
                         cargando: false,
                         requerimientos: [],
                         error: error
-                    }, () => {
+                    }, function() {
                         this.ocultarBotonNuevo();
-                    });
-                })
+                    }.bind(this));
+                }.bind(this))
         }.bind(this));
     }
 
     abrirNuevoRequerimiento() {
 
         App.navegar('RequerimientoNuevo', {
-            callback: () => {
-                this.buscarRequerimientos();
-            },
-            verDetalleRequerimiento: (id) => {
+
+            callback: function() {
+                this.buscarRequerimientos()
+            }.bind(this),
+
+            verDetalleRequerimiento: function(id) {
                 this.buscarRequerimientos();
                 this.verDetalleRequerimiento(id);
-            }
+            }.bind(this)
+
         });
     }
 
