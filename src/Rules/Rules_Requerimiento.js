@@ -5,53 +5,31 @@ import Rules_Ajustes from "./Rules_Ajustes";
 const metodos = {
   get: function () {
     return new Promise((resolve, reject) => {
-      let rqs = [];
-      rqs.push({ id: 1, estadoKeyValue: 1, estadoColor: '#E53935', estadoNombre: 'Nuevo', numero: "QAZWSX", año: 2017, fechaAlta: '10/10/2018' });
-      rqs.push({ id: 2, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta: '10/10/2018' })
-      rqs.push({ id: 3, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta: '10/10/2018' })
-      rqs.push({ id: 4, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta: '10/10/2018' })
-      rqs.push({ id: 5, estadoKeyValue: 2, estadoColor: '#000000', estadoNombre: 'Cancelado', numero: "THYWDC", año: 2018, fechaAlta: '10/10/2018' })
 
-      setTimeout(() => {
-        // reject('ouchilas');
-        resolve(rqs);
-      }, 500);
-    })
+      if (global.token == undefined) {
+        reject('Debe iniciar sesion');
+        return;
+      }
 
-    // const url =
-    //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeRequerimiento.asmx/ConsultarMisRequerimientos";
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Requerimiento?token={token}";
+      url = url.replace('{token}', global.token);
 
-    // console.log('Rules_Requerimiento - get');
-    // fetch(url, {
-    //   method: "POST",
-    //   headers: {
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({
-    //     token: App.Variables.Token
-    //   })
-    // })
-    //   .then(response => response.json())
-    //   .then(responseJson => {
-    //     var data = responseJson.d;
-    //     console.log(data);
+      fetch(url, {
+        method: "GET"
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok == false) {
+            reject(data.error);
+            return;
+          }
 
-    //     if (!data.Ok) {
-    //       console.log('Error');
-    //       console.log(data.Error);
-
-    //       reject(data.Error);
-    //       return;
-    //     }
-
-    //     resolve(data.Return);
-    //   })
-    //   .catch(error => {
-    //     console.log('Error');
-    //     console.log(error);
-    //     reject('Error procesando la solicitud');
-    // });
+          resolve(data.return);
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        });
+    });
   },
 
   insertar: function (comando) {
@@ -60,25 +38,6 @@ const metodos = {
         callback();
       }, 5000);
     });
-  },
-
-  getEstados: function () {
-    return new Promise((callback, reject) => {
-      setTimeout(() => {
-        let estados = [{
-          Id: 1,
-          KeyValue: 1,
-          Color: 'red',
-          Nombre: 'Nuevo'
-        }, {
-          Id: 2,
-          KeyValue: 2,
-          Color: 'yellow',
-          Nombre: 'En proceso'
-        }]
-        callback(estados);
-      }, 500);
-    })
   },
 
   getDetalle: function (id) {

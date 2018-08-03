@@ -1,21 +1,23 @@
 import React from "react";
 import {
-    View
+    View,
+    Alert
 } from "react-native";
 import {
     Button,
     Text,
     ListItem
 } from "native-base";
+import _ from 'lodash';
+import autobind from 'autobind-decorator'
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 //Mis componentes
 import App from "@UI/App";
 import MiView from "@Utils/MiView";
 import CardCirculo from "@Utils/CardCirculo";
 import MiItemDetalle from "@Utils/MiItemDetalle";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import _ from 'lodash';
-import autobind from 'autobind-decorator'
+import { toTitleCase, quitarAcentos } from "@Utils/Helpers";
 
 //Rules
 import Rules_Motivo from "@Rules/Rules_Motivo";
@@ -31,8 +33,9 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             cargando: false,
             error: undefined,
             anims: undefined,
-            servicio: undefined,
-            motivo: undefined,
+            servicioNombre: undefined,
+            motivoNombre: undefined,
+            motivoId: undefined,
             mostrarServicio: true,
             mostrarMotivo: false,
             mostrarResultado: false,
@@ -42,6 +45,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
     static defaultProps = {
         ...React.Component.defaultProps,
+        servicios: [],
         onCargando: function () { }
     }
 
@@ -54,15 +58,28 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     @autobind
     seleccionarServicio(servicio) {
         this.setState({ cargando: true }, function () {
-            Rules_Motivo.get(servicio.Id)
+            Rules_Motivo.get(servicio.id)
                 .then(function (data) {
-                    data = _.orderBy(data, 'Nombre');
-                    this.setState({ servicio: servicio, motivos: data, mostrarServicio: false },
+                    data = _.orderBy(data, 'nombre');
+                    this.setState({
+                        servicioNombre: servicio.nombre,
+                        motivos: data,
+                        mostrarServicio: false
+                    },
                         function () {
                             setTimeout(function () {
-                                this.setState({ cargando: false, mostrarMotivo: true });
+                                this.setState({
+                                    cargando: false,
+                                    mostrarMotivo: true
+                                });
                             }.bind(this), 300);
                         });
+                }.bind(this))
+                .catch(function (error) {
+                    this.setState({
+                        cargando: false
+                    });
+                    Alert.alert('', error || 'Error procesando la solicitud');
                 }.bind(this));
         });
     }
@@ -71,7 +88,11 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     cancelarServicio() {
         this.setState({ mostrarMotivo: false }, function () {
             setTimeout(function () {
-                this.setState({ servicio: undefined, motivos: undefined, mostrarServicio: true });
+                this.setState({
+                    servicioNombre: undefined,
+                    motivos: undefined,
+                    mostrarServicio: true
+                });
             }.bind(this), 300);
         })
     }
@@ -79,11 +100,11 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     @autobind
     seleccionarMotivo(motivo) {
         this.setState({
-            motivo: motivo,
+            motivoNombre: motivo.nombre,
+            motivoId: motivo.id,
             mostrarMotivo: false
         }, function () {
             this.informar();
-
             setTimeout(function () {
                 this.setState({ mostrarResultado: true });
             }.bind(this), 300);
@@ -91,26 +112,34 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     }
 
     @autobind
-    seleccionarServicioMotivo(servicio, motivo) {
-        this.setState({
-            servicio: servicio,
-            motivo: motivo,
-            mostrarServicio: false,
-            mostrarMotivo: false
-        }, function () {
-            this.informar();
+    seleccionarServicioMotivo(entity) {
+        // this.setState({
+        //     servicio: servicio,
+        //     motivo: motivo,
+        //     mostrarServicio: false,
+        //     mostrarMotivo: false
+        // }, function () {
+        //     this.informar();
 
-            setTimeout(function () {
-                this.setState({ mostrarResultado: true });
-            }.bind(this), 300);
-        });
+        //     setTimeout(function () {
+        //         this.setState({ mostrarResultado: true });
+        //     }.bind(this), 300);
+        // });
     }
 
     @autobind
     cancelarMotivo() {
-        this.setState({ mostrarResultado: false, mostrarMotivo: false }, function () {
+        this.setState({
+            mostrarResultado: false,
+            mostrarMotivo: false
+        }, function () {
             setTimeout(function () {
-                this.setState({ motivo: undefined, servicio: undefined, mostrarServicio: true }, function () {
+                this.setState({
+                    motivoNombre: undefined,
+                    servicioNombre: undefined,
+                    motivoId: undefined,
+                    mostrarServicio: true
+                }, () => {
                     this.informar();
                 });
             }.bind(this), 300);
@@ -123,11 +152,17 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             busqueda: true,
             backgroundColor: initData.backgroundColor,
             placeholderBusqueda: 'Buscar categoría...',
+            textoEmpty: 'Categoría no encontrada',
             cumpleBusqueda: function (item, texto) {
-                return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                let campo = quitarAcentos(item.nombre.trim()).toLowerCase();
+                let filtro = quitarAcentos(texto.trim()).toLowerCase();
+                return campo.indexOf(filtro) != -1;
+            },
+            keyExtractor: function (data) {
+                return data.id;
             },
             data: this.state.servicios,
-            title: function (item) { return item.Nombre },
+            title: function (item) { return toTitleCase(item.nombre) },
             onPress: this.seleccionarServicio
         })
     }
@@ -138,14 +173,32 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             busqueda: true,
             backgroundColor: initData.backgroundColor,
             placeholderBusqueda: 'Buscar motivo...',
+            textoEmpty: 'Motivo no encontrado',
+            keyExtractor: function (data) {
+                return data.id;
+            },
             cumpleBusqueda: function (item, texto) {
-                return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                let campoNombre = quitarAcentos(item.nombre.trim()).toLowerCase();
+                let campoKeywords = quitarAcentos(item.keywords || '').trim().toLowerCase().split(' ');
+                let filtro = quitarAcentos(texto.trim()).toLowerCase();
+
+                let cumpleNombre = campoNombre.indexOf(filtro) != -1;
+                let cumpleKeyword = false;
+                for (let i = 0; i < campoKeywords.length; i++) {
+                    let cumple = campoKeywords[i].indexOf(filtro) != -1;
+                    if (cumple) {
+                        cumpleKeyword = true;
+                    }
+                }
+
+                return cumpleNombre == true || cumpleKeyword == true;
             },
             data: this.state.motivos,
-            title: function (item) { return item.Nombre },
+            title: function (item) { return toTitleCase(item.nombre).trim() },
             onPress: this.seleccionarMotivo
         });
     }
+
 
     @autobind
     buscar() {
@@ -154,56 +207,63 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                 .then(function (data) {
                     this.setState({ cargando: false });
 
+                    data = _.orderBy(data, 'motivoNombre');
                     App.navegar('PickerListado', {
                         busqueda: true,
                         backgroundColor: initData.backgroundColor,
                         placeholderBusqueda: 'Buscar motivo...',
                         cumpleBusqueda: function (item, texto) {
-                            return item.Nombre.toLowerCase().indexOf(texto.toLowerCase()) != -1;
+                            let campoNombre = quitarAcentos(item.motivoNombre.toLowerCase().trim());
+                            let campoServicio = quitarAcentos(item.servicioNombre.toLowerCase().trim());
+                            let campoKeywords = quitarAcentos(item.motivoKeywords || '').trim().toLowerCase().split(' ');
+
+                            let filtro = quitarAcentos(texto.toLowerCase().trim());
+
+                            let cumpleNombre = campoNombre.indexOf(filtro) != -1;
+                            let cumpleServicio = campoServicio.indexOf(filtro) != -1;
+                            let cumpleKeyword = false;
+                            for (let i = 0; i < campoKeywords.length; i++) {
+                                let cumple = campoKeywords[i].indexOf(filtro) != -1;
+                                if (cumple) {
+                                    cumpleKeyword = true;
+                                }
+                            }
+
+                            return cumpleNombre == true || cumpleKeyword == true || cumpleServicio == true;
                         },
                         data: data,
+                        keyExtractor: function (data) {
+                            return data.motivoId;
+                        },
                         renderItem: function (item) {
-                            return <View>
-                                <View style={{ display: 'flex', flexDirection: 'row' }}>
-                                    <Text style={{ fontWeight: 'bold', marginRight: 8 }}>Servicio:</Text>
-                                    <Text>{item.ServicioNombre}</Text>
+                            return <View style={{ width: '100%' }}>
+                                <View style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+                                    <Text style={{ fontWeight: 'bold', alignSelf: 'flex-start' }}>Categoría:</Text>
+                                    <Text style={{ flex: 1, alignSelf: 'flex-start' }}>{toTitleCase(item.servicioNombre).trim()}</Text>
                                 </View>
-                                <View style={{ display: 'flex', flexDirection: 'row' }}>
-                                    <Text style={{ fontWeight: 'bold', marginRight: 8 }}>Motivo:</Text>
-                                    <Text>{item.Nombre}</Text>
+                                <View style={{ display: 'flex', flexDirection: 'column', width: '100%', alignItems: 'flex-start', justifyContent: 'flex-start', marginTop: 8 }}>
+                                    <Text style={{ fontWeight: 'bold', alignSelf: 'flex-start' }}>Motivo:</Text>
+                                    <Text style={{ flex: 1, alignSelf: 'flex-start' }}>{toTitleCase(item.motivoNombre).trim()}</Text>
                                 </View>
                             </View>
                         },
-                        onPress: function (item) {
-                            let servicio = {
-                                Id: 1,
-                                Nombre: 'Test'
-                            };
-                            let motivo = {
-                                Id: 1,
-                                Nombre: 'Test'
-                            };
-
-                            this.seleccionarServicioMotivo(servicio, motivo);
-                        }.bind(this)
+                        onPress: this.seleccionarServicioMotivo
                     });
                 }.bind(this));
-
         })
     }
 
     @autobind
     informar() {
         if (this.props.onMotivo == undefined) return;
-        this.props.onMotivo(this.state.servicio, this.state.motivo);
+        this.props.onMotivo({ servicioNombre: this.state.servicioNombre, motivoNombre: this.state.motivoNombre, motivoId: this.state.motivoId });
     }
 
     @autobind
     informarReady() {
         if (this.props.onReady == undefined) return;
-        this.props.onReady(this.state.servicio, this.state.motivo);
+        this.props.onReady({ servicioNombre: this.state.servicioNombre, motivoNombre: this.state.motivoNombre, motivoId: this.state.motivoId });
     }
-
 
     render() {
         if (this.state.servicios == undefined) return null;
@@ -233,14 +293,14 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         const serviciosPrincipales = [];
         for (let i = 0; i < this.state.servicios.length; i++) {
             let servicio = this.state.servicios[i];
-            if (servicio.Principal == true && serviciosPrincipales.length <= 5) {
+            if (servicio.principal == true && serviciosPrincipales.length <= 5) {
                 serviciosPrincipales.push(servicio);
             }
         }
 
         //Creo las view principales
         const viewPrincipales = serviciosPrincipales.map((servicio) => {
-            let backgroundColor = servicio.Color || cardColorFondo;
+            let backgroundColor = servicio.color || cardColorFondo;
             let iconColor = iconoColor;
 
             return (
@@ -249,8 +309,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                     <CardCirculo
                         key={servicio.Id}
                         onPress={this.seleccionarServicio.bind(this, servicio)}
-                        icono={servicio.Icono || 'flash'}
-                        texto={servicio.Nombre || 'Sin datos'}
+                        icono={servicio.icono || 'flash'}
+                        texto={toTitleCase(servicio.nombre || 'Sin datos')}
                         textoLines={2}
                         iconoStyle={{ fontSize: iconoFontSize, color: iconColor }}
                         cardColor={backgroundColor}
@@ -316,8 +376,16 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     }
 
     renderViewSeleccionarMotivo() {
-        const nombreServicio = this.state.servicio == undefined ? '' : this.state.servicio.Nombre;
-        const motivos = this.state.motivos == undefined ? [] : this.state.motivos.slice(0, 3);
+        const nombreServicio = this.state.servicioNombre == undefined ? '' : toTitleCase(this.state.servicioNombre);
+        const motivos = [];
+        if (this.state.motivos != undefined) {
+            for (var i = 0; i < this.state.motivos.length; i++) {
+                let motivo = this.state.motivos[i];
+                if (motivo && motivo.principal == true) {
+                    motivos.push(motivo);
+                }
+            }
+        }
 
         return (
             <MiView visible={this.state.mostrarMotivo}>
@@ -339,17 +407,17 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                     </View>
 
                     {/* Categoria seleccionada */}
-                    <View style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+                    <View style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
                         <MiItemDetalle
-                            style={{ flex: 1 }}
                             titulo="Categoria seleccionada"
                             subtitulo={nombreServicio} />
 
                         <Button
                             transparent
+                            small
                             onPress={this.cancelarServicio}
                         >
-                            <Icon name="close" style={{ fontSize: 24 }} />
+                            <Text style={{ color: colorCancelar, marginLeft: -16, textDecorationLine: 'underline' }}>Cancelar categoría</Text>
                         </Button>
                     </View>
 
@@ -361,7 +429,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                         return <ListItem
                             onPress={this.seleccionarMotivo.bind(this, item)}
                             style={{ marginLeft: 0 }}>
-                            <Text>{item.Nombre}</Text>
+                            <Text>{toTitleCase(item.nombre).trim()}</Text>
                         </ListItem>;
                     })}
                     <View style={{ height: 16 }} />
@@ -381,8 +449,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     }
 
     renderViewMotivoSeleccionado() {
-        const nombreServicio = this.state.servicio == undefined ? '' : this.state.servicio.Nombre;
-        const nombreMotivo = this.state.motivo == undefined ? '' : this.state.motivo.Nombre;
+        const nombreServicio = toTitleCase(this.state.servicioNombre || 'Sin datos').trim();
+        const nombreMotivo = toTitleCase(this.state.motivoNombre || 'Sin datos').trim();
 
         return (
             <MiView padding={false} visible={this.state.mostrarResultado}>
@@ -397,21 +465,17 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
                                 <MiItemDetalle titulo="Motivo seleccionado" subtitulo={nombreMotivo} />
                                 <View style={{ height: 8 }} />
-
-
                             </View>
-
                         </View>
 
                         <View style={{ height: 16 }} />
                         <Button
                             small
                             onPress={this.cancelarMotivo}
-                            bordered
-                            small
-                            style={{ alignSelf: 'center', borderColor: '#D32F2F' }}>
+                            transparent
+                            style={{}}>
 
-                            <Text style={{ color: '#D32F2F' }}>Cancelar seleccion</Text>
+                            <Text style={{ color: colorCancelar, textDecorationLine: 'underline', marginLeft: -16 }}>Cancelar selección</Text>
                         </Button>
                     </View>
 
@@ -425,13 +489,13 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                             onPress={this.informarReady}
                             rounded
                             bordered
-                            disabled={this.state.servicio == undefined || this.state.motivo == undefined}
+                            disabled={this.state.motivoId == undefined}
                             style={{
                                 alignSelf: 'flex-end',
-                                borderColor: this.state.servicio == undefined || this.state.motivo == undefined ? 'rgba(150,150,150,1)' : 'green'
+                                borderColor: this.state.motivoId == undefined ? 'rgba(150,150,150,1)' : 'green'
                             }}><Text
                                 style={{
-                                    color: this.state.servicio == undefined || this.state.motivo == undefined ? 'rgba(150,150,150,1)' : 'green'
+                                    color: this.state.motivoId == undefined ? 'rgba(150,150,150,1)' : 'green'
                                 }}
                             >Siguiente</Text></Button>
                     </View>
@@ -441,3 +505,5 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
         );
     }
 }
+
+const colorCancelar = '#E53935';

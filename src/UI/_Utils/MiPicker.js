@@ -2,6 +2,8 @@ import React from "react";
 import {
   View,
   StyleSheet,
+  Animated,
+  Keyboard,
   TextInput,
 } from "react-native";
 import {
@@ -9,6 +11,7 @@ import {
   Text
 } from "native-base";
 import LinearGradient from 'react-native-linear-gradient';
+import autobind from 'autobind-decorator'
 
 //Mis compontenes
 import App from "@UI/App";
@@ -33,9 +36,42 @@ export default class MiPicker extends React.Component {
     this.state = {
       busqueda: undefined
     }
+
+    this.keyboardHeight = new Animated.Value(0);
   }
 
-  onChangeBusqueda = (text) => {
+  componentWillMount() {
+    this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
+    this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
+  }
+
+  componentWillUnmount() {
+    this.keyboardWillShowSub.remove();
+    this.keyboardWillHideSub.remove();
+  }
+
+  @autobind
+  keyboardWillShow(event) {
+    this.teclado = true;
+
+    Animated.timing(this.keyboardHeight, {
+      duration: event.duration,
+      toValue: event.endCoordinates.height
+    }).start();
+  }
+
+  @autobind
+  keyboardWillHide(event) {
+    this.teclado = false;
+
+    Animated.timing(this.keyboardHeight, {
+      duration: event.duration,
+      toValue: 0,
+    }).start();
+  }
+
+  @autobind
+  onChangeBusqueda(text) {
     let { params } = this.props.navigation.state || {};
     if (params == undefined) params = {};
 
@@ -43,6 +79,11 @@ export default class MiPicker extends React.Component {
       busqueda: text,
       dataFiltrada: params.data.filter(element => params.cumpleBusqueda(element, text))
     });
+  }
+
+  @autobind
+  goBack() {
+    App.goBack()
   }
 
   render() {
@@ -55,7 +96,7 @@ export default class MiPicker extends React.Component {
       <View style={[styles.contenedor, { backgroundColor: colorFondo }]}>
 
         {/* Toolbar */}
-        <MiToolbar customContent onBackPress={() => App.goBack()}>
+        <MiToolbar customContent onBackPress={this.goBack}>
           {params.busqueda == true && (
             <TextInput
               onChangeText={this.onChangeBusqueda}
@@ -72,7 +113,7 @@ export default class MiPicker extends React.Component {
             data={this.state.busqueda != undefined && this.state.busqueda != "" ? this.state.dataFiltrada : params.data}
             keyExtractor={params.keyExtractor}
             renderEmpty={() => {
-              return <Text>Servicio no encontrado</Text>;
+              return <Text>{params.textoEmpty || 'No encontrado'}</Text>;
             }}
             renderItem={({ item }) => {
               return (
@@ -84,7 +125,7 @@ export default class MiPicker extends React.Component {
                 >
                   {params.renderItem != undefined ?
                     (
-                      <View>
+                      <View style={{ width: '100%' }}>
                         {params.renderItem(item)}
                       </View>
                     ) :
@@ -104,7 +145,11 @@ export default class MiPicker extends React.Component {
             pointerEvents="none" />
         </View>
 
-      </View>
+        <Animated.View style={[{ height: '100%' }, {
+          maxHeight: this.keyboardHeight
+        }]}></Animated.View>
+
+      </View >
     );
   }
 }

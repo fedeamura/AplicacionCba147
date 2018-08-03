@@ -10,8 +10,9 @@ export default class DB extends React.Component {
     static getItem(nombre) {
         return SInfo.getItem(nombre, {});
     }
-    
+
     static removeItem(nombre) {
+        // SInfo.setItem(nombre, undefined, {});
         SInfo.deleteItem(nombre, {});
     }
 }

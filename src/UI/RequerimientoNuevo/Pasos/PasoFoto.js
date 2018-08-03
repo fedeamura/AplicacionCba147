@@ -148,9 +148,7 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
                 this.setState({
                     cargando: false
                 });
-            }.bind(this));
-
-       
+            }.bind(this));  
     }
 
 

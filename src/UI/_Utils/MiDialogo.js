@@ -52,19 +52,19 @@ export default class MiDialogo extends React.Component {
 
     return <Dialog
       dismissable={cancelable}
-      style={{
+      style={[{
         borderRadius: 16,
         maxWidth: 400,
         width: '90%',
         alignSelf: 'center'
-      }}
+      }, this.props.style]}
       visible={this.props.visible}
       onDismiss={this.props.onDismiss}
     >
       {this.renderCargando()}
       {this.renderContent()}
 
-    </Dialog>;
+    </Dialog >;
   }
 
   renderCargando() {

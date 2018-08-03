@@ -107,27 +107,27 @@ export default class UsuarioEditarDatosContacto extends React.Component {
         let celArea = undefined;
         let celNumero = undefined;
 
-        if (datos.TelefonoFijo != undefined) {
-          if (datos.TelefonoFijo.split('-').length >= 2) {
-            telFijoArea = datos.TelefonoFijo.split('-')[0];
-            telFijoNumero = datos.TelefonoFijo.split('-')[1];
+        if (datos.telefonoFijo != undefined) {
+          if (datos.telefonoFijo.split('-').length >= 2) {
+            telFijoArea = datos.telefonoFijo.split('-')[0];
+            telFijoNumero = datos.telefonoFijo.split('-')[1];
           } else {
-            telFijoNumero = datos.TelefonoFijo;
+            telFijoNumero = datos.telefonoFijo;
           }
         }
 
-        if (datos.TelefonoCelular != undefined) {
-          if (datos.TelefonoCelular.split('-').length >= 2) {
-            celArea = datos.TelefonoCelular.split('-')[0];
-            celNumero = datos.TelefonoCelular.split('-')[1];
+        if (datos.telefonoCelular != undefined) {
+          if (datos.telefonoCelular.split('-').length >= 2) {
+            celArea = datos.telefonoCelular.split('-')[0];
+            celNumero = datos.telefonoCelular.split('-')[1];
           } else {
-            celNumero = datos.TelefonoCelular;
+            celNumero = datos.telefonoCelular;
           }
         }
 
         this.setState({
           datosUsuario: datos,
-          email: datos.Email,
+          email: datos.email,
           telefonoFijoCaracteristica: telFijoArea,
           telefonoFijoNumero: telFijoNumero,
           telefonoCelularCaracteristica: celArea,
@@ -213,7 +213,19 @@ export default class UsuarioEditarDatosContacto extends React.Component {
 
     Keyboard.dismiss();
     this.setState({ cargando: true }, function () {
-      Rules_Usuario.actualizarDatosContacto({})
+
+      const comando = {
+        email: this.state.email
+      };
+
+      if (telefonoFijoCaracteristica != undefined) {
+        comando.telefonoFijo = telefonoFijoCaracteristica + '-' + telefonoFijoNumero;
+      }
+      if (telefonoCelularCaracteristica != undefined) {
+        comando.telefonoCelular = telefonoCelularCaracteristica + '-' + telefonoCelularNumero;
+      }
+
+      Rules_Usuario.actualizarDatosContacto(comando)
         .then(function () {
           this.setState({ cargando: false, dialogoExitoVisible: true });
         }.bind(this))
@@ -326,7 +338,7 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     this.setState({ telefonoCelularNumeroError: error });
   }
 
-  
+
   @autobind
   ocultarTeclado() {
     Keyboard.dismiss();

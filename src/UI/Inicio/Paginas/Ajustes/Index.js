@@ -37,6 +37,7 @@ export default class PaginaAjustes extends React.Component {
     super(props);
 
     this.state = {
+      cargandoCerrarSesion: false,
       dialogoCambiosVisible: false,
       dialogoCerrarSesionVisible: false,
       contadorAjustesDesarroladorClick: 0,
@@ -57,17 +58,15 @@ export default class PaginaAjustes extends React.Component {
   cerrarSesion = () => {
     this.setState({
       dialogoCerrarSesionVisible: false,
-      cargando: true
+      cargandoCerrarSesion: true
     }, () => {
       Rules_Usuario.cerrarSesion()
         .then(() => {
-          this.setState({ cargando: false }, () => {
-            App.replace('Login');
-          });
+          App.replace('Login');
         })
         .catch((error) => {
-          this.setState({ cargando: false }, () => {
-            alert.alert('', error);
+          this.setState({ dialogoCerrarSesionVisible: false }, () => {
+            Alert.alert('', error);
           });
         });;
     });
@@ -120,14 +119,19 @@ export default class PaginaAjustes extends React.Component {
     return (
       <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
 
-        <ScrollView contentContainerStyle={{ padding: 16}}>
+        <ScrollView contentContainerStyle={{ padding: 16 }}>
 
           {/* Sesion Activa */}
           <MiCardDetalle
             padding={false}
             titulo='Sesión activa'
             botones={[
-              { texto: 'Cerrar sesión', onPress: () => { this.setState({ dialogoCerrarSesionVisible: true }); } }
+              {
+                texto: 'Cerrar sesión', onPress: () => {
+                  if (this.state.cargandoCerrarSesion == true) return;
+                  this.setState({ dialogoCerrarSesionVisible: true });
+                }
+              }
             ]}>
             <TouchableRipple onPress={() => { }}>
               <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', padding: 16 }}>
@@ -146,7 +150,7 @@ export default class PaginaAjustes extends React.Component {
 
           </MiCardDetalle>
 
-         
+
           {/* Acerca de... */}
           <MiCardDetalle padding={false} titulo='Sobre nosotros'>
             <MiItemDetalle

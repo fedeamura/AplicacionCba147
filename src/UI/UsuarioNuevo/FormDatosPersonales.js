@@ -17,21 +17,33 @@ import {
   CheckBox
 } from "native-base";
 import { Card, CardContent } from 'react-native-paper';
-import MiInputTextValidar from '@Utils/MiInputTextValidar';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-import { dateToString } from '@Utils/Helpers'
+import autobind from 'autobind-decorator'
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 //Mis componentes
-import Rules_Usuario from "../../Rules/Rules_Usuario";
+import { dateToString } from '@Utils/Helpers'
+import MiInputTextValidar from '@Utils/MiInputTextValidar';
+
+//Rules
+import Rules_Usuario from "@Rules/Rules_Usuario";
 
 export default class NuevoUsuario_FormDatosPersonales extends React.Component {
+
+  static defaultProps = {
+    ...React.Component.defaultProps,
+    onCargando: function () { },
+    onReady: function () { },
+    noValidar: false,
+    datosIniciales: undefined
+  }
 
   constructor(props) {
     super(props);
 
     let fecha = undefined;
     if (props.datosIniciales != undefined) {
-
       fecha = new Date(
         props.datosIniciales.FechaNacimiento.split('/')[2],
         props.datosIniciales.FechaNacimiento.split('/')[1] - 1,
@@ -40,7 +52,7 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     }
 
     this.state = {
-      noValidar: props.noValidar || false,
+      noValidar: props.noValidar,
       nombre: props.datosIniciales != undefined ? props.datosIniciales.Nombre : undefined,
       nombreError: undefined,
       apellido: props.datosIniciales != undefined ? props.datosIniciales.Apellido : undefined,
@@ -62,19 +74,6 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     }.bind(this), 100);
 
     this.animCargando = new Animated.Value(0);
-
-    this.validarCampos = this.validarCampos.bind(this);
-    this.onNombreChange = this.onNombreChange.bind(this);
-    this.onApellidoChange = this.onApellidoChange.bind(this);
-    this.onDniChange = this.onDniChange.bind(this);
-    this.mostrarDatePickerFechaNacimiento = this.mostrarDatePickerFechaNacimiento.bind(this);
-    this.ocultarDatePickerFechaNacimiento = this.ocultarDatePickerFechaNacimiento.bind(this);
-    this.onFechaNacimiento = this.onFechaNacimiento.bind(this);
-    this.onSexoMasculino = this.onSexoMasculino.bind(this);
-    this.onSexoFemenino = this.onSexoFemenino.bind(this);
-    this.mostrarCargando = this.mostrarCargando.bind(this);
-    this.ocultarCargando = this.ocultarCargando.bind(this);
-    this.validarDatos = this.validarDatos.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -91,6 +90,7 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     return JSON.stringify(nextState) != JSON.stringify(this.state);
   }
 
+  @autobind
   validarCampos() {
     let tieneNombre = this.state.nombre != undefined && this.state.nombre != "";
     let tieneApellido = this.state.apellido != undefined && this.state.apellido != "";
@@ -109,32 +109,40 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     }
   }
 
+  @autobind
   onNombreChange(val) {
     this.setState({
       nombre: val
     }, this.validarCampos);
   }
 
+  @autobind
   onApellidoChange(val) {
     this.setState({
       apellido: val
     }, this.validarCampos);
   }
 
+  @autobind
   onDniChange(val) {
     this.setState({
       dni: val
     }, this.validarCampos);
   }
 
+  @autobind
   mostrarDatePickerFechaNacimiento() {
+    Keyboard.dismiss();
     this.setState({ datePickerFechaNacimientoVisible: true })
   };
 
+  @autobind
   ocultarDatePickerFechaNacimiento() {
+    Keyboard.dismiss();
     this.setState({ datePickerFechaNacimientoVisible: false })
   };
 
+  @autobind
   onFechaNacimiento(val) {
     this.setState({
       fechaNacimiento: val
@@ -143,18 +151,21 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     this.ocultarDatePickerFechaNacimiento();
   };
 
+  @autobind
   onSexoMasculino() {
     this.setState({
       sexoMasculino: true
     }, this.validarCampos);
   }
 
+  @autobind
   onSexoFemenino() {
     this.setState({
       sexoMasculino: false
     }, this.validarCampos);
   }
 
+  @autobind
   mostrarCargando() {
     Animated.timing(this.animCargando, {
       toValue: 1,
@@ -164,8 +175,11 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     this.setState({
       cargando: true
     });
+
+    this.props.onCargando(true);
   }
 
+  @autobind
   ocultarCargando() {
     Animated.timing(this.animCargando, {
       toValue: 0,
@@ -175,8 +189,11 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
     this.setState({
       cargando: false
     });
+
+    this.props.onCargando(false);
   }
 
+  @autobind
   validarDatos() {
     if (this.state.nombre == undefined || this.state.nombre == "") {
       Alert.alert('', texto_Error_IngreseNombre,
@@ -244,69 +261,106 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
       return;
     }
 
-
-    let data = {
-      Nombre: this.state.nombre,
-      Apellido: this.state.apellido,
-      Dni: this.state.dni,
-      SexoMasculino: this.state.sexoMasculino,
-      fechaNacimiento: this.state.fechaNacimiento
-    };
-
-    if (this.state.noValidar == true) {
-      if (this.props.onReady != undefined) {
-        this.props.onReady(data);
-      }
-      return;
-    }
-
     let comando = {
       nombre: this.state.nombre,
       apellido: this.state.apellido,
       dni: this.state.dni,
-      cuil: '2035476866',
-      fechaNacimiento: this.state.fechaNacimiento,
-      sexoMasculino: this.state.sexoMasculino,
-      domicilioLegalFormateado: 'Independencia 710 4f, Cordoba, Cordoba, Argentina'
+      fechaNacimiento: dateToString(this.state.fechaNacimiento),
+      sexoMasculino: this.state.sexoMasculino
     };
+
+    if (this.state.noValidar == true) {
+      if (this.props.onReady != undefined) {
+        this.props.onReady(comando);
+      }
+      return;
+    }
 
     Keyboard.dismiss();
 
     Animated.timing(this.animCargando, {
       toValue: 1,
       duration: 300
-    }).start();
+    }).start(function () {
+      this.setState({
+        cargando: true
+      }, function () {
 
-    this.setState({
-      cargando: true
-    }, function () {
-      Rules_Usuario.validarDatos(comando)
-        .then(function (data) {
-          if (this.props.onReady != undefined) {
+        Rules_Usuario.validarDatos(comando)
+          .then(function (data) {
             this.props.onReady(data);
-          }
-        }.bind(this))
-        .catch(function (error) {
-          Alert.alert('', error);
+          }.bind(this))
+          .catch(function (error) {
+            Alert.alert('', error);
 
-          Animated.timing(this.animCargando, {
-            toValue: 0,
-            duration: 300
-          }).start();
+            Animated.timing(this.animCargando, {
+              toValue: 0,
+              duration: 300
+            }).start();
 
-          this.setState({
-            cargando: false
-          });
-        }.bind(this));
-
+            this.setState({
+              cargando: false
+            });
+          }.bind(this));
+      });
     }.bind(this));
   }
 
+
+  @autobind
+  onInputNombreRef(ref) {
+    this.inputNombre = ref;
+  }
+
+  @autobind
+  focusInputApellido() {
+    if (this.inputApellido == undefined) return;
+    this.inputApellido._root.focus()
+  }
+
+  @autobind
+  onInputNombreError(error) {
+    this.setState({ nombreError: error }, this.validarCampos)
+  }
+
+  @autobind
+  onInputApellidoRef(ref) {
+    this.inputApellido = ref;
+  }
+
+  @autobind
+  focusInputDni() {
+    if (this.inputDni == undefined) return;
+    this.inputDni._root.focus()
+  }
+
+  @autobind
+  onInputApellidoError(error) {
+    this.setState({ apellidoError: error }, this.validarCampos)
+  }
+
+  @autobind
+  onInputDniRef(ref) {
+    this.inputDni = ref;
+  }
+
+  @autobind
+  onInputDniError(error) {
+    this.setState({ dniError: error }, this.validarCampos)
+  }
 
   render() {
 
     return (
       <View style={{}}>
+        <Card style={[styles.card, { backgroundColor: '#FFFDE7', marginTop: 32 }]}>
+          <CardContent style={{ display: 'flex', alignItems: 'center' }}>
+            <Icon style={{ fontSize: 36, marginBottom: 8 }} name="info-outline"></Icon>
+            <Text style={{ fontSize: 16, flex: 1, textAlign: 'justify' }}>{texto_InfoValida}</Text>
+          </CardContent>
+
+        </Card>
+
         {/* Datos de acceso */}
         <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{texto_TituloDatosPersonales}</Text>
         <Card style={styles.card}>
@@ -314,49 +368,47 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
 
             {/* Nombre */}
             <MiInputTextValidar
-              onRef={function (ref) { this.inputNombre = ref; }.bind(this)}
+              onRef={this.onInputNombreRef}
               valorInicial={this.state.nombre}
               placeholder={texto_HintNombre}
               autoCapitalize="words"
               returnKeyType="done"
               autoCorrect={false}
-              onSubmitEditing={function () { this.inputApellido._root.focus() }.bind(this)}
+              onSubmitEditing={this.focusInputApellido}
               keyboardType="default"
               validaciones={{ requerido: true, minLength: 2, maxLength: 70, tipo: 'nombre' }}
               onChange={this.onNombreChange}
-              onError={function (error) { this.setState({ nombreError: error }, this.validarCampos) }.bind(this)}
+              onError={this.onInputNombreError}
             />
 
             {/* Apellido */}
             <MiInputTextValidar
-              onRef={function (ref) { this.inputApellido = ref; }.bind(this)}
+              onRef={this.onInputApellidoRef}
               valorInicial={this.state.apellido}
               placeholder={texto_HintApellido}
               autoCapitalize="words"
               returnKeyType="done"
               autoCorrect={false}
               keyboardType="default"
-              onSubmitEditing={function () { this.inputDni._root.focus() }.bind(this)}
+              onSubmitEditing={this.focusInputDni}
               validaciones={{ requerido: true, minLength: 2, maxLength: 70, tipo: 'nombre' }}
               onChange={this.onApellidoChange}
-              onError={function (error) { this.setState({ apellidoError: error }, this.validarCampos) }.bind(this)}
+              onError={this.onInputApellidoError}
             />
 
 
             {/* Dni */}
             <MiInputTextValidar
-              onRef={function (ref) { this.inputDni = ref; }.bind(this)}
+              onRef={this.onInputDniRef}
               valorInicial={this.state.dni}
               placeholder={texto_HintDni}
               keyboardType="numeric"
               returnKeyType="done"
               autoCorrect={false}
-              onSubmitEditing={function () {
-                Keyboard.dismiss();
-              }.bind(this)}
+              onSubmitEditing={this.mostrarDatePickerFechaNacimiento}
               validaciones={{ requerido: true, minLength: 7, maxLength: 8, tipo: 'numeroEntero' }}
               onChange={this.onDniChange}
-              onError={function (error) { this.setState({ dniError: error }, this.validarCampos) }.bind(this)}
+              onError={this.onInputDniError}
             />
 
             {/* Fecha de nacimiento */}
@@ -398,7 +450,7 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
 
               <ListItem
                 noBorder
-                style={{ flex: 1, minWidth: '50%'}}
+                style={{ flex: 1, minWidth: '50%' }}
                 onPress={this.onSexoMasculino}>
                 <CheckBox checked={this.state.sexoMasculino == true} onPress={this.onSexoMasculino} color="green" />
                 <Body>
@@ -422,6 +474,7 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
               style={{
                 opacity: this.animCargando,
                 position: 'absolute',
+                borderRadius: 16,
                 left: 0,
                 top: 0,
                 right: 0,
@@ -438,17 +491,21 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
         </Card>
 
         {/* Boton Validar datos */}
-        {
-          this.state.cargando != true && (
-            <View style={{ marginTop: 16 }}>
-              <Button
-                rounded
-                style={styles.botonRegistrar} onPress={this.validarDatos}>
-                <Text>{texto_BotonValidar}</Text>
-              </Button>
-            </View>
-          )
-        }
+
+        <Animated.View
+          pointerEvents={this.state.cargando ? 'none' : 'auto'}
+          style={[{ marginTop: 16 }, {
+            opacity: this.animCargando.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1, 0]
+            })
+          }]}>
+          <Button
+            rounded
+            style={styles.botonRegistrar} onPress={this.validarDatos}>
+            <Text>{texto_BotonValidar}</Text>
+          </Button>
+        </Animated.View>
 
       </View >
     );
@@ -482,6 +539,7 @@ const texto_HintSexo_Masculino = 'Masculino';
 const texto_HintSexo_Femenino = 'Femenino';
 const texto_BotonValidar = 'Validar datos';
 
+const texto_InfoValida = "Para crearte un usuario primero tenés que validar tus datos con el registro nacional de personas. Para hacerlo completá el formulario y apreta en 'Validar datos'";
 const texto_Validando = 'Validando datos personales';
 const texto_Error_IngreseNombre = 'Ingrese el nombre';
 const texto_Error_IngreseApellido = 'Ingrese el apellido';

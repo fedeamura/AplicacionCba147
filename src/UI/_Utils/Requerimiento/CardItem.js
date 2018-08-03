@@ -1,132 +1,104 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert
+} from "react-native";
 
 //Mis compontentes
 import { Text } from "native-base";
 import { Card } from "react-native-paper";
-import LinearGradient from 'react-native-linear-gradient';
-
-import Rules_Ajustes from "@Rules/Rules_Ajustes";
 
 export default class RequerimientoCardItem extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      tipo: undefined
     };
   }
 
   componentDidMount() {
-    Rules_Ajustes.getListadoRequerimientoInterfaz().then((result) => {
-      this.setState({
-        tipo: result
-      });
-    });
+
+  }
+
+  toTitleCase(val) {
+    return val.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+  };
+
+  convertirFecha(fecha) {
+    let partes = fecha.split('-');
+    let año = partes[0];
+    let mes = partes[1];
+    let dia = partes[2].split('T')[0];
+    return dia + '/' + mes + '/' + año;
   }
 
   render() {
-    if (this.state.tipo == undefined) return null;
+    const numero = this.props.data.numero || 'XXXXXX';
+    const año = this.props.data.año || 'XX'
+    const fecha = this.convertirFecha(this.props.data.fechaAlta);
 
-    let view = null;
-    switch (parseInt(this.state.tipo)) {
-      case 1: {
-        view = this.render1();
-      } break;
-
-      case 2: {
-        view = this.render2();
-      } break;
-
-      default: {
-        view = this.render1();
-      } break;
+    //Estado Color
+    let estadoColor = 'black';
+    if (this.props.data.estadoPublicoColor != undefined) {
+      estadoColor = '#' + this.props.data.estadoPublicoColor;
+    } else {
+      if (this.props.data.estadoColor != undefined) {
+        estadoColor = '#' + this.props.data.estadoColor;
+      }
     }
 
-    return view;
-  }
+    //Estado nombre
+    let estadoNombre = 'Sin datos';
+    if (this.props.data.estadoPublicoNombre != undefined) {
+      estadoNombre = this.props.data.estadoPublicoNombre;
+    } else {
+      if (this.props.data.estadoNombre != undefined) {
+        estadoNombre = this.props.data.estadoNombre;
+      }
+    }
 
-  render1 = () => {
+    //Datos
+    const servicio = this.toTitleCase(this.props.data.servicioNombre || 'Sin datos').trim();
+    const motivo =  this.toTitleCase(this.props.data.motivoNombre || 'Sin datos').trim();
+    const cpc = this.toTitleCase((this.props.data.cpcNumero || 'X') + ' - ' + (this.props.data.cpcNombre || 'Sin datos')).trim();
+    const barrio = this.toTitleCase(this.props.data.barrioNombre || 'Sin datos').trim();
+
     return (
       <Card
         style={styles.cardItem}
         onPress={this.props.onPress}>
 
-        <View style={[styles.cardItemHeader, { backgroundColor: this.props.estadoColor }]}>
-          {this.state.tipo == 1 && (
-            <LinearGradient
-              colors={["rgba(255,255,255,0.5)", "rgba(255,255,255,0)"]}
-              backgroundColor="transparent"
-              style={styles.cardItemHeaderGradiente}
-              pointerEvents="none" />
-          )}
-
+        <View style={[styles.cardItemHeader]}>
           <View style={styles.contenedorNumero}>
-            <Text style={styles.textoNumero}> {this.props.numero + '/' + this.props.año}</Text>
-          </View>
-          <View style={styles.contenedorFecha}>
-            <Text style={styles.textoEstado}>{this.props.estadoNombre}</Text>
-            <Text style={styles.textoFecha}>{this.props.fechaAlta}</Text>
-          </View>
-        </View>
-
-        <View style={styles.contenedorDatos}>
-          <View style={styles.contenedorItem}>
-            <Text style={styles.texto_ItemTitulo}>Servicio: </Text>
-            <Text style={styles.texto_ItemDetalle}>Alumbrado</Text>
-          </View>
-          <View style={styles.contenedorItem}>
-            <Text style={styles.texto_ItemTitulo}>Motivo: </Text>
-            <Text style={styles.texto_ItemDetalle}>Foco Roto</Text>
-          </View>
-          <View style={styles.contenedorItem}>
-            <Text style={styles.texto_ItemTitulo}>CPC: </Text>
-            <Text style={styles.texto_ItemDetalle}>Nº 10 - Central</Text>
-          </View>
-          <View style={styles.contenedorItem}>
-            <Text style={styles.texto_ItemTitulo}>Barrio: </Text>
-            <Text style={styles.texto_ItemDetalle}>Centro</Text>
-          </View>
-        </View>
-
-      </Card>
-    );
-  }
-
-  render2() {
-    return (
-      <Card
-        style={styles2.cardItem}
-        onPress={this.props.onPress}>
-
-        <View style={[styles2.cardItemHeader]}>
-          <View style={styles2.contenedorNumero}>
-            <Text style={styles2.textoNumero}> {this.props.numero + '/' + this.props.año}</Text>
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ width: 16, height: 16, backgroundColor: this.props.estadoColor, borderRadius: 16, marginRight: 4 }}></View>
-              <Text style={styles2.textoEstado}>{this.props.estadoNombre}</Text>
+            <Text
+              numberOfLines={1}
+              style={styles.textoNumero}> {numero + '/' + año}</Text>
+            <View style={styles.contenedorEstado}>
+              <View style={[styles.indicadorEstado, { backgroundColor: estadoColor }]}></View>
+              <Text style={styles.textoEstado}>{estadoNombre}</Text>
             </View>
           </View>
-          <Text style={styles2.textoFecha}>{this.props.fechaAlta}</Text>
+          <Text style={styles.textoFecha}>{fecha}</Text>
         </View>
 
-        <View style={{ width: '100%', height: 3, backgroundColor: this.props.estadoColor, opacity:0.4 }}></View>
+        <View style={[styles.divisorEstado, { backgroundColor: estadoColor }]}></View>
         <View style={styles.contenedorDatos}>
           <View style={styles.contenedorItem}>
-            <Text style={styles.texto_ItemTitulo}>Servicio: </Text>
-            <Text style={styles.texto_ItemDetalle}>Alumbrado</Text>
+            <Text numberOfLines={1} style={styles.texto_ItemTitulo}>Servicio: </Text>
+            <Text numberOfLines={1} style={styles.texto_ItemDetalle}>{servicio}</Text>
           </View>
           <View style={styles.contenedorItem}>
-            <Text style={styles.texto_ItemTitulo}>Motivo: </Text>
-            <Text style={styles.texto_ItemDetalle}>Foco Roto</Text>
+            <Text numberOfLines={1} style={styles.texto_ItemTitulo}>Motivo: </Text>
+            <Text numberOfLines={1} style={styles.texto_ItemDetalle}>{motivo}</Text>
           </View>
           <View style={styles.contenedorItem}>
-            <Text style={styles.texto_ItemTitulo}>CPC: </Text>
-            <Text style={styles.texto_ItemDetalle}>Nº 10 - Central</Text>
+            <Text numberOfLines={1} style={styles.texto_ItemTitulo}>CPC: </Text>
+            <Text numberOfLines={1} style={styles.texto_ItemDetalle}>{cpc}</Text>
           </View>
           <View style={styles.contenedorItem}>
-            <Text style={styles.texto_ItemTitulo}>Barrio: </Text>
-            <Text style={styles.texto_ItemDetalle}>Centro</Text>
+            <Text numberOfLines={1} style={styles.texto_ItemTitulo}>Barrio: </Text>
+            <Text numberOfLines={1} style={styles.texto_ItemDetalle}>{barrio}</Text>
           </View>
         </View>
 
@@ -152,91 +124,45 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     display: "flex",
     flexDirection: "row",
-    padding: 16
-  },
-  cardItemHeaderGradiente: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    right: 0,
-    bottom: 0,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    overflow: "hidden"
+    padding: 16,
+    backgroundColor: 'rgba(0,0,0,0.025)'
   },
   contenedorNumero: {
-    flex: 1
-  },
-  textoNumero: {
-    fontWeight: "bold",
-    fontSize: 24,
-    backgroundColor: 'transparent',
-    color: 'white'
+    flex: 1,
+    display: 'flex',
+    flexDirection: "column"
   },
   contenedorFecha: {
     display: 'flex',
     alignItems: 'flex-end'
   },
-  textoEstado: {
-    fontWeight: "bold",
-    backgroundColor: 'transparent',
-    color: 'white'
-  },
-  textoFecha: {
-    fontSize: 14,
-    backgroundColor: 'transparent',
-    color: 'white'
-  },
-  contenedorDatos: {
-    padding: 16
-  },
-  contenedorItem: {
-    display: 'flex',
-    flexDirection: 'row'
-  },
-  texto_ItemTitulo: {
-    fontWeight: "bold",
-    backgroundColor: 'transparent',
-    color: 'black'
-  },
-  texto_ItemDetalle: {
-    backgroundColor: 'transparent',
-    color: 'black'
-  }
-});
-
-const styles2 = StyleSheet.create({
-  cardItem: {
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    marginBottom: 8,
-    marginLeft: 8,
-    marginRight: 8,
-    marginTop: 8
-  },
-  cardItemHeader: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    display: "flex",
-    flexDirection: "row",
-    padding: 16,
-    backgroundColor: 'rgba(0,0,0,0.025)'
-  },
-  contenedorNumero: {
-    flex: 1
-  },
   textoNumero: {
+    flex: 1,
     fontWeight: "bold",
     fontSize: 24,
     marginLeft: -4,
-    backgroundColor: 'transparent',
     color: 'black'
+  },
+  contenedorEstado: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4
+  },
+  indicadorEstado: {
+    width: 16,
+    height: 16,
+    borderRadius: 16,
+    marginRight: 4
   },
   textoEstado: {
     backgroundColor: 'transparent',
     color: 'black'
+  },
+  divisorEstado: {
+    width: '100%',
+    height: 3,
+    opacity: 0.4
   },
   textoFecha: {
     fontSize: 14,
@@ -244,4 +170,22 @@ const styles2 = StyleSheet.create({
     backgroundColor: 'transparent',
     color: 'black'
   },
+  contenedorDatos: {
+    padding: 16
+  },
+  contenedorItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems:'flex-start'
+  },
+  texto_ItemTitulo: {
+    fontWeight: "bold",
+    backgroundColor: 'transparent',
+    color: 'black'
+  },
+  texto_ItemDetalle: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    color: 'black'
+  }
 });

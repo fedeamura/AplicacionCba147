@@ -142,6 +142,7 @@ export default class MiListado extends React.Component {
         {/* Listado */}
         <FlatList
           ref={this.onRef}
+          keyboardShouldPersistTaps="always"
           style={[styles.listado]}
           data={this.props.data}
           numColumns={this.props.numColumns}

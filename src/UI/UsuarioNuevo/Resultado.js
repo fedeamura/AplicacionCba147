@@ -1,37 +1,29 @@
-import React, { Component } from "react";
+import React from "react";
 import {
-  Platform,
   StyleSheet,
   View,
-  UIManager,
-  Alert,
   Animated,
-  StatusBar,
-  ScrollView,
-  Keyboard,
-  Dimensions,
-  TouchableOpacity
 } from "react-native";
 import {
-  Container,
   Button,
   Text,
-  Input,
-  Item,
-  Spinner,
-  Content
 } from "native-base";
-import { Card, CardContent, Toolbar, ToolbarBackAction, ToolbarContent, ToolbarAction } from 'react-native-paper';
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LottieView from 'lottie-react-native';
 
 //Mis componentes
-import App from "Cordoba/src/UI/App";
-
+import autobind from 'autobind-decorator'
 
 export default class UsuarioNuevo_Resultado extends React.Component {
 
+
+  static defaultProps = {
+    ...React.Component.defaultProps,
+    onButtonPress: function () { },
+    visible: false,
+    cargando: false,
+    username: 'Sin datos',
+    email: 'sin datos'
+  }
 
   constructor(props) {
     super(props);
@@ -79,21 +71,24 @@ export default class UsuarioNuevo_Resultado extends React.Component {
     });
   }
 
-  mostrar = () => {
+  @autobind
+  mostrar() {
     Animated.timing(this.anim, {
       toValue: 1,
       timing: 300
     }).start();
   }
 
-  ocultar = () => {
+  @autobind
+  ocultar() {
     Animated.timing(this.anim, {
       toValue: 0,
       timing: 300
     }).start();
   }
 
-  mostrarCargando = () => {
+  @autobind
+  mostrarCargando() {
     Animated.timing(this.animTextos, {
       toValue: 0,
       timing: 300
@@ -116,7 +111,8 @@ export default class UsuarioNuevo_Resultado extends React.Component {
       ])).start();
   }
 
-  ocultarCargando = () => {
+  @autobind
+  ocultarCargando() {
     Animated.timing(this.animTextos, {
       toValue: 1,
       timing: 300
@@ -132,9 +128,16 @@ export default class UsuarioNuevo_Resultado extends React.Component {
     }).start();
   }
 
+  @autobind
+  onButtonPress() {
+    this.props.onButtonPress();
+  }
+
   render() {
 
-    const textoDetalle = texto_Detalle.replace('{email}', this.props.email || 'email');
+    const textoDetalle = texto_Detalle.replace('{email}', this.props.email);
+    const textoDetalle2 = texto_Detalle2.replace('{username}', this.props.username || 'Sin datos');
+
     return (
       <Animated.View
         pointerEvents={this.props.visible == true ? 'auto' : 'none'}
@@ -163,15 +166,14 @@ export default class UsuarioNuevo_Resultado extends React.Component {
           }}>
             <Text style={styles.texto_CreandoUsuario}>{texto_UsuarioCreado}</Text>
             <Text style={[styles.texto_EmailActivacion, { marginTop: 8 }]}>{textoDetalle}</Text>
+            <Text style={[styles.texto_Username]}>{textoDetalle2}</Text>
             <View style={{ marginTop: 16 }}>
 
               <Button
                 bordered
                 rounded
                 style={{ alignSelf: 'center', borderColor: 'green' }}
-                onPress={() => {
-                  App.goBack();
-                }}><Text style={{ color: 'green' }}>{texto_BotonAceptar}</Text></Button>
+                onPress={this.onButtonPress}><Text style={{ color: 'green' }}>{texto_BotonAceptar}</Text></Button>
             </View>
 
           </Animated.View>
@@ -201,15 +203,23 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   texto_CreandoUsuario: {
-    fontSize: 24,
+    fontSize: 28,
     textAlign: 'center',
     maxWidth: 300,
     alignSelf: 'center'
   },
   texto_EmailActivacion: {
-    fontSize: 20,
+    fontSize: 18,
     textAlign: 'center',
     maxWidth: 300,
+    alignSelf: 'center'
+  },
+  texto_Username: {
+    fontSize: 16,
+    marginTop:8,
+    textAlign: 'center',
+    maxWidth: 300,
+    opacity:0.9,
     alignSelf: 'center'
   }
 });
@@ -217,4 +227,5 @@ const styles = StyleSheet.create({
 const texto_Registrando = 'Registrando su usuario...';
 const texto_UsuarioCreado = 'Usuario creado correctamente';
 const texto_Detalle = 'Te enviamos un e-mail a {email} con las instrucciones para activarlo';
+const texto_Detalle2 = 'Recordá que tu nombre de usuario es {username}';
 const texto_BotonAceptar = 'Aceptar';

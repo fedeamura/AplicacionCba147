@@ -16,6 +16,7 @@ import ExtraDimensions from 'react-native-extra-dimensions-android';
 import WebImage from 'react-native-web-image'
 import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
 import { Kohana } from "react-native-textinput-effects";
+import autobind from 'autobind-decorator'
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
@@ -47,17 +48,6 @@ export default class Login extends React.Component {
     this.anim_ErrorUsername = new Animated.Value(0);
     this.anim_ErrorPassword = new Animated.Value(0);
     this.keyboardHeight = new Animated.Value(0);
-
-    this.keyboardWillShow = this.keyboardWillShow.bind(this);
-    this.keyboardWillHide = this.keyboardWillHide.bind(this);
-    this.animarInicio = this.animarInicio.bind(this);
-    this.consultarLogin = this.consultarLogin.bind(this);
-    this.mostrarFormulario = this.mostrarFormulario.bind(this);
-    this.onUsernameChange = this.onUsernameChange.bind(this);
-    this.onPasswordChange = this.onPasswordChange.bind(this);
-    this.login = this.login.bind(this);
-    this.nuevoUsuario = this.nuevoUsuario.bind(this);
-    this.recuperarCuenta = this.recuperarCuenta.bind(this);
   }
 
   componentWillMount() {
@@ -70,6 +60,7 @@ export default class Login extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
+  @autobind
   keyboardWillShow(event) {
     this.teclado = true;
 
@@ -79,6 +70,7 @@ export default class Login extends React.Component {
     }).start();
   }
 
+  @autobind
   keyboardWillHide(event) {
     this.teclado = false;
 
@@ -88,12 +80,14 @@ export default class Login extends React.Component {
     }).start();
   }
 
+  @autobind
   animarInicio() {
     Animated.spring(this.anim_Logo, {
       toValue: 1
     }).start(this.consultarLogin);
   }
 
+  @autobind
   consultarLogin() {
     Rules_Ajustes.esIntroVista()
       .then(function (vista) {
@@ -126,6 +120,7 @@ export default class Login extends React.Component {
       }.bind(this));
   }
 
+  @autobind
   mostrarFormulario() {
     Animated.timing(this.anim_Form, {
       duration: 500,
@@ -133,16 +128,19 @@ export default class Login extends React.Component {
     }).start();
   }
 
+  @autobind
   onUsernameChange(text) {
     this.setState({ username: text });
     Animated.timing(this.anim_ErrorUsername, { toValue: 0, duration: 300 }).start();
   }
 
+  @autobind
   onPasswordChange(text) {
     this.setState({ password: text });
     Animated.timing(this.anim_ErrorPassword, { toValue: 0, duration: 300 }).start();
   }
 
+  @autobind
   login() {
 
     //Valido el form
@@ -162,15 +160,84 @@ export default class Login extends React.Component {
         this.setState({
           cargando: true
         }, function () {
-          Rules_Usuario.login(this.state.username, this.state.password)
-            .then(function () {
-              Animated.spring(this.anim_Logo, { toValue: 0 })
-                .start(function () {
-                  App.replace('Inicio');
+
+          Rules_Usuario.validarUsuarioActivado(this.state.username, this.state.password)
+            .then(function (validado) {
+              if (validado == false) {
+
+                //Muestro el error
+                Alert.alert('', 'Tu usuario no se encuentra activado. Para hacerlo debes ir a tu casilla de e-mail y seguir las instrucciones que te enviamos al momento de crear tu usuario. Si lo deseás podes solicitar el e-mail de nuevo.',
+                  [
+                    {
+                      text: "Aceptar",
+                      onPress: () => {
+                        this.setState({
+                          cargando: false
+                        });
+
+                        Animated.spring(this.anim_Form, { toValue: 1 }).start();
+                      }
+                    },
+                    {
+                      text: "Volver a enviar e-mail",
+                      onPress: () => {
+                        Rules_Usuario.solicitarEmailActivacion(this.state.username, this.state.password)
+                          .then(function (email) {
+                            this.setState({
+                              cargando: false
+                            });
+
+                            Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+                            //Muestro el error
+                            Alert.alert('', 'Se te envio un e-mail a ' + email + ' con las instrucciones para activar tu usuario');
+                          }.bind(this))
+                          .catch(function (error) {
+                            this.setState({
+                              cargando: false
+                            });
+
+                            Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+                            //Muestro el error
+                            Alert.alert('', error || texto_ErrorGenerico);
+                          }.bind(this))
+                      }
+                    }
+                  ],
+                  { cancelable: false }
+                );
+
+                return;
+              }
+
+              Rules_Usuario.login(this.state.username, this.state.password)
+                .then(function () {
+                  Animated.spring(this.anim_Logo, { toValue: 0 })
+                    .start(function () {
+                      App.replace('Inicio');
+                    }.bind(this));
+                }.bind(this))
+                .catch(function (error) {
+                  this.setState({
+                    cargando: false
+                  });
+
+                  Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+                  //Muestro el error
+                  Alert.alert('', error || texto_ErrorGenerico,
+                    [
+                      {
+                        text: "Aceptar",
+                        onPress: function () { }
+                      }
+                    ],
+                    { cancelable: true }
+                  );
                 }.bind(this));
             }.bind(this))
             .catch(function (error) {
-
               this.setState({
                 cargando: false
               });
@@ -188,6 +255,7 @@ export default class Login extends React.Component {
                 { cancelable: true }
               );
             }.bind(this));
+
         }.bind(this))
       }.bind(this));
     }.bind(this), 300);

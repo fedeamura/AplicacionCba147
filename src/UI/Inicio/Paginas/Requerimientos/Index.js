@@ -2,6 +2,7 @@ import React from "react";
 import {
     View,
     Animated,
+    Alert,
     StyleSheet,
 } from "react-native";
 import {
@@ -70,16 +71,16 @@ export default class PaginaInicio_Requerimientos extends React.Component {
     buscarRequerimientos() {
         this.setState({
             cargando: true
-        }, function() {
+        }, function () {
             this.ocultarBotonNuevo();
 
             Rules_Requerimiento.get()
-                .then(function(requerimientos) {
+                .then(function (requerimientos) {
                     this.setState({
                         cargando: false,
                         error: undefined,
                         requerimientos: requerimientos
-                    }, function() {
+                    }, function () {
                         if (requerimientos.length == 0) {
                             this.ocultarBotonNuevo();
                         } else {
@@ -88,12 +89,12 @@ export default class PaginaInicio_Requerimientos extends React.Component {
                     }.bind(this));
 
                 }.bind(this))
-                .catch(function(error) {
+                .catch(function (error) {
                     this.setState({
                         cargando: false,
                         requerimientos: [],
                         error: error
-                    }, function() {
+                    }, function () {
                         this.ocultarBotonNuevo();
                     }.bind(this));
                 }.bind(this))
@@ -104,11 +105,11 @@ export default class PaginaInicio_Requerimientos extends React.Component {
 
         App.navegar('RequerimientoNuevo', {
 
-            callback: function() {
+            callback: function () {
                 this.buscarRequerimientos()
             }.bind(this),
 
-            verDetalleRequerimiento: function(id) {
+            verDetalleRequerimiento: function (id) {
                 this.buscarRequerimientos();
                 this.verDetalleRequerimiento(id);
             }.bind(this)
@@ -141,11 +142,7 @@ export default class PaginaInicio_Requerimientos extends React.Component {
                     renderItem={(item) => {
                         return <ItemRequerimiento
                             onPress={this.verDetalleRequerimiento}
-                            numero={item.item.numero}
-                            año={item.item.año}
-                            estadoColor={item.item.estadoColor}
-                            estadoNombre={item.item.estadoNombre}
-                            fechaAlta={item.item.fechaAlta}
+                            data={item.item}
                         />;
                     }}
                     // Empty
@@ -198,6 +195,17 @@ export default class PaginaInicio_Requerimientos extends React.Component {
                         color="white"
                         onPress={this.abrirNuevoRequerimiento} />
                 </Animated.View>
+
+                <Button
+                    onPress={() => {
+                        App.navegar('PickerUbicacion', {
+                            onUbicacionSeleccionada: function (data) {
+                                Alert.alert('', JSON.stringify(data));
+                            }
+                        });
+                    }}
+                    style={{ position: 'absolute', bottom: 16, alignSelf: 'center' }}
+                ><Text>Domicilio</Text></Button>
             </View>
         );
     }

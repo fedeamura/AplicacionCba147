@@ -52,8 +52,7 @@ export default class RequerimientoNuevo extends React.Component {
     this.state = {
       cargando: true,
       pasoActual: 1,
-      servicio: undefined,
-      motivo: undefined,
+      motivoId: undefined,
       descripcion: undefined,
       ubicacion: undefined,
       foto: undefined,
@@ -95,8 +94,8 @@ export default class RequerimientoNuevo extends React.Component {
     }
 
     //Si no registre aun pero el form tiene algo
-    const formConDatos = this.state.servicio != undefined ||
-      this.state.motivo ||
+    const formConDatos =
+      this.state.motivoId != undefined ||
       this.state.descripcion != undefined ||
       this.state.foto != undefined ||
       this.state.ubicacion != undefined;
@@ -122,7 +121,7 @@ export default class RequerimientoNuevo extends React.Component {
   componentDidMount() {
     Rules_Servicio.get()
       .then(function (data) {
-        data = _.orderBy(data, 'Nombre');
+        data = _.orderBy(data, 'nombre');
         this.setState({ cargando: false, servicios: data });
       }.bind(this))
       .catch(function () {
@@ -196,8 +195,7 @@ export default class RequerimientoNuevo extends React.Component {
       return;
     }
 
-    let conServicio = this.state.servicio != undefined;
-    let conMotivo = this.state.motivo != undefined;
+    let conMotivo = this.state.motivoId != undefined;
     let conDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim() != "";
     let conUbicacion = this.state.ubicacion != undefined;
 
@@ -207,16 +205,16 @@ export default class RequerimientoNuevo extends React.Component {
         cumple = true;
       } break;
       case 2: {
-        cumple = conServicio && conMotivo;
+        cumple = conMotivo;
       } break;
       case 3: {
-        cumple = conServicio && conMotivo && conDescripcion;
+        cumple = conMotivo && conDescripcion;
       } break;
       case 4: {
-        cumple = conServicio && conMotivo && conDescripcion && conUbicacion;
+        cumple = conMotivo && conDescripcion && conUbicacion;
       } break;
       case 5: {
-        cumple = conServicio && conMotivo && conDescripcion && conUbicacion;
+        cumple = conMotivo && conDescripcion && conUbicacion;
       } break;
     }
 
@@ -253,22 +251,24 @@ export default class RequerimientoNuevo extends React.Component {
     this.setState({ paso1Cargando: cargando })
   }
 
- 
+
   @autobind
   onPaso4Cargando(cargando) {
     this.setState({ paso4Cargando: cargando })
   }
 
   @autobind
-  onMotivo(servicio, motivo) {
+  onMotivo(data) {
+
     this.setState({
-      servicio: servicio,
-      motivo: motivo
+      servicioNombre: data.servicioNombre,
+      motivoNombre: data.motivoNombre,
+      motivoId: data.motivoId
     });
   }
 
   @autobind
-  onPasi1Ready() {
+  onPaso1Ready() {
     this.mostrarPaso(2);
   }
 
@@ -333,13 +333,13 @@ export default class RequerimientoNuevo extends React.Component {
               titulo={texto_Titulo_Servicio}
               onPress={this.onPasoClick}
               expandido={this.state.pasoActual == 1 ? true : false}
-              completado={this.state.servicio != undefined}
+              completado={this.state.motivoId != undefined}
             >
               <PasoServicio
                 servicios={this.state.servicios}
                 onCargando={this.onPaso1Cargando}
                 onMotivo={this.onMotivo}
-                onReady={this.onPasi1Ready}
+                onReady={this.onPaso1Ready}
               />
             </Paso>
 

@@ -1,4 +1,4 @@
-import React from "react";
+import { Alert } from "react-native";
 
 //Data
 import DB from "Cordoba/src/DAO/DB";
@@ -6,154 +6,74 @@ import DB from "Cordoba/src/DAO/DB";
 const metodos = {
 
   login: function (user, pass) {
+
+    let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/IniciarSesion?username={user}&password={pass}&keyVencimiento={key}"
+    url = url.replace('{user}', user);
+    url = url.replace('{pass}', pass);
+    url = url.replace('{key}', "ERYNW;Duiucnsw_s72!22*");
+
+
     return new Promise((resolve, reject) => {
-      let token = "test";
-      DB.setItem("token", token).then(() => {
-        global.token = token;
-        resolve();
-      }).catch((error) => {
-        reject('Error procesando la solicitud');
-      });
 
-      // reject('Error procesando la solicitud');
-      // const url =
-      //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/IniciarSesion";
+      fetch(url, {
+        method: "GET"
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
 
-      // fetch(url, {
-      //   method: "POST",
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json"
-      //   },
-      //   body: JSON.stringify({
-      //     user: user,
-      //     pass: pass
-      //   })
-      // })
-      //   .then(response => response.json())
-      //   .then(responseJson => {
-      //     var data = responseJson.d;
+          var token = data.return;
 
-      //     console.log(data);
-      //     if (!data.Ok) {
-      //       console.log('Error');
-      //       console.log(data.Error);
-
-      //       reject(data.Error);
-      //       return;
-      //     }
-      //     var token = data.Return;
-
-      //     DB.setItem("token", token).then(() => {
-      //       App.Variables.Token = token;
-      //       resolve();
-      //     }).catch((error) => {
-      //       console.log('Error');
-      //       console.log(error);
-
-      //       reject('Error procesando la solicitud');
-      //     });
-      //   })
-      //   .catch(error => {
-      //     console.log('Error');
-      //     console.log(error);
-
-      //     reject('Error procesando la solicitud');
-      //   });
+          DB.setItem("token", token).then(() => {
+            global.token = token;
+            resolve();
+          }).catch((error) => {
+            reject('Error procesando la solicitud');
+          });
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        });
     });
   },
 
   isLogin: function () {
     return new Promise((resolve, reject) => {
+
       DB.getItem("token")
         .then(response => {
+
           if (response == undefined) {
             global.token = undefined;
             resolve(false);
             return;
           }
 
-          global.token = response;
-          resolve(true);
+          //Valido el token en vecino virtual
+          let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ValidarToken?token={token}";
+          url = url.replace('{token}', response);
+          fetch(url, { method: 'GET' })
+            .then(response => response.json())
+            .then(data => {
+              if (data.ok != true || data.return == false) {
+                global.token = undefined;
+                resolve(false);
+                return;
+              }
+
+              global.token = response;
+              resolve(true);
+            })
+            .catch(error => {
+              resolve(false);
+            });
         }).catch((error) => {
           global.token = undefined;
           resolve(false);
-        });;
-
-
-      // DB.getItem("token")
-      //   .then(response => {
-      //     if (response == undefined) {
-      //       console.log('Error');
-      //       console.log('Sin token');
-
-      //       App.Variables.Token = undefined;
-      //       resolve(false);
-      //       return;
-      //     }
-
-      // const url =
-      //   "https://servicios.cordoba.gov.ar/WSSigo_Bridge/BridgeUsuario.asmx/ValidarToken";
-
-      // fetch(url, {
-      //   method: "POST",
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json"
-      //   },
-      //   body: JSON.stringify({
-      //     token: response
-      //   })
-      // })
-      //   .then(response => response.json())
-      //   .then(responseJson => {
-
-      //     if(responseJson==undefined || responseJson.d==undefined){
-      //       console.log('Sin datos');
-      //       App.Variables.Token = undefined;
-      //       resolve(false);
-      //       return;
-      //     }
-
-      //     var data = responseJson.d;
-
-
-      //     if (!data.Ok) {
-      //       console.log('Error');
-      //       console.log(data.Error);
-
-      //       App.Variables.Token = undefined;
-      //       resolve(false);
-      //       return;
-      //     }
-
-      //     if (!data.Return) {
-      //       console.log('No es login');
-
-      //       App.Variables.Token = undefined;
-      //       resolve(false);
-      //       return;
-      //     }
-
-      //     App.Variables.Token = response;
-      //     resolve(true);
-      //   })
-      //   .catch(error => {
-      //     console.log('Error');
-      //     console.log(error);
-
-      //     App.Variables.Token = undefined;
-      //     resolve(false);
-      //   });
-
-
-      // }).catch((error) => {
-      //   console.log('Error');
-      //   console.log(error);
-
-      //   App.Variables.Token = undefined;
-      //   resolve(false);
-      // });
+        });
     });
   },
 
@@ -161,11 +81,33 @@ const metodos = {
     return new Promise((resolve, reject) => {
       try {
 
-        //No olvidarse de rovocar el token en el servidor
+        if (global.token == undefined) {
+          reject('Debe iniciar sesion');
+          return;
+        }
 
-        DB.removeItem("token");
-        global.token = undefined;
-        resolve();
+        let url = 'https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/CerrarSesion?token={token}&fcmToken={fcmToken}';
+        url = url.replace('{token}', global.token);
+        url = url.replace('{fcmToken}', global.fcmToken || 'Sin token');
+
+        fetch(url, {
+          method: 'GET'
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.ok != true) {
+              reject(data.error || 'Error procesando la solicitud');
+              return;
+            }
+
+            DB.removeItem("token");
+            global.token = undefined;
+            global.fcmToken = undefined;
+            resolve();
+          })
+          .catch(error => {
+            reject('Error procesando la solicitud');
+          });
       } catch (error) {
         reject('Error procesando la solicitud');
       }
@@ -175,48 +117,83 @@ const metodos = {
   getDatos: function () {
     return new Promise((resolve, reject) => {
 
-      setTimeout(() => {
-        // reject('lalala');
-        resolve({
-          Nombre: 'Federico',
-          Apellido: 'Amura',
-          Dni: 35476866,
-          Cuil: '20354768667',
-          Username: 'fede.amura',
-          SexoMasculino: false,
-          FechaNacimiento: '01/05/1991',
-          DomicilioLegal: '27 de abril 464 13B, Cordoba, Argentina',
-          Email: 'fede.amura@gmail.com',
-          TelefonoCelular: '351-7449132',
-          TelefonoFijo: '351-4226236',
-          ValidadoEmail: true,
-          ValidadoRenaper: false,
-          IdentificadorFotoPersonal: undefined
-        });
-      }, 1000);
+      if (global.token == undefined) {
+        reject('Debe iniciar sesion');
+        return;
+      }
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario?token={token}";
+      url = url.replace('{token}', global.token);
+
+      fetch(url, {
+        method: 'GET'
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve(data.return);
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
     });
   },
 
   esUsuarioValidadoRenaper: function () {
     return new Promise((callback, reject) => {
-      //Consulto
-      setTimeout(() => {
-        callback(true);
-        // reject('Todo mal');
-        // callback(true);
-        // callback(global.validado || false);
-      }, 100);
+
+      if (global.token == undefined) {
+        reject('Debe iniciar sesion');
+        return;
+      }
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/EsValidadoRenaper?token={token}";
+      url = url.replace("{token}", global.token);
+
+      fetch(url, {
+        method: "GET"
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          callback(data.return == true);
+        });
     });
   },
 
-  validarDatos: function (usuario) {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback(usuario);
-        // callbackError('Datos invalidos');
-        // callback(usuario);
-        // callbackError('El usuario ya existe');
-      }, 1000);
+  validarDatos: function (comando) {
+    return new Promise((resolve, reject) => {
+
+      let url = "https://servicios2.cordoba.gov.ar/WSVecinoVirtual_Bridge/v1/Usuario/ValidarRenaper";
+      fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify(comando),
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve(data.return);
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud. ' + JSON.stringify(error));
+        });
+
     });
   },
 
@@ -231,54 +208,247 @@ const metodos = {
   },
 
   actualizarDatosContacto: function (comando) {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback();
-      }, 1000);
+    return new Promise((resolve, reject) => {
+
+      if (global.token == undefined) {
+        reject('Debe iniciar sesion');
+        return;
+      }
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ActualizarDatosContacto?token={token}";
+      url = url.replace('{token}', global.token);
+
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(comando)
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve();
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
+
     });
   },
 
-  crearUsuario: function (usuario) {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback();
-        // callbackError('Error procesando la solicitud');
-      }, 2000);
+  crearUsuario: function (comando) {
+    return new Promise((resolve, reject) => {
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario?passwordDefault=false&urlRetorno=cba147app://abrir";
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(comando)
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve();
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
+
     });
   },
 
-  recuperarCuenta: function (username, email) {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback();
-      }, 2000);
+  recuperarCuenta: function (username) {
+    return new Promise((resolve, reject) => {
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/RecuperarCuenta?username={user}&urlRetorno={urlRetorno}";
+      url = url.replace('{user}', username);
+      url = url.replace('{urlRetorno}', 'cba147app://abrir');
+
+      fetch(url, { method: 'GET' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve();
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
     });
   },
 
   cambiarUsername: function (username) {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback();
-      }, 2000);
+    return new Promise((resolve, reject) => {
+
+      if (global.token == undefined) {
+        reject('Debe iniciar sesion');
+        return;
+      }
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/CambiarUsername?token={token}&username={username}";
+      url = url.replace('{token}', global.token);
+      url = url.replace('{username}', username);
+
+      fetch(url, {
+        method: 'GET'
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error);
+            return;
+          }
+
+          resolve();
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
+
     });
   },
 
   cambiarPassword: function (passwordAnterior, passwordNueva) {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback();
-      }, 2000);
+    return new Promise((resolve, reject) => {
+
+      if (global.token == undefined) {
+        reject('Debe iniciar sesion');
+        return;
+      }
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/CambiarPassword?token={token}&passwordAnterior={passAnterior}&passwordNuevo={passNueva}";
+      url = url.replace('{token}', global.token);
+      url = url.replace('{passAnterior}', passwordAnterior);
+      url = url.replace('{passNueva}', passwordNueva);
+
+      fetch(url, {
+        method: 'GET'
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve();
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
+
     });
   },
 
   cambiarFoto: function (foto) {
-    return new Promise((callback, callbackError) => {
-      setTimeout(() => {
-        callback();
-      }, 2000);
+    return new Promise((resolve, reject) => {
+      if (global.token == undefined) {
+        reject('Debe iniciar sesion');
+        return;
+      }
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ActualizarFotoPersonal?token={token}";
+      url = url.replace('{token}', global.token);
+
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: foto })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve(data.return);
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
+    });
+  },
+
+  validarUsuarioActivado: function (username, password) {
+    return new Promise((resolve, reject) => {
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ValidarUsuarioActivado?username={username}&password={password}";
+      url = url.replace('{username}', username);
+      url = url.replace('{password}', password);
+
+      fetch(url, {
+        method: 'GET'
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve(data.return == true);
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
+    });
+  },
+  solicitarEmailActivacion: function (username, password) {
+    return new Promise((resolve, reject) => {
+
+      let url = "https://servicios2.cordoba.gov.ar/WSVecinoVirtual_Bridge/v1/Usuario/ActivacionCuenta/Iniciar";
+
+      let comando = {
+        username: username,
+        password: password,
+        urlServidor: 'https://servicios2.cordoba.gov.ar/vecinovirtualutils_internet/ProcesarActivarUsuario',
+        urlRetorno: 'cba147app://abrir'
+      };
+
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(comando)
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok != true) {
+            reject(data.error || 'Error procesando la solicitud');
+            return;
+          }
+
+          resolve(data.return);
+        })
+        .catch(error => {
+          reject('Error procesando la solicitud');
+        })
     });
   }
-  
+
 };
 
 export default metodos;

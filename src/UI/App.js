@@ -21,14 +21,14 @@ import firebase from 'react-native-firebase';
 //Mis Componentes
 import Introduccion from "@UI/Introduccion/Index";
 import Login from "@UI/Login/Index";
-import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
-import RecuperarCuenta from "@UI/RecuperarCuenta/Index";
 import Inicio from "@UI/Inicio/Index";
 import RequerimientoNuevo from "@UI/RequerimientoNuevo/Index";
 import RequerimientoDetalle from "@UI/RequerimientoDetalle/Index";
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 import AjustesDesarrolladores from "@UI/AjustesDesarrolladores/Index";
+import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
+import UsuarioRecuperarPassword from "@UI/UsuarioRecuperarPassword/Index";
 import UsuarioValidarDatosRenaper from '@UI/UsuarioValidarDatosRenaper/Index';
 import UsuarioEditarDatosContacto from '@UI/UsuarioEditarDatosContacto/Index';
 
@@ -100,7 +100,7 @@ const RootStack = StackNavigator(
       screen: UsuarioNuevo
     },
     RecuperarCuenta: {
-      screen: RecuperarCuenta
+      screen: UsuarioRecuperarPassword
     },
     Inicio: {
       screen: Inicio
