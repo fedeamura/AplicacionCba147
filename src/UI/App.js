@@ -1,22 +1,8 @@
 import React from "react";
-import {
-  Platform,
-  View,
-  Alert,
-  Easing,
-  Animated,
-  Linking,
-  LayoutAnimation,
-  StatusBar
-} from "react-native";
-import {
-  StackNavigator,
-  NavigationActions
-} from "react-navigation";
-import {
-  Provider as PaperProvider
-} from "react-native-paper";
-import firebase from 'react-native-firebase';
+import { Platform, View, Alert, Easing, Animated, Linking, LayoutAnimation, StatusBar } from "react-native";
+import { StackNavigator, NavigationActions } from "react-navigation";
+import { Provider as PaperProvider } from "react-native-paper";
+import firebase from "react-native-firebase";
 
 //Mis Componentes
 import Introduccion from "@UI/Introduccion/Index";
@@ -29,8 +15,8 @@ import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 import AjustesDesarrolladores from "@UI/AjustesDesarrolladores/Index";
 import UsuarioNuevo from "@UI/UsuarioNuevo/Index";
 import UsuarioRecuperarPassword from "@UI/UsuarioRecuperarPassword/Index";
-import UsuarioValidarDatosRenaper from '@UI/UsuarioValidarDatosRenaper/Index';
-import UsuarioEditarDatosContacto from '@UI/UsuarioEditarDatosContacto/Index';
+import UsuarioValidarDatosRenaper from "@UI/UsuarioValidarDatosRenaper/Index";
+import UsuarioEditarDatosContacto from "@UI/UsuarioEditarDatosContacto/Index";
 
 import AppCargando from "./AppCargando";
 import AppError from "./AppError";
@@ -41,16 +27,17 @@ import Rules_Init from "@Rules/Rules_Init";
 import Rules_Ajustes from "../Rules/Rules_Ajustes";
 import Rules_Notificaciones from "@Rules/Rules_Notificaciones";
 
+
 const transitionConfig = function() {
   return {
     transitionSpec: {
       duration: 500,
       easing: Easing.out(Easing.poly(4)),
       timing: Animated.timing,
-      useNativeDriver: true,
+      useNativeDriver: true
     },
-    screenInterpolator: function (sceneProps) {
-      const { layout, position, scene } = sceneProps
+    screenInterpolator: function(sceneProps) {
+      const { layout, position, scene } = sceneProps;
 
       const thisSceneIndex = scene.index;
 
@@ -66,8 +53,6 @@ const transitionConfig = function() {
       //   outputRange: [height, 0, 0]
       // })
 
-
-
       // const scale = position.interpolate({
       //   inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
       //   outputRange: [1, 1, 0.9]
@@ -82,10 +67,10 @@ const transitionConfig = function() {
             })
           }
         ]
-      }
-    }.bind(this),
-  }
-}
+      };
+    }.bind(this)
+  };
+};
 
 //Defino el Stack de la App
 const RootStack = StackNavigator(
@@ -141,7 +126,6 @@ const RootStack = StackNavigator(
 global.initData = undefined;
 
 export default class App extends React.Component {
-
   constructor(props) {
     super(props);
     console.disableYellowBox = true;
@@ -163,90 +147,123 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    Linking.addEventListener('url', this._handleOpenURL);
+    Linking.addEventListener("url", this._handleOpenURL);
 
     Rules_Init.actualizarApp()
-      .then(function () {
-        //Busco la data inicial
-        Rules_Init.getInitData()
-          .then(function (initData) {
+      .then(
+        function() {
+          //Busco la data inicial
+          Rules_Init.getInitData()
+            .then(
+              function(initData) {
+                global.initData = initData;
 
-            global.initData = initData;
+                this.setState({
+                  cargando: false,
+                  initData: initData,
+                  error: undefined
+                });
+              }.bind(this)
+            )
+            .catch(
+              function(error) {
+                this.informarError(error);
+              }.bind(this)
+            );
+        }.bind(this)
+      )
+      .catch(
+        function(error) {
+          this.informarError(error);
+        }.bind(this)
+      );
 
-            this.setState({
-              cargando: false,
-              initData: initData,
-              error: undefined
-            });
-          }.bind(this))
-          .catch(function (error) {
-            this.informarError(error);
-          }.bind(this));
-      }.bind(this))
-      .catch(function (error) {
-        this.informarError(error);
-      }.bind(this));
+    firebase
+      .messaging()
+      .getToken()
+      .then(
+        function(fcmToken) {
+          this.onToken(fcmToken);
+        }.bind(this)
+      );
 
-    firebase.messaging().getToken().then(function (fcmToken) {
-      this.onToken(fcmToken);
-    }.bind(this));
+    firebase.messaging().onTokenRefresh(
+      function(fcmToken) {
+        this.onToken(fcmToken);
+      }.bind(this)
+    );
 
-    firebase.messaging().onTokenRefresh(function (fcmToken) {
-      this.onToken(fcmToken);
-    }.bind(this));
-
-    firebase.messaging().hasPermission()
-      .then(function (enabled) {
-        if (enabled == false) {
-          firebase.messaging().requestPermission()
-            .then(function () {
-              // User has authorised  
-            }.bind(this))
-            .catch(function (error) {
-              Alert.alert('', 'Para recibir notificaciones debe conceder el permiso en Ajustes');
-            }.bind(this));
-        }
-      }.bind(this));
+    firebase
+      .messaging()
+      .hasPermission()
+      .then(
+        function(enabled) {
+          if (enabled == false) {
+            firebase
+              .messaging()
+              .requestPermission()
+              .then(
+                function() {
+                  // User has authorised
+                }.bind(this)
+              )
+              .catch(
+                function(error) {
+                  Alert.alert("", "Para recibir notificaciones debe conceder el permiso en Ajustes");
+                }.bind(this)
+              );
+          }
+        }.bind(this)
+      );
 
     //App abierta desde notificacion
-    firebase.notifications().getInitialNotification().then(function (notificationOpen) {
-      if (!notificationOpen) return;
+    firebase
+      .notifications()
+      .getInitialNotification()
+      .then(
+        function(notificationOpen) {
+          if (!notificationOpen) return;
 
-      const notification = notificationOpen.notification;
+          const notification = notificationOpen.notification;
 
-      //Transformo
-      let data = Rules_Notificaciones.transformarNotificacion(notification);
+          //Transformo
+          let data = Rules_Notificaciones.transformarNotificacion(notification);
 
-      //Guardo en global... para que el componente de Inicio (Mis requerimiento) maneje lo que hay que hacer
-      //Lo mando para despues porque hay que validar el usuario logeado y esperar que acceda.
-      global.notificacionInicial = data;
+          //Guardo en global... para que el componente de Inicio (Mis requerimiento) maneje lo que hay que hacer
+          //Lo mando para despues porque hay que validar el usuario logeado y esperar que acceda.
+          global.notificacionInicial = data;
+        }.bind(this)
+      );
 
-    }.bind(this));
-
-    const channel = new firebase.notifications.Android.Channel('channelId', '#CBA147', firebase.notifications.Android.Importance.Max).setDescription('#CBA147');
+    const channel = new firebase.notifications.Android.Channel(
+      "channelId",
+      "#CBA147",
+      firebase.notifications.Android.Importance.Max
+    ).setDescription("#CBA147");
     firebase.notifications().android.createChannel(channel);
 
     //Al aparecer una notificacion (En foreground)
-    this.notificationListener = firebase.notifications().onNotification(function (notification) {
+    this.notificationListener = firebase.notifications().onNotification(
+      function(notification) {
+        //Transformo y mando a notificar
+        let data = Rules_Notificaciones.transformarNotificacion(notification);
+        if (data == undefined) return;
 
-      //Transformo y mando a notificar
-      let data = Rules_Notificaciones.transformarNotificacion(notification);
-      if (data == undefined) return;
-
-      Rules_Notificaciones.notificar(data);
-    }.bind(this));
+        Rules_Notificaciones.notificar(data);
+      }.bind(this)
+    );
 
     //Al hacer click en una notificacion
-    this.notificationOpenedListener = firebase.notifications().onNotificationOpened(function (notificationOpen) {
-      const notification = notificationOpen.notification;
-      Rules_Notificaciones.manejar(notification.data);
-    }.bind(this));
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened(
+      function(notificationOpen) {
+        const notification = notificationOpen.notification;
+        Rules_Notificaciones.manejar(notification.data);
+      }.bind(this)
+    );
   }
 
-
-
   componentWillUnmount() {
-    Linking.removeEventListener('url', this._handleOpenURL);
+    Linking.removeEventListener("url", this._handleOpenURL);
 
     this.notificationListener();
     this.notificationOpenedListener();
@@ -266,7 +283,7 @@ export default class App extends React.Component {
     this.setState({
       cargando: false,
       initData: undefined,
-      error: error || 'Error procesando la solicitud'
+      error: error || "Error procesando la solicitud"
     });
   }
 
@@ -294,7 +311,7 @@ export default class App extends React.Component {
   }
 
   static animar(callback) {
-    if (Platform.OS != 'android') {
+    if (Platform.OS != "android") {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, callback);
     } else {
       if (callback != undefined) {
@@ -311,7 +328,7 @@ export default class App extends React.Component {
 
     //Error
     if (this.state.initData == undefined || this.state.error != undefined) {
-      return <AppError error={this.state.error || 'Error procesando la solicitud'} />
+      return <AppError error={this.state.error || "Error procesando la solicitud"} />;
     }
 
     //Mantenimiento
@@ -321,13 +338,14 @@ export default class App extends React.Component {
 
     return (
       <PaperProvider>
-        <View
-          keyboardShouldPersistTaps="handled"
-          style={{ height: '100%', width: '100%', backgroundColor: 'white' }}>
-
+        <View keyboardShouldPersistTaps="handled" style={{ height: "100%", width: "100%", backgroundColor: "white" }}>
           <StatusBar backgroundColor="white" barStyle="dark-content" />
 
-          <RootStack ref={function (ref) { global.navigator = ref; }.bind(this)} />
+          <RootStack
+            ref={function(ref) {
+              global.navigator = ref;
+            }.bind(this)}
+          />
         </View>
       </PaperProvider>
     );

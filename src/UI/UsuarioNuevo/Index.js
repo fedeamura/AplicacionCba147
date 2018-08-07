@@ -1,30 +1,18 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  Alert,
-  Animated,
-  ScrollView,
-  Keyboard,
-} from "react-native";
-import {
-  Text,
-} from "native-base";
-import {
-  Card,
-  CardContent,
-} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import LinearGradient from 'react-native-linear-gradient';
-import autobind from 'autobind-decorator'
+import { StyleSheet, View, Alert, Animated, ScrollView, Keyboard } from "react-native";
+import { Text } from "native-base";
+import { Card, CardContent } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import LinearGradient from "react-native-linear-gradient";
+import autobind from "autobind-decorator";
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
-import MiStatusBar from '@Utils/MiStatusBar';
-import MiToolbar from '@Utils/MiToolbar';
-import FormDatosPersonales from './FormDatosPersonales';
-import FormDatosExtra from './FormDatosExtra';
-import Resultado from './Resultado';
+import MiStatusBar from "@Utils/MiStatusBar";
+import MiToolbar from "@Utils/MiToolbar";
+import FormDatosPersonales from "./FormDatosPersonales";
+import FormDatosExtra from "./FormDatosExtra";
+import Resultado from "./Resultado";
 import { dateToString, stringDateToString, toTitleCase } from "@Utils/Helpers";
 
 //Rules
@@ -47,7 +35,7 @@ export default class Login extends React.Component {
       //Resultado
       mostrarPanelResultado: false,
       registrando: false,
-      error: undefined,
+      error: undefined
     };
 
     this.keyboardHeight = new Animated.Value(0);
@@ -57,8 +45,8 @@ export default class Login extends React.Component {
 
   @autobind
   componentWillMount() {
-    this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
-    this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
+    this.keyboardWillShowSub = Keyboard.addListener("keyboardWillShow", this.keyboardWillShow);
+    this.keyboardWillHideSub = Keyboard.addListener("keyboardWillHide", this.keyboardWillHide);
   }
 
   @autobind
@@ -73,7 +61,7 @@ export default class Login extends React.Component {
 
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
-      toValue: event.endCoordinates.height,
+      toValue: event.endCoordinates.height
     }).start();
   }
 
@@ -81,16 +69,14 @@ export default class Login extends React.Component {
   keyboardWillHide(event) {
     this.teclado = false;
 
-
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
-      toValue: 0,
+      toValue: 0
     }).start();
   }
 
   @autobind
   registrar(data) {
-
     Keyboard.dismiss();
 
     //Armo el comando
@@ -107,34 +93,40 @@ export default class Login extends React.Component {
       TelefonoCelular: data.telefonoCelular
     };
 
-    Alert.alert('', JSON.stringify(comando));
-
     //Muestro el panel y empiezo a animar el cargando
-    this.setState({
-      datosExtra: data,
-      mostrarPanelResultado: true,
-      registrando: true
-    }, function () {
-
-      //Mando a registrar
-      Rules_Usuario.crearUsuario(comando)
-        .then(function () {
-          this.setState({
-            registrando: false
-          });
-        }.bind(this))
-        .catch(function (error) {
-          Alert.alert('', error);
-          this.setState({
-            mostrarPanelResultado: false,
-            registrando: false
-          });
-        }.bind(this));
-    }.bind(this));
+    this.setState(
+      {
+        datosExtra: data,
+        mostrarPanelResultado: true,
+        registrando: true
+      },
+      function() {
+        //Mando a registrar
+        Rules_Usuario.crearUsuario(comando)
+          .then(
+            function() {
+              this.setState({
+                registrando: false
+              });
+            }.bind(this)
+          )
+          .catch(
+            function(error) {
+              Alert.alert("", error);
+              this.setState({
+                mostrarPanelResultado: false,
+                registrando: false
+              });
+            }.bind(this)
+          );
+      }.bind(this)
+    );
   }
 
   @autobind
   cerrar() {
+    Keyboard.dismiss();
+
     if (this.state.registrando == true) return;
 
     let preguntarCerrar = false;
@@ -147,15 +139,22 @@ export default class Login extends React.Component {
     }
 
     if (preguntarCerrar == true) {
-      Alert.alert('', texto_DialogoCancelarFormulario, [
-        {
-          text: texto_DialogoCancelarFormulario_Si,
-          onPress: function () { App.goBack() }.bind(this)
-        },
-        {
-          text: texto_DialogoCancelarFormulario_No
-        }
-      ], { cancelable: true });
+      Alert.alert(
+        "",
+        texto_DialogoCancelarFormulario,
+        [
+          {
+            text: texto_DialogoCancelarFormulario_No
+          },
+          {
+            text: texto_DialogoCancelarFormulario_Si,
+            onPress: function() {
+              App.goBack();
+            }.bind(this)
+          }
+        ],
+        { cancelable: true }
+      );
       return;
     }
 
@@ -169,29 +168,31 @@ export default class Login extends React.Component {
 
   @autobind
   onFormularioDatosPersonalesAlgoInsertado(algoInsertado) {
-    this.setState({ algoInsertadoEnDatosPersonales: algoInsertado })
+    this.setState({ algoInsertadoEnDatosPersonales: algoInsertado });
   }
 
   @autobind
   onDatosPersonalesReady(datos) {
-
-
     Animated.timing(this.animDatosPersonales, {
       toValue: 0,
       duration: 500
-    }).start(function () {
+    }).start(
+      function() {
+        this.setState(
+          { datosPersonales: datos },
+          function() {
+            if (this.scrollView != undefined) {
+              this.scrollView.scrollTo(0);
+            }
 
-      this.setState({ datosPersonales: datos }, function () {
-        if (this.scrollView != undefined) {
-          this.scrollView.scrollTo(0);
-        }
-
-        Animated.timing(this.animDatosExtra, {
-          toValue: 1,
-          duration: 500
-        }).start();
-      }.bind(this));
-    }.bind(this));
+            Animated.timing(this.animDatosExtra, {
+              toValue: 1,
+              duration: 500
+            }).start();
+          }.bind(this)
+        );
+      }.bind(this)
+    );
   }
 
   @autobind
@@ -204,7 +205,6 @@ export default class Login extends React.Component {
 
     return (
       <View style={styles.contenedor}>
-
         {/* StatusBar */}
         <MiStatusBar />
 
@@ -213,28 +213,29 @@ export default class Login extends React.Component {
 
         {/* Contenido */}
         <View style={[styles.contenedor_Formulario, { backgroundColor: initData.backgroundColor }]}>
-          <ScrollView
-            ref={this.onScrollViewRef}
-            keyboardShouldPersistTaps="always">
-
+          <ScrollView ref={this.onScrollViewRef} keyboardShouldPersistTaps="always">
             <View style={styles.scrollViewContent}>
-
               {/* Datos de acceso */}
               {this.state.datosPersonales == undefined && (
-                <Animated.View
-                  style={{ opacity: this.animDatosPersonales }}
-                >
-
+                <Animated.View style={{ opacity: this.animDatosPersonales }}>
                   <FormDatosPersonales
                     onAlgoInsertado={this.onFormularioDatosPersonalesAlgoInsertado}
-                    onReady={this.onDatosPersonalesReady} />
+                    onReady={this.onDatosPersonalesReady}
+                  />
                 </Animated.View>
               )}
 
               {this.state.datosPersonales != undefined && (
-                <Animated.View
-                  style={{ opacity: this.animDatosExtra }}
-                >
+                <Animated.View style={{ opacity: this.animDatosExtra }}>
+                  {/* Info */}
+                  <Card style={[styles.card, { backgroundColor: initData.colorNaranja, marginTop: 32 }]}>
+                    <CardContent style={{ display: "flex", flexDirection: "row" }}>
+                      <Icon style={{ fontSize: 36, marginRight: 16, color: "white" }} name="information-outline" />
+                      <Text style={{ fontSize: 16, flex: 1, color: "white", fontWeight: "bold" }}>
+                        {texto_InfoDatosValidados}
+                      </Text>
+                    </CardContent>
+                  </Card>
 
                   {/* Datos de acceso */}
                   <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{texto_TituloDatosPersonales}</Text>
@@ -242,81 +243,121 @@ export default class Login extends React.Component {
                   {/* Card datos del usuario */}
                   <Card style={styles.card}>
                     <CardContent>
-                      <Text style={{ fontSize: 24 }}>{toTitleCase(this.state.datosPersonales.nombre + ' ' + this.state.datosPersonales.apellido)}</Text>
+                      <Text style={{ fontSize: 24 }}>
+                        {toTitleCase(this.state.datosPersonales.nombre + " " + this.state.datosPersonales.apellido)}
+                      </Text>
 
-                      <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                        <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                      <View style={{ display: "flex", flexDirection: "row", marginTop: 8 }}>
+                        <Icon
+                          name="account-card-details"
+                          type="MaterialCommunityIcons"
+                          style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}
+                        />
                         <View style={{ marginLeft: 16, flex: 1 }}>
-                          <Text style={{ fontWeight: 'bold' }}>{texto_TituloDni}</Text>
-                          <Text>{this.state.datosPersonales.dni || 'Sin datos'}</Text>
+                          <Text style={{ fontWeight: "bold" }}>{texto_TituloDni}</Text>
+                          <Text>{this.state.datosPersonales.dni || "Sin datos"}</Text>
                         </View>
                       </View>
 
-                      <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                        <Icon name="account-card-details" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                      <View style={{ display: "flex", flexDirection: "row", marginTop: 8 }}>
+                        <Icon
+                          name="account-card-details"
+                          type="MaterialCommunityIcons"
+                          style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}
+                        />
                         <View style={{ marginLeft: 16, flex: 1 }}>
-                          <Text style={{ fontWeight: 'bold' }}>{texto_TituloCuil}</Text>
-                          <Text>{this.state.datosPersonales.cuil || 'Sin datos'}</Text>
+                          <Text style={{ fontWeight: "bold" }}>{texto_TituloCuil}</Text>
+                          <Text>{this.state.datosPersonales.cuil || "Sin datos"}</Text>
                         </View>
                       </View>
 
-                      <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                        <Icon name="calendar" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                      <View style={{ display: "flex", flexDirection: "row", marginTop: 8 }}>
+                        <Icon
+                          name="calendar"
+                          type="MaterialCommunityIcons"
+                          style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}
+                        />
                         <View style={{ marginLeft: 16, flex: 1 }}>
-                          <Text style={{ fontWeight: 'bold' }}>{texto_TituloFechaNacimiento}</Text>
+                          <Text style={{ fontWeight: "bold" }}>{texto_TituloFechaNacimiento}</Text>
                           <Text>{stringDateToString(this.state.datosPersonales.fechaNacimiento)}</Text>
                         </View>
                       </View>
 
-                      <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                        <Icon name={this.state.datosPersonales.sexoMasculino == true ? "gender-male" : "gender-female"} type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                      <View style={{ display: "flex", flexDirection: "row", marginTop: 8 }}>
+                        <Icon
+                          name={this.state.datosPersonales.sexoMasculino == true ? "gender-male" : "gender-female"}
+                          type="MaterialCommunityIcons"
+                          style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}
+                        />
                         <View style={{ marginLeft: 16, flex: 1 }}>
-                          <Text style={{ fontWeight: 'bold' }}>{texto_TituloSexo}</Text>
-                          <Text>{this.state.datosPersonales.sexoMasculino == true ? texto_TituloSexoMasculino : texto_TituloSexoFemenino}</Text>
+                          <Text style={{ fontWeight: "bold" }}>{texto_TituloSexo}</Text>
+                          <Text>
+                            {this.state.datosPersonales.sexoMasculino == true
+                              ? texto_TituloSexoMasculino
+                              : texto_TituloSexoFemenino}
+                          </Text>
                         </View>
                       </View>
 
-
-                      <View style={{ display: 'flex', flexDirection: 'row', marginTop: 8 }}>
-                        <Icon name="map" type="MaterialCommunityIcons" style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}></Icon>
+                      <View style={{ display: "flex", flexDirection: "row", marginTop: 8 }}>
+                        <Icon
+                          name="map"
+                          type="MaterialCommunityIcons"
+                          style={{ fontSize: 24, marginLeft: 4, marginTop: 4, opacity: 0.8 }}
+                        />
                         <View style={{ marginLeft: 16, flex: 1 }}>
-                          <Text style={{ fontWeight: 'bold' }}>{texto_TituloDomicilioLegal}</Text>
+                          <Text style={{ fontWeight: "bold" }}>{texto_TituloDomicilioLegal}</Text>
                           <Text>{toTitleCase(this.state.datosPersonales.domicilioLegal)}</Text>
                         </View>
                       </View>
                     </CardContent>
                   </Card>
 
-
                   {/* Datos de Extra */}
                   <FormDatosExtra onReady={this.registrar} />
                 </Animated.View>
-
               )}
-
             </View>
           </ScrollView>
-
 
           {/* Sombra del toolbar */}
           <LinearGradient
             colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
             backgroundColor="transparent"
-            style={{ left: 0, top: 0, right: 0, height: 16, position: 'absolute' }}
-            pointerEvents="none" />
+            style={{ left: 0, top: 0, right: 0, height: 16, position: "absolute" }}
+            pointerEvents="none"
+          />
         </View>
 
-        <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
+        <Animated.View style={[{ height: "100%" }, { maxHeight: this.keyboardHeight }]} />
 
-        <Resultado
-          visible={this.state.mostrarPanelResultado}
-          cargando={this.state.registrando}
-          username={this.state.datosPersonales != undefined ? (this.state.datosPersonales.username || this.state.datosPersonales.cuil) : ''}
-          onButtonPress={this.onButtonResultadoClick}
-          email={this.state.datosExtra == undefined ? '' : this.state.datosExtra.email}>
-        </Resultado>
-
+        {this.renderResultado()}
       </View>
+    );
+  }
+
+  renderResultado() {
+    let username = "";
+    if (this.state.datosPersonales != undefined) {
+      username = this.state.datosPersonales.cuil;
+    }
+    if (this.state.datos != undefined && this.state.datos.username != undefined) {
+      username = this.state.datos.username;
+    }
+
+    let email = "";
+    if (this.state.datosExtra != undefined) {
+      email = this.state.datosExtra.email;
+    }
+
+    return (
+      <Resultado
+        visible={this.state.mostrarPanelResultado}
+        cargando={this.state.registrando}
+        username={username}
+        onButtonPress={this.onButtonResultadoClick}
+        email={email}
+      />
     );
   }
 }
@@ -350,16 +391,19 @@ const styles = StyleSheet.create({
   }
 });
 
-const texto_Titulo = 'Nuevo Usuario';
-const texto_DialogoCancelarFormulario = '¿Desea cancelar el registro de nuevo usuario?';
-const texto_DialogoCancelarFormulario_Si = 'Si';
-const texto_DialogoCancelarFormulario_No = 'No';
+const texto_InfoDatosValidados =
+  "Su datos personales fueron validados correctamente. A continuacion encontrará otros formularios con mas información necesaria para completar su perfil.";
 
-const texto_TituloDatosPersonales = 'Datos personales';
-const texto_TituloDni = 'Nº de Documento';
-const texto_TituloCuil = 'CUIL';
-const texto_TituloFechaNacimiento = 'Fecha de nacimiento';
-const texto_TituloSexo = 'Sexo';
-const texto_TituloSexoMasculino = 'Masculino';
-const texto_TituloSexoFemenino = 'Femenino';
-const texto_TituloDomicilioLegal = 'Domicilio legal'
+const texto_Titulo = "Nuevo Usuario";
+const texto_DialogoCancelarFormulario = "¿Desea cancelar el registro de nuevo usuario?";
+const texto_DialogoCancelarFormulario_Si = "Si";
+const texto_DialogoCancelarFormulario_No = "No";
+
+const texto_TituloDatosPersonales = "Datos personales";
+const texto_TituloDni = "Nº de Documento";
+const texto_TituloCuil = "CUIL";
+const texto_TituloFechaNacimiento = "Fecha de nacimiento";
+const texto_TituloSexo = "Sexo";
+const texto_TituloSexoMasculino = "Masculino";
+const texto_TituloSexoFemenino = "Femenino";
+const texto_TituloDomicilioLegal = "Domicilio legal";

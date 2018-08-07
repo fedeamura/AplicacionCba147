@@ -94,8 +94,8 @@ export default class MiToolbarMenu extends React.Component {
     }.bind(this));
 
     Animated.sequence([
-      Animated.timing(this.animInicio, { toValue: 1, duration: 500 }),
-      Animated.timing(this.animInicio2, { toValue: 1, duration: 500 }),
+      Animated.timing(this.animInicio, { toValue: 1, duration: 500, useNativeDriver:true }),
+      Animated.timing(this.animInicio2, { toValue: 1, duration: 500,useNativeDriver:true }),
     ]).start();
   }
 

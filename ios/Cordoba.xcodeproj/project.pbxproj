@@ -27,6 +27,8 @@
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		1CDEE792B6324923921E69AD /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9B27142501B9492FA3854922 /* Foundation.ttf */; };
 		1D848787812E47DDA33407AD /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 377704340C4F4971801AC2C3 /* FontAwesome.ttf */; };
+		231493422119452900D65E97 /* libRNLocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2314933C2119445800D65E97 /* libRNLocation.a */; };
+		231493442119454C00D65E97 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 231493432119454C00D65E97 /* CoreLocation.framework */; };
 		23456CA720F474480065C969 /* Images-2.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 23456CA620F474480065C969 /* Images-2.xcassets */; };
 		23456CA920F475B60065C969 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 23456CA820F475B60065C969 /* GoogleService-Info.plist */; };
 		23456CAA20F478E90065C969 /* Lottie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2360059020EC8FF5007B339C /* Lottie.framework */; };
@@ -125,6 +127,20 @@
 			proxyType = 2;
 			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
 			remoteInfo = React;
+		};
+		231493092119445800D65E97 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C83D77EF48F14BA9AF40905B /* FastImage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A287971D1DE0C0A60081BDFA;
+			remoteInfo = FastImage;
+		};
+		2314933B2119445800D65E97 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 231492FF2119445800D65E97 /* RNLocation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNLocation;
 		};
 		232625BC20A54A79001846B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -527,6 +543,8 @@
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		147B37E5816C4846911A303E /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/native-base/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		1EB24C78E1B54397840B091C /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/native-base/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
+		231492FF2119445800D65E97 /* RNLocation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNLocation.xcodeproj; path = "../node_modules/react-native-gps/RNLocation.xcodeproj"; sourceTree = "<group>"; };
+		231493432119454C00D65E97 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		2335BF1E20F4806C00674C21 /* Cordoba.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Cordoba.entitlements; path = Cordoba/Cordoba.entitlements; sourceTree = "<group>"; };
 		23456CA620F474480065C969 /* Images-2.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Images-2.xcassets"; path = "Cordoba/Images-2.xcassets"; sourceTree = "<group>"; };
 		23456CA820F475B60065C969 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Cordoba/GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -605,6 +623,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				231493442119454C00D65E97 /* CoreLocation.framework in Frameworks */,
+				231493422119452900D65E97 /* libRNLocation.a in Frameworks */,
 				236005A520EC90E5007B339C /* libRCTPushNotification.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
@@ -760,6 +780,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		231493002119445800D65E97 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2314933C2119445800D65E97 /* libRNLocation.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		232625B920A54A79001846B1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -771,6 +799,7 @@
 		2326264720A54FB9001846B1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				2314930A2119445800D65E97 /* libFastImage.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -932,6 +961,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				231493432119454C00D65E97 /* CoreLocation.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
 				BC6C0EDBCB6C468DB4287577 /* libz.tbd */,
 				A42E34DDA3589468552E8885 /* libPods-Cordoba.a */,
@@ -963,6 +993,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				231492FF2119445800D65E97 /* RNLocation.xcodeproj */,
 				2360059C20EC90AF007B339C /* RCTPushNotification.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -1239,6 +1270,10 @@
 					ProjectRef = F3E326AAE4C94522A3EC87CC /* RNImagePicker.xcodeproj */;
 				},
 				{
+					ProductGroup = 231493002119445800D65E97 /* Products */;
+					ProjectRef = 231492FF2119445800D65E97 /* RNLocation.xcodeproj */;
+				},
+				{
 					ProductGroup = 2360057C20EC8FF5007B339C /* Products */;
 					ProjectRef = 844C97569F714BDA98400481 /* RNPhotoView.xcodeproj */;
 				},
@@ -1321,6 +1356,20 @@
 			fileType = archive.ar;
 			path = libReact.a;
 			remoteRef = 146834031AC3E56700842450 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2314930A2119445800D65E97 /* libFastImage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libFastImage.a;
+			remoteRef = 231493092119445800D65E97 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2314933C2119445800D65E97 /* libRNLocation.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNLocation.a;
+			remoteRef = 2314933B2119445800D65E97 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		232625BD20A54A79001846B1 /* libWebImage.a */ = {

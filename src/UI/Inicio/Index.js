@@ -1,21 +1,8 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  Alert,
-  Animated,
-  ScrollView,
-  BackHandler
-} from "react-native";
+import { View, StyleSheet, Alert, Animated, ScrollView, BackHandler } from "react-native";
 
-import {
-  Dialog,
-  Paragraph,
-  Button as ButtonPeper,
-  DialogActions,
-  DialogContent
-} from 'react-native-paper';
-import autobind from 'autobind-decorator'
+import { Dialog, Paragraph, Button as ButtonPeper, DialogActions, DialogContent } from "react-native-paper";
+import autobind from "autobind-decorator";
 
 //Mis componentes
 import App from "@UI/App";
@@ -29,7 +16,6 @@ import MiPanelError from "@Utils/MiPanelError";
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
 
-
 export default class Inicio extends React.Component {
   static navigationOptions = {
     title: texto_Titulo,
@@ -40,46 +26,46 @@ export default class Inicio extends React.Component {
   constructor(props) {
     super(props);
 
+    const initData = global.initData;
     this.state = {
       expandido: false,
       dialogoConfirmarSalidaVisible: false,
       opciones: [
         {
-          backgroundColor: '#01a15a',
+          backgroundColor: initData.colorVerde,
           titulo: texto_Menu_MisRequerimientos,
-          tituloColor: 'white',
+          tituloColor: "white",
           tituloFontSize: 18,
           tituloFontSpace: 2,
-          icono: 'file-document',
+          icono: "file-document",
           iconoFontSize: 48,
-          iconoColor: 'white',
+          iconoColor: "white",
           valor: 0,
-          contenido: (<PaginaInicio />)
-          // botones: (<View><Text>Hola</Text></View>)
+          contenido: <PaginaInicio />
         },
         {
-          backgroundColor: '#f68a1e',
+          backgroundColor: initData.colorNaranja,
           titulo: texto_Menu_MiPerfil,
-          tituloColor: 'white',
+          tituloColor: "white",
           tituloFontSize: 18,
           tituloFontSpace: 2,
-          icono: 'account-circle',
+          icono: "account-circle",
           iconoFontSize: 48,
-          iconoColor: 'white',
+          iconoColor: "white",
           valor: 1,
-          contenido: (<PaginaPerfil />)
+          contenido: <PaginaPerfil />
         },
         {
-          backgroundColor: '#c6148c',
+          backgroundColor: initData.colorRosa,
           titulo: texto_Menu_Ajustes,
-          tituloColor: 'white',
+          tituloColor: "white",
           tituloFontSize: 18,
           tituloFontSpace: 2,
-          icono: 'settings',
-          iconoColor: 'white',
+          icono: "settings",
+          iconoColor: "white",
           iconoFontSize: 48,
           valor: 2,
-          contenido: (<PaginaAjustes />)
+          contenido: <PaginaAjustes />
         }
       ],
       cargando: true,
@@ -88,20 +74,24 @@ export default class Inicio extends React.Component {
     };
 
     //Back
-    this._didFocusSubscription = props.navigation.addListener('didFocus', function (payload) {
-      BackHandler.addEventListener('hardwareBackPress', this.back);
-    }.bind(this));
+    this._didFocusSubscription = props.navigation.addListener(
+      "didFocus",
+      function(payload) {
+        BackHandler.addEventListener("hardwareBackPress", this.back);
+      }.bind(this)
+    );
 
-    this._willBlurSubscription = props.navigation.addListener('willBlur', function (payload) {
-      BackHandler.removeEventListener('hardwareBackPress', this.back);
-    }.bind(this));
-
+    this._willBlurSubscription = props.navigation.addListener(
+      "willBlur",
+      function(payload) {
+        BackHandler.removeEventListener("hardwareBackPress", this.back);
+      }.bind(this)
+    );
   }
 
   componentDidMount() {
     this.consultarUsuarioValidadoRenaper();
   }
-
 
   @autobind
   back() {
@@ -115,31 +105,37 @@ export default class Inicio extends React.Component {
 
   @autobind
   consultarUsuarioValidadoRenaper() {
-    this.setState({ cargando: true, error: undefined, mostrandoPanelRenaper: false },
-      function () {
+    this.setState(
+      { cargando: true, error: undefined, mostrandoPanelRenaper: false },
+      function() {
         Rules_Usuario.esUsuarioValidadoRenaper()
-          .then(function (validado) {
-            this.setState({
-              cargando: false,
-              validadoRenaper: validado,
-              mostrandoPanelRenaper: validado == false
-            });
-          }.bind(this))
-          .catch(function (error) {
-            this.setState({
-              cargando: false,
-              validadoRenaper: false,
-              mostrandoPanelRenaper: true,
-              error: error
-            });
-          }.bind(this));
-      }.bind(this));
+          .then(
+            function(validado) {
+              this.setState({
+                cargando: false,
+                validadoRenaper: validado,
+                mostrandoPanelRenaper: validado == false
+              });
+            }.bind(this)
+          )
+          .catch(
+            function(error) {
+              this.setState({
+                cargando: false,
+                validadoRenaper: false,
+                mostrandoPanelRenaper: true,
+                error: error
+              });
+            }.bind(this)
+          );
+      }.bind(this)
+    );
   }
 
   @autobind
   onBtnValidarClick() {
-    App.navegar('UsuarioValidarDatosRenaper', {
-      callback: function () {
+    App.navegar("UsuarioValidarDatosRenaper", {
+      callback: function() {
         this.consultarUsuarioValidadoRenaper();
       }.bind(this)
     });
@@ -164,51 +160,52 @@ export default class Inicio extends React.Component {
     if (this.state.cargando == true) return null;
 
     const initData = global.initData;
-    const colorToolbar = initData.toolbar_Dark ? 'white' : 'black';
+    const colorToolbar = initData.toolbar_Dark ? "white" : "black";
 
     //Mostrando panel validar renaper
     if (this.state.mostrandoPanelRenaper == true) {
-
       if (this.state.error != undefined) {
         //Error consultando usuario
         const textoError = undefined;
         const textoDetalle = this.state.error;
 
-        return <View>
-          <MiPanelError
-            titulo={textoError}
-            detalle={textoDetalle}
-            mostrarBoton={true}
-            icono="alert-circle-outline"
-            onBotonPress={this.onBtnRecargarClick}
-            textoBoton={texto_Boton_VolverConsultarUsuarioValidado} />
+        return (
+          <View>
+            <MiPanelError
+              titulo={textoError}
+              detalle={textoDetalle}
+              mostrarBoton={true}
+              icono="alert-circle-outline"
+              onBotonPress={this.onBtnRecargarClick}
+              textoBoton={texto_Boton_VolverConsultarUsuarioValidado}
+            />
 
-          {this.renderDialogoConfirmarSalida()}
-        </View>
+            {this.renderDialogoConfirmarSalida()}
+          </View>
+        );
       } else {
         //Usuario no validado
         const textoError = texto_UsuarioNoValidado;
         const textoDetalle = texto_UsuarioNoValidadoDetalle;
-        return <View>
-          <MiPanelError
-            titulo={textoError}
-            detalle={textoDetalle}
-            mostrarBoton={true}
-            onBotonPress={this.onBtnValidarClick}
-            textoBoton={texto_Boton_ValidarUsuario}
-          />
+        return (
+          <View>
+            <MiPanelError
+              titulo={textoError}
+              detalle={textoDetalle}
+              mostrarBoton={true}
+              onBotonPress={this.onBtnValidarClick}
+              textoBoton={texto_Boton_ValidarUsuario}
+            />
 
-          {this.renderDialogoConfirmarSalida()}
-        </View>;
+            {this.renderDialogoConfirmarSalida()}
+          </View>
+        );
       }
     }
 
     return (
-      <View
-        style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
-
+      <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]}>
         <MiStatusBar />
-
 
         <MiToolbarMenu
           toolbarHeight={initData.toolbar_Height}
@@ -217,11 +214,11 @@ export default class Inicio extends React.Component {
           opciones={this.state.opciones}
           expandirAlHacerClick={false}
           mostrarBotonCerrar={true}
-          iconoCerrar='close'
-          iconoCerrarColor='white'
+          iconoCerrar="close"
+          iconoCerrarColor="white"
           mostrarBotonIzquierda={true}
           iconoIzquierdaColor={colorToolbar}
-          iconoIzquierda='menu'
+          iconoIzquierda="menu"
           onExpandido={this.onToolbarMenuOpen}
           onSeleccionChange={this.onToolbarMenuClose}
         />
@@ -233,55 +230,60 @@ export default class Inicio extends React.Component {
 
   @autobind
   ocultarDialogoConfirmarSalida() {
-    this.setState({ dialogoConfirmarSalidaVisible: false })
+    this.setState({ dialogoConfirmarSalidaVisible: false });
   }
 
   @autobind
   onConfirmarSalida() {
-    this.setState({
-      dialogoConfirmarSalidaVisible: false
-    }, function () {
-      BackHandler.exitApp();
-    }.bind(this))
+    this.setState(
+      {
+        dialogoConfirmarSalidaVisible: false
+      },
+      function() {
+        BackHandler.exitApp();
+      }.bind(this)
+    );
   }
 
   renderDialogoConfirmarSalida() {
-    return <Dialog
-      style={{ borderRadius: 16 }}
-      visible={this.state.dialogoConfirmarSalidaVisible}
-      onDismiss={this.ocultarDialogoConfirmarSalida}
-    >
-      <DialogContent>
-        <ScrollView style={{ maxHeight: 300, maxWidth: 400 }}>
-          <Paragraph>{texto_DialogoConfirmarSalir}</Paragraph>
-        </ScrollView>
-      </DialogContent>
-      <DialogActions>
-        <ButtonPeper onPress={this.ocultarDialogoConfirmarSalida}>No</ButtonPeper>
-        <ButtonPeper onPress={this.onConfirmarSalida}>Si</ButtonPeper>
-      </DialogActions>
-    </Dialog>
+    return (
+      <Dialog
+        style={{ borderRadius: 16 }}
+        visible={this.state.dialogoConfirmarSalidaVisible}
+        onDismiss={this.ocultarDialogoConfirmarSalida}
+      >
+        <DialogContent>
+          <ScrollView style={{ maxHeight: 300, maxWidth: 400 }}>
+            <Paragraph>{texto_DialogoConfirmarSalir}</Paragraph>
+          </ScrollView>
+        </DialogContent>
+        <DialogActions>
+          <ButtonPeper onPress={this.ocultarDialogoConfirmarSalida}>No</ButtonPeper>
+          <ButtonPeper onPress={this.onConfirmarSalida}>Si</ButtonPeper>
+        </DialogActions>
+      </Dialog>
+    );
   }
 }
 
-const texto_DialogoConfirmarSalir = '¿Esta seguro que desea salir de la aplicación #CBA147?';
+const texto_DialogoConfirmarSalir = "¿Esta seguro que desea salir de la aplicación #CBA147?";
 
 const styles = StyleSheet.create({
   contenedor: {
-    width: '100%',
-    height: '100%'
+    width: "100%",
+    height: "100%"
   }
-})
-
+});
 
 //Textos
-const texto_Titulo = 'Inicio';
-const texto_Menu_MisRequerimientos = 'Mis requerimientos';
-const texto_Menu_MiPerfil = 'Mi perfil';
-const texto_Menu_Ajustes = 'Ajustes';
+const texto_Titulo = "Inicio";
+const texto_Menu_MisRequerimientos = "Mis requerimientos";
+const texto_Menu_MiPerfil = "Mi perfil";
+const texto_Menu_Ajustes = "Ajustes";
 
 //Sin validar
 const texto_UsuarioNoValidado = "Usuario no validado";
-const texto_UsuarioNoValidadoDetalle = "Para utilizar la aplicación debes validar tus datos contra el registro nacional de personas.";
-const texto_Boton_ValidarUsuario = "Validar su usuario";
+const texto_UsuarioNoValidadoDetalle =
+  "A partir de ahora para utilizar #CBA147 su información debe estar validada formalmente a traves del Registro Nacional de las Personas.";
+const texto_Boton_ValidarUsuario = "Validar usuario";
 const texto_Boton_VolverConsultarUsuarioValidado = "Actualizar";

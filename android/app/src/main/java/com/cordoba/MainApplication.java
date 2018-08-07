@@ -2,36 +2,36 @@ package com.cordoba;
 
 import android.app.Application;
 
-import io.invertase.firebase.RNFirebasePackage;
-import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; 
-import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage; // <-- Add this line
-
-import com.facebook.react.ReactApplication;
-import com.airbnb.android.react.maps.MapsPackage;
-import org.vovkasm.WebImage.WebImagePackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import com.azendoo.reactnativesnackbar.SnackbarPackage;
-import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
-import com.wix.interactable.Interactable;
-import fr.bamlab.rnimageresizer.ImageResizerPackage;
-import com.imagepicker.ImagePickerPackage;
-import com.rnfs.RNFSPackage;
-import ca.jaysoo.extradimensions.ExtraDimensionsPackage;
-import com.microsoft.codepush.react.CodePush;
 import com.airbnb.android.react.lottie.LottiePackage;
-
+import com.airbnb.android.react.maps.MapsPackage;
+import com.azendoo.reactnativesnackbar.SnackbarPackage;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
+import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.imagepicker.ImagePickerPackage;
+import com.microsoft.codepush.react.CodePush;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.rnfs.RNFSPackage;
+import com.syarul.rnlocation.RNLocation;
+import com.wix.interactable.Interactable;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.core.ImagePipelineConfig;
-import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
+import org.vovkasm.WebImage.WebImagePackage;
 
 import java.util.Arrays;
 import java.util.List;
+
+import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage;
+import ca.jaysoo.extradimensions.ExtraDimensionsPackage;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
+import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -62,6 +62,7 @@ public class MainApplication extends Application implements ReactApplication {
             new VectorIconsPackage(),
             new SnackbarPackage(),
             new RNSensitiveInfoPackage(),
+              new RNLocation(),
 //            new ReactNativePushNotificationPackage(),
             new MapsPackage(),
               new RNFirebasePackage(),
@@ -92,6 +93,7 @@ public class MainApplication extends Application implements ReactApplication {
                 .setDownsampleEnabled(true)
                 .build();
     Fresco.initialize(this, config);
+
   }
 
 

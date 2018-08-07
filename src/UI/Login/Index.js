@@ -1,22 +1,12 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  Alert,
-  Animated,
-  ScrollView,
-  Keyboard,
-  Dimensions
-} from "react-native";
-import {
-  Button,
-  Text
-} from "native-base";
-import ExtraDimensions from 'react-native-extra-dimensions-android';
-import WebImage from 'react-native-web-image'
-import MaterialsIcon from "react-native-vector-icons/MaterialIcons";
+import { StyleSheet, View, Alert, Animated, ScrollView, Keyboard, Dimensions } from "react-native";
+import { Button, Text } from "native-base";
+import ExtraDimensions from "react-native-extra-dimensions-android";
+import WebImage from "react-native-web-image";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Kohana } from "react-native-textinput-effects";
-import autobind from 'autobind-decorator'
+import autobind from "autobind-decorator";
+import LinearGradient from "react-native-linear-gradient";
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
@@ -37,9 +27,9 @@ export default class Login extends React.Component {
 
     this.state = {
       username: undefined,
-      usernameError: 'Dato requerido',
+      usernameError: "Dato requerido",
       password: undefined,
-      passwordError: 'Dato requerido',
+      passwordError: "Dato requerido",
       cargando: false
     };
 
@@ -51,8 +41,8 @@ export default class Login extends React.Component {
   }
 
   componentWillMount() {
-    this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
-    this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
+    this.keyboardWillShowSub = Keyboard.addListener("keyboardWillShow", this.keyboardWillShow);
+    this.keyboardWillHideSub = Keyboard.addListener("keyboardWillHide", this.keyboardWillHide);
   }
 
   componentWillUnmount() {
@@ -66,7 +56,7 @@ export default class Login extends React.Component {
 
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
-      toValue: event.endCoordinates.height,
+      toValue: event.endCoordinates.height
     }).start();
   }
 
@@ -76,7 +66,7 @@ export default class Login extends React.Component {
 
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
-      toValue: 0,
+      toValue: 0
     }).start();
   }
 
@@ -90,34 +80,41 @@ export default class Login extends React.Component {
   @autobind
   consultarLogin() {
     Rules_Ajustes.esIntroVista()
-      .then(function (vista) {
-        if (vista == false) {
-          App.navegar('Introduccion', {
-            callback: function () {
-              this.consultarLogin();
-            }.bind(this)
-          });
-        } else {
-          Rules_Usuario.isLogin()
-            .then(function (login) {
-              if (login) {
-                Animated.spring(this.anim_Logo, { toValue: 0 }).start(function () { App.replace('Inicio') }.bind(this));
-                return;
-              }
+      .then(
+        function(vista) {
+          if (vista == false) {
+            App.navegar("Introduccion", {
+              callback: function() {
+                this.consultarLogin();
+              }.bind(this)
+            });
+          } else {
+            Rules_Usuario.isLogin()
+              .then(
+                function(login) {
+                  if (login) {
+                    Animated.spring(this.anim_Logo, { toValue: 0 }).start(
+                      function() {
+                        App.replace("Inicio");
+                      }.bind(this)
+                    );
+                    return;
+                  }
 
-              Animated.spring(this.anim_Form, {
-                toValue: 1
-              }).start();
-
-            }.bind(this))
-            .catch(function (error) {
-              Alert.alert('', error, [{ text: 'Reintentar', onPress: this.consultarLogin }]);
-            }.bind(this));
-        }
-      }.bind(this))
-      .catch(function () {
-
-      }.bind(this));
+                  Animated.spring(this.anim_Form, {
+                    toValue: 1
+                  }).start();
+                }.bind(this)
+              )
+              .catch(
+                function(error) {
+                  Alert.alert("", error, [{ text: "Reintentar", onPress: this.consultarLogin }]);
+                }.bind(this)
+              );
+          }
+        }.bind(this)
+      )
+      .catch(function() {}.bind(this));
   }
 
   @autobind
@@ -142,6 +139,7 @@ export default class Login extends React.Component {
 
   @autobind
   login() {
+    Keyboard.dismiss();
 
     //Valido el form
     let tieneUsername = this.state.username != undefined && this.state.username != "";
@@ -153,36 +151,87 @@ export default class Login extends React.Component {
     if (tieneUsername == false || tienePassword == false) return;
 
     //Cierro keyboard y empiezo a animar
-    Keyboard.dismiss();
-    setTimeout(function () {
-      //Achico el formulario
-      Animated.spring(this.anim_Form, { toValue: 0 }).start(function () {
-        this.setState({
-          cargando: true
-        }, function () {
+    setTimeout(
+      function() {
+        //Achico el formulario
+        Animated.spring(this.anim_Form, { toValue: 0 }).start(
+          function() {
+            this.setState(
+              {
+                cargando: true
+              },
+              function() {
+                Rules_Usuario.validarUsuarioActivado(this.state.username, this.state.password)
+                  .then(
+                    function(validado) {
+                      if (validado == false) {
+                        //Muestro el error
+                        Alert.alert(
+                          "",
+                          texto_UsuarioNoActivado,
+                          [
+                            {
+                              text: "Aceptar",
+                              onPress: () => {
+                                this.setState({
+                                  cargando: false
+                                });
 
-          Rules_Usuario.validarUsuarioActivado(this.state.username, this.state.password)
-            .then(function (validado) {
-              if (validado == false) {
+                                Animated.spring(this.anim_Form, { toValue: 1 }).start();
+                              }
+                            },
+                            {
+                              text: "Volver a enviar e-mail",
+                              onPress: () => {
+                                Rules_Usuario.solicitarEmailActivacion(this.state.username, this.state.password)
+                                  .then(
+                                    function(email) {
+                                      this.setState({
+                                        cargando: false
+                                      });
 
-                //Muestro el error
-                Alert.alert('', 'Tu usuario no se encuentra activado. Para hacerlo debes ir a tu casilla de e-mail y seguir las instrucciones que te enviamos al momento de crear tu usuario. Si lo deseás podes solicitar el e-mail de nuevo.',
-                  [
-                    {
-                      text: "Aceptar",
-                      onPress: () => {
-                        this.setState({
-                          cargando: false
-                        });
+                                      Animated.spring(this.anim_Form, { toValue: 1 }).start();
 
-                        Animated.spring(this.anim_Form, { toValue: 1 }).start();
+                                      let mensaje = texto_EmailActivacionEnviado;
+                                      mensaje = mensaje.replace("{email}", email);
+
+                                      //Muestro el error
+                                      Alert.alert("", mensaje);
+                                    }.bind(this)
+                                  )
+                                  .catch(
+                                    function(error) {
+                                      this.setState({
+                                        cargando: false
+                                      });
+
+                                      Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+                                      //Muestro el error
+                                      Alert.alert("", error || texto_ErrorGenerico);
+                                    }.bind(this)
+                                  );
+                              }
+                            }
+                          ],
+                          { cancelable: false }
+                        );
+
+                        return;
                       }
-                    },
-                    {
-                      text: "Volver a enviar e-mail",
-                      onPress: () => {
-                        Rules_Usuario.solicitarEmailActivacion(this.state.username, this.state.password)
-                          .then(function (email) {
+
+                      Rules_Usuario.login(this.state.username, this.state.password)
+                        .then(
+                          function() {
+                            Animated.spring(this.anim_Logo, { toValue: 0 }).start(
+                              function() {
+                                App.replace("Inicio");
+                              }.bind(this)
+                            );
+                          }.bind(this)
+                        )
+                        .catch(
+                          function(error) {
                             this.setState({
                               cargando: false
                             });
@@ -190,157 +239,153 @@ export default class Login extends React.Component {
                             Animated.spring(this.anim_Form, { toValue: 1 }).start();
 
                             //Muestro el error
-                            Alert.alert('', 'Se te envio un e-mail a ' + email + ' con las instrucciones para activar tu usuario');
-                          }.bind(this))
-                          .catch(function (error) {
-                            this.setState({
-                              cargando: false
-                            });
+                            Alert.alert(
+                              "",
+                              error || texto_ErrorGenerico,
+                              [
+                                {
+                                  text: "Aceptar",
+                                  onPress: function() {}
+                                }
+                              ],
+                              { cancelable: true }
+                            );
+                          }.bind(this)
+                        );
+                    }.bind(this)
+                  )
+                  .catch(
+                    function(error) {
+                      this.setState({
+                        cargando: false
+                      });
 
-                            Animated.spring(this.anim_Form, { toValue: 1 }).start();
+                      Animated.spring(this.anim_Form, { toValue: 1 }).start();
 
-                            //Muestro el error
-                            Alert.alert('', error || texto_ErrorGenerico);
-                          }.bind(this))
-                      }
-                    }
-                  ],
-                  { cancelable: false }
-                );
-
-                return;
-              }
-
-              Rules_Usuario.login(this.state.username, this.state.password)
-                .then(function () {
-                  Animated.spring(this.anim_Logo, { toValue: 0 })
-                    .start(function () {
-                      App.replace('Inicio');
-                    }.bind(this));
-                }.bind(this))
-                .catch(function (error) {
-                  this.setState({
-                    cargando: false
-                  });
-
-                  Animated.spring(this.anim_Form, { toValue: 1 }).start();
-
-                  //Muestro el error
-                  Alert.alert('', error || texto_ErrorGenerico,
-                    [
-                      {
-                        text: "Aceptar",
-                        onPress: function () { }
-                      }
-                    ],
-                    { cancelable: true }
+                      //Muestro el error
+                      Alert.alert(
+                        "",
+                        error || texto_ErrorGenerico,
+                        [
+                          {
+                            text: "Aceptar",
+                            onPress: function() {}
+                          }
+                        ],
+                        { cancelable: true }
+                      );
+                    }.bind(this)
                   );
-                }.bind(this));
-            }.bind(this))
-            .catch(function (error) {
-              this.setState({
-                cargando: false
-              });
-
-              Animated.spring(this.anim_Form, { toValue: 1 }).start();
-
-              //Muestro el error
-              Alert.alert('', error || texto_ErrorGenerico,
-                [
-                  {
-                    text: "Aceptar",
-                    onPress: function () { }
-                  }
-                ],
-                { cancelable: true }
-              );
-            }.bind(this));
-
-        }.bind(this))
-      }.bind(this));
-    }.bind(this), 300);
+              }.bind(this)
+            );
+          }.bind(this)
+        );
+      }.bind(this),
+      300
+    );
   }
 
   nuevoUsuario() {
-    App.navegar('UsuarioNuevo');
+    App.navegar("UsuarioNuevo");
   }
 
   recuperarCuenta() {
-    App.navegar('RecuperarCuenta');
+    App.navegar("RecuperarCuenta");
   }
 
   render() {
+    let initData = global.initData;
 
     return (
-      <View
-        style={styles.contenedor}
-        onLayout={this.animarInicio}>
-
+      <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]} onLayout={this.animarInicio}>
         <MiStatusBar />
 
-        <WebImage
-          resizeMode="cover"
-          style={styles.imagenFondo}
-          source={{ uri: url_ImagenFondo }}
-        />
+        <WebImage resizeMode="cover" style={styles.imagenFondo} source={{ uri: url_ImagenFondo }} />
 
-        <View style={styles.imagenFondo_Dim}></View>
+        {/* <LinearGradient
+        start={{x: 0, y: 0}}
+          colors={['white', 'white']}
+          style={{
+            opacity: 1,
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            left: 0
+          }}
+        /> */}
+
+        {/* <View style={styles.imagenFondo_Dim} /> */}
+
+        {/* <WebImage
+          resizeMode="contain"
+          style={{
+            position: "absolute",
+            left: 16,
+            right: 16,
+            bottom: 16,
+            height: 48
+          }}
+          source={{ uri: url_ImagenMuni }}
+        /> */}
 
         <ScrollView
           style={styles.contenedor_ScrollView}
           keyboardShouldPersistTaps="always"
-          contentContainerStyle={[styles.contenedor_ScrollViewContent, {
-            minHeight: Dimensions.get('window').height - ExtraDimensions.get('STATUS_BAR_HEIGHT') - ExtraDimensions.get('SOFT_MENU_BAR_HEIGHT')
-          }]}
+          contentContainerStyle={[
+            styles.contenedor_ScrollViewContent,
+            {
+              minHeight:
+                Dimensions.get("window").height -
+                ExtraDimensions.get("STATUS_BAR_HEIGHT") -
+                ExtraDimensions.get("SOFT_MENU_BAR_HEIGHT")
+            }
+          ]}
         >
           <View style={styles.contenedor_ScrollViewContenido}>
             <Animated.View
               style={{
-                transform: [{
-                  scale:
-                    this.anim_Logo.interpolate({
+                transform: [
+                  {
+                    scale: this.anim_Logo.interpolate({
                       inputRange: [0, 1],
                       outputRange: [0, 1]
                     })
-                }],
-                opacity:
-                  this.anim_Logo.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, 1],
-                    extrapolateRight: 'clamp'
-                  })
-              }}>
-              <WebImage
-                resizeMode="cover"
-                style={styles.imagenLogo}
-                source={{ uri: url_ImagenLogo }}
-              />
-
+                  }
+                ],
+                opacity: this.anim_Logo.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 1],
+                  extrapolateRight: "clamp"
+                })
+              }}
+            >
+              <WebImage resizeMode="cover" style={styles.imagenLogo} source={{ uri: url_ImagenLogo }} />
             </Animated.View>
 
-            <Animated.View style={
-              [
+            <Animated.View
+              style={[
                 styles.contenedorFormulario,
                 {
                   maxHeight: this.anim_Form.interpolate({
                     inputRange: [0, 1],
                     outputRange: [0, 400]
                   }),
-                  transform: [{
-                    translateY:
-                      this.anim_Form.interpolate({
+                  transform: [
+                    {
+                      translateY: this.anim_Form.interpolate({
                         inputRange: [0, 1],
                         outputRange: [200, 0]
                       })
-                  }],
-                  opacity:
-                    this.anim_Form.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0, 1],
-                      extrapolateRight: 'clamp'
-                    })
+                    }
+                  ],
+                  opacity: this.anim_Form.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1],
+                    extrapolateRight: "clamp"
+                  })
                 }
-              ]}>
+              ]}
+            >
               <View style={styles.contenedorInput}>
                 <Kohana
                   ref="inputUsuario"
@@ -349,8 +394,8 @@ export default class Login extends React.Component {
                   value={this.state.username}
                   style={styles.input}
                   label={texto_Usuario}
-                  iconClass={MaterialsIcon}
-                  iconName="person"
+                  iconClass={Icon}
+                  iconName="account"
                   iconColor="black"
                   labelStyle={styles.inputLabelStyle}
                   inputStyle={styles.inputStyle}
@@ -359,19 +404,16 @@ export default class Login extends React.Component {
 
                 <Animated.View
                   style={{
-                    overflow: 'hidden',
+                    overflow: "hidden",
                     opacity: this.anim_ErrorUsername,
                     maxHeight: this.anim_ErrorUsername.interpolate({
                       inputRange: [0, 1],
                       outputRange: [0, 50]
                     })
-                  }}>
-                  <Text
-                    style={styles.inputTextoError}>
-                    {this.state.usernameError}
-                  </Text>
+                  }}
+                >
+                  <Text style={styles.inputTextoError}>{this.state.usernameError}</Text>
                 </Animated.View>
-
               </View>
 
               <View style={styles.contenedorInput}>
@@ -383,8 +425,8 @@ export default class Login extends React.Component {
                   onChangeText={this.onPasswordChange}
                   style={styles.input}
                   label={texto_Password}
-                  iconClass={MaterialsIcon}
-                  iconName="vpn-key"
+                  iconClass={Icon}
+                  iconName="key"
                   iconColor="black"
                   labelStyle={styles.inputLabelStyle}
                   inputStyle={styles.inputStyle}
@@ -393,30 +435,26 @@ export default class Login extends React.Component {
 
                 <Animated.View
                   style={{
-                    overflow: 'hidden',
+                    overflow: "hidden",
                     opacity: this.anim_ErrorPassword,
                     maxHeight: this.anim_ErrorPassword.interpolate({
                       inputRange: [0, 1],
                       outputRange: [0, 50]
                     })
-                  }}>
-                  <Text
-                    style={styles.inputTextoError}>
-                    {this.state.passwordError}
-                  </Text>
+                  }}
+                >
+                  <Text style={styles.inputTextoError}>{this.state.passwordError}</Text>
                 </Animated.View>
-
               </View>
 
               <View style={styles.contenedorBotones}>
-
                 <View style={{ height: 16 }} />
 
                 <Button
                   full={true}
                   rounded={true}
                   disabled={this.state.cargandoLogin}
-                  style={styles.botonAcceder}
+                  style={[styles.botonAcceder, { backgroundColor: initData.colorExito }]}
                   onPress={this.login}
                 >
                   <Text style={styles.botonAccederTexto}>{texto_BotonAcceder}</Text>
@@ -429,14 +467,15 @@ export default class Login extends React.Component {
                   onPress={this.recuperarCuenta}
                   style={styles.botonRecuperarCuenta}
                 >
-                  <Text style={styles.botonAccederTexto}>{texto_BotonOlvidoContraseña}</Text>
+                  <Text style={styles.botonRecuperarCuentaTexto}>{texto_BotonOlvidoContraseña}</Text>
                 </Button>
 
                 <View style={{ height: 32 }} />
 
                 <Button
                   full={false}
-                  rounded={true}
+                  rounded={false}
+                  transparent={true}
                   disabled={this.state.cargandoLogin}
                   style={styles.botonNuevoUsuario}
                   onPress={this.nuevoUsuario}
@@ -445,17 +484,13 @@ export default class Login extends React.Component {
                 </Button>
 
                 <View style={{ height: 16 }} />
-
               </View>
-
             </Animated.View>
           </View>
         </ScrollView>
 
-        <Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]}></Animated.View>
-
-      </View >
-
+        <Animated.View style={[{ height: "100%" }, { maxHeight: this.keyboardHeight }]} />
+      </View>
     );
   }
 }
@@ -477,18 +512,17 @@ const styles = StyleSheet.create({
   imagenFondo_Dim: {
     backgroundColor: "#000000",
     height: "100%",
-    opacity: 0.5,
+    opacity: 0.1,
     position: "absolute",
     width: "100%"
   },
   imagenLogo: {
     height: 104,
-    marginBottom: 64,
+    marginBottom: 32,
     width: 104
   },
   botonAcceder: {
     alignSelf: "center",
-    backgroundColor: "green",
     minHeight: 48,
     width: "100%"
   },
@@ -497,11 +531,12 @@ const styles = StyleSheet.create({
   },
   botonNuevoUsuario: {
     alignSelf: "center",
-    backgroundColor: "rgba(100,100,100,1)",
+    backgroundColor: "transparent",
     minHeight: 48
   },
   botonNuevoUsuarioTexto: {
-    color: "white"
+    color: "black",
+    textDecorationLine: "underline"
   },
   botonRecuperarCuenta: {
     alignSelf: "center",
@@ -509,7 +544,7 @@ const styles = StyleSheet.create({
     width: "auto"
   },
   botonRecuperarCuentaTexto: {
-    color: "white"
+    color: "black"
   },
 
   contenedorBotones: {
@@ -545,6 +580,8 @@ const styles = StyleSheet.create({
   input: {
     borderRadius: 50,
     height: 50,
+    borderColor: "rgba(190,190,190,1)",
+    borderWidth: 2,
     maxHeight: 50,
     width: "100%"
   },
@@ -564,8 +601,10 @@ const styles = StyleSheet.create({
 });
 
 const texto_Titulo = "Iniciar sesión";
-const url_ImagenFondo = "https://i.imgur.com/ggQxfwB.jpg";
+const url_ImagenFondo = "https://i.imgur.com/pXKii5l.jpg";
 const url_ImagenLogo = "https://i.imgur.com/GAMvKv8.png";
+const url_ImagenMuni = "https://i.imgur.com/mq5sJo9.png";
+
 const texto_Usuario = "Usuario";
 const texto_UsuarioRequerido = "DatoRequerido";
 const texto_Password = "Contraseña";
@@ -575,3 +614,6 @@ const texto_BotonAcceder = "Acceder";
 const texto_BotonOlvidoContraseña = "¿Olvidaste tu contraseña?";
 const texto_BotonCrearUsuario = "Crear usuario";
 const texto_ErrorGenerico = "Error procesando la solicitud";
+const texto_UsuarioNoActivado =
+  "Su usuario necesita ser activado. Por favor, revise el mensaje que le enviamos a su direccion de correo al momento de registrarse.";
+const texto_EmailActivacionEnviado = "Se le ha enviando un mensaje a {email}. Si no lo encuentra revise la bandeja de SPAM.";
