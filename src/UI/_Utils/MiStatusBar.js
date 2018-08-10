@@ -3,7 +3,7 @@ import {
     StatusBar
 } from "react-native";
 
-export default class MiStatusBar extends React.Component {
+export default class MiStatusBar extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -12,10 +12,10 @@ export default class MiStatusBar extends React.Component {
     render() {
 
         const initData = global.initData;
-        const barStyle = initData.statusBar_Dark ? "light-content" : "dark-content";
+        const barStyle = initData.statusBarDark ? "light-content" : "dark-content";
 
         return (
-            <StatusBar backgroundColor={initData.statusBar_BackgroundColor} barStyle={barStyle} />
+            <StatusBar backgroundColor={initData.statusBarBackgroundColor} barStyle={barStyle} />
         );
     }
 }

@@ -7,8 +7,7 @@ import {
   StyleSheet,
   Animated,
   Keyboard,
-  TouchableWithoutFeedback,
-  PermissionsAndroid
+  TouchableWithoutFeedback
 } from "react-native";
 import { Card, FAB } from "react-native-paper";
 import { Button, Text, Input, Spinner, ListItem, Textarea } from "native-base";
@@ -16,7 +15,6 @@ import { Button, Text, Input, Spinner, ListItem, Textarea } from "native-base";
 import MapView from "react-native-maps";
 import { Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import autobind from "autobind-decorator";
 
 //Mis compontenes
 import App from "@UI/App";
@@ -61,12 +59,11 @@ export default class MiPickerUbicacion extends React.Component {
 
   componentDidMount() {
     Animated.spring(this.animInicio, { toValue: 1, delay: 300, duration: 300, useNativeDriver: true }).start(() => {
-      this.setState({ cargarMapa: true }, () => {});
+      this.setState({ cargarMapa: true }, () => { });
     });
   }
 
-  @autobind
-  getCurrentPosition() {
+  getCurrentPosition = () => {
     try {
       if (Platform.OS == "ios") {
         Location.startUpdatingLocation();
@@ -92,13 +89,11 @@ export default class MiPickerUbicacion extends React.Component {
     }
   }
 
-  @autobind
-  onMapReady() {
+  onMapReady = () => {
     this.getCurrentPosition();
   }
 
-  @autobind
-  onContenedorBusquedaPress() {
+  onContenedorBusquedaPress = () => {
     if (this.state.cargando == true) {
       this.input._root.blur();
       Keyboard.dismiss();
@@ -109,8 +104,7 @@ export default class MiPickerUbicacion extends React.Component {
     Animated.timing(this.animSugerencias, { toValue: 1, duration: 300 }).start();
   }
 
-  @autobind
-  onBtnCancelarBusquedaPress() {
+  onBtnCancelarBusquedaPress = () => {
     Keyboard.dismiss();
 
     if (this.state.cargando == true) {
@@ -124,49 +118,38 @@ export default class MiPickerUbicacion extends React.Component {
     this.setState({ mostrarPanelBusqueda: false, busqueda: undefined, sugerencias: undefined });
   }
 
-  @autobind
-  onInputBusquedaChangeText(text) {
+  onInputBusquedaChangeText = (text) => {
     this.setState({ busqueda: text });
   }
 
-  @autobind
-  buscar() {
+  buscar = () => {
     Animated.spring(this.animCard, { toValue: 0 }).start();
 
-    this.setState(
-      {
-        cargando: true,
-        data: undefined,
-        sugerencias: undefined
-      },
-      function() {
-        Rules_Domicilio.buscarSugerencias(this.state.busqueda)
-          .then(
-            function(data) {
-              if (data.length == 1) {
-                this.setState(
-                  { cargando: false },
-                  function() {
-                    this.onSugerenciaClick(data[0]);
-                  }.bind(this)
-                );
-              } else {
-                this.setState({ cargando: false, sugerencias: data });
-              }
-            }.bind(this)
-          )
-          .catch(
-            function(error) {
-              this.setState({ cargando: false });
-              Alert.alert("", error);
-            }.bind(this)
-          );
-      }.bind(this)
+    this.setState({
+      cargando: true,
+      data: undefined,
+      sugerencias: undefined
+    }, () => {
+      Rules_Domicilio.buscarSugerencias(this.state.busqueda)
+        .then((data) => {
+          if (data.length == 1) {
+            this.setState({ cargando: false }, () => {
+              this.onSugerenciaClick(data[0]);
+            });
+          } else {
+            this.setState({ cargando: false, sugerencias: data });
+          }
+        }
+        )
+        .catch((error) => {
+          this.setState({ cargando: false });
+          Alert.alert("", error);
+        });
+    }
     );
   }
 
-  @autobind
-  onMapaClick(e) {
+  onMapaClick = (e) => {
     this.input._root.blur();
     let coordenadas = e.nativeEvent.coordinate;
 
@@ -174,54 +157,41 @@ export default class MiPickerUbicacion extends React.Component {
     Animated.spring(this.animCard, { toValue: 0 }).start();
 
     //Pongo cargando
-    this.setState(
-      {
-        cargando: true,
-        data: undefined
-      },
-      function() {
-        //BUsco en mi API
-        Rules_Domicilio.validar(coordenadas.latitude, coordenadas.longitude)
-          .then(data => {
-            this.setState(
-              {
-                cargando: false,
-                data: data
-              },
-              function() {
-                //Mando a ver el detalle
-                this.verDetalleMarcador();
-              }.bind(this)
-            );
-          })
-          .catch(
-            function(error) {
-              Alert.alert("", error);
-              this.setState({ cargando: false });
-            }.bind(this)
-          );
-      }.bind(this)
-    );
+    this.setState({
+      cargando: true,
+      data: undefined
+    }, () => {
+      //BUsco en mi API
+      Rules_Domicilio.validar(coordenadas.latitude, coordenadas.longitude)
+        .then(data => {
+          this.setState({
+            cargando: false,
+            data: data
+          }, () => {
+            //Mando a ver el detalle
+            this.verDetalleMarcador();
+          });
+        })
+        .catch((error) => {
+          Alert.alert("", error);
+          this.setState({ cargando: false });
+        });
+    });
   }
 
-  @autobind
-  onSugerenciaClick(sugerencia) {
+  onSugerenciaClick = (sugerencia) => {
     if (sugerencia == undefined) return;
     this.onBtnCancelarBusquedaPress();
 
     //Pongo cargando
-    this.setState(
-      {
-        data: sugerencia
-      },
-      function() {
-        this.verDetalleMarcador();
-      }.bind(this)
-    );
+    this.setState({
+      data: sugerencia
+    }, () => {
+      this.verDetalleMarcador();
+    });
   }
 
-  @autobind
-  verDetalleMarcador() {
+  verDetalleMarcador = () => {
     try {
       //Muevo el mapa
       this.map.animateToRegion({
@@ -237,21 +207,18 @@ export default class MiPickerUbicacion extends React.Component {
     }
   }
 
-  @autobind
-  onBtnCancelarUbicacionClick() {
+  onBtnCancelarUbicacionClick = () => {
     Animated.spring(this.animCard, { toValue: 0 }).start();
     this.setState({
       data: undefined
     });
   }
 
-  @autobind
-  onBtnCancelarClick() {
+  onBtnCancelarClick = () => {
     App.goBack();
   }
 
-  @autobind
-  onBtnSeleccionarClick() {
+  onBtnSeleccionarClick = () => {
     if (this.state.data.observaciones == undefined || this.state.data.observaciones == "") {
       this.mostrarDialogoObservaciones();
       return;
@@ -260,8 +227,7 @@ export default class MiPickerUbicacion extends React.Component {
     this.onUbicacionReady();
   }
 
-  @autobind
-  onUbicacionReady() {
+  onUbicacionReady = () => {
     const { params } = this.props.navigation.state;
 
     if (params != undefined && params.onUbicacionSeleccionada != undefined) {
@@ -271,48 +237,55 @@ export default class MiPickerUbicacion extends React.Component {
     App.goBack();
   }
 
-  @autobind
-  onMapaRef(ref) {
+  onMapaRef = (ref) => {
     this.map = ref;
   }
 
-  @autobind
-  onMapaRegionChange(region) {
+  onMapaRegionChange = (region) => {
     this.setState({ region: region });
   }
 
-  @autobind
-  mostrarDialogoObservaciones() {
+  mostrarDialogoObservaciones = () => {
     if (this.state.data == undefined) return;
     this.setState({ dialogoObservacionesVisible: true });
   }
 
-  @autobind
-  ocultarDialogoObservaciones() {
+  ocultarDialogoObservaciones = () => {
     this.setState({ dialogoObservacionesVisible: false });
   }
 
-  @autobind
-  onDialogoObservacionesBotonAceptarPress() {
+  onDialogoObservacionesBotonAceptarPress = () => {
     if (this.state.data == undefined) return;
     if (this.state.data.observaciones == undefined || this.state.data.observaciones == "") return;
     this.ocultarDialogoObservaciones();
     this.onUbicacionReady();
   }
 
-  @autobind
-  onObservacionesChange(val) {
+  onDialogoObservacionesBotonCancelarPress = () => {
+    let data = this.state.data;
+    if (data != undefined) {
+      data.observaciones = undefined;
+    }
+    this.setState({ data: data });
+    this.ocultarDialogoObservaciones();
+  }
+
+  onObservacionesChange = (val) => {
     let data = this.state.data;
     if (data == undefined) return;
     data.observaciones = val;
     this.setState({ data: data });
   }
 
-  @autobind
-  centrar() {
+  centrar = () => {
     if (this.state.posicionGPS == undefined) return;
     this.map.animateToRegion(this.state.posicionGPS);
   }
+
+  onInputRef = (ref) => {
+    this.input = ref;
+  }
+
 
   render() {
     const initData = global.initData;
@@ -369,9 +342,7 @@ export default class MiPickerUbicacion extends React.Component {
             <Icon name="arrow-left" style={{ fontSize: 24 }} />
           </Button>
           <Input
-            ref={ref => {
-              this.input = ref;
-            }}
+            ref={this.onInputRef}
             placeholder="Buscar..."
             value={this.state.busqueda}
             returnKeyType="done"
@@ -406,8 +377,8 @@ export default class MiPickerUbicacion extends React.Component {
               <Spinner color="green" />
             </View>
           ) : (
-            <View />
-          )}
+              <View />
+            )}
         </Card>
       </Animated.View>
     );
@@ -583,20 +554,11 @@ export default class MiPickerUbicacion extends React.Component {
         botones={[
           {
             texto: "Cancelar",
-            onPress: () => {
-              let data = this.state.data;
-              if (data != undefined) {
-                data.observaciones = undefined;
-              }
-              this.setState((data: data));
-              this.ocultarDialogoObservaciones();
-            }
+            onPress: this.onDialogoObservacionesBotonCancelarPress
           },
           {
             texto: "Aceptar",
-            onPress: () => {
-              this.onDialogoObservacionesBotonAceptarPress();
-            }
+            onPress: this.onDialogoObservacionesBotonAceptarPress
           }
         ]}
         visible={this.state.dialogoObservacionesVisible}
@@ -631,6 +593,10 @@ export default class MiPickerUbicacion extends React.Component {
     );
   }
 
+  renderSugerenciaItem(item) {
+    return <MiPickerUbicacionItem onPress={this.onSugerenciaClick} data={item.item} />;
+  }
+
   renderSugerencias() {
     return (
       <TouchableWithoutFeedback onPress={this.onBtnCancelarBusquedaPress}>
@@ -654,31 +620,41 @@ export default class MiPickerUbicacion extends React.Component {
                 <MiListado
                   backgroundColor={initData.backgroundColor}
                   data={this.state.sugerencias}
-                  renderItem={item => {
-                    return (
-                      <ListItem
-                        style={{ paddingLeft: 8, paddingRight: 8 }}
-                        onPress={() => {
-                          this.onSugerenciaClick(item.item);
-                        }}
-                      >
-                        <View style={{ display: "flex", width: "100%" }}>
-                          {item.item.observaciones != undefined &&
-                            item.item.observaciones != "" && (
-                              <Text style={{ alignSelf: "flex-start", fontWeight: "bold" }}>
-                                {toTitleCase(item.item.observaciones).trim()}
-                              </Text>
-                            )}
-                          <Text style={{ alignSelf: "flex-start" }}>{toTitleCase(item.item.direccion).trim()}</Text>
-                        </View>
-                      </ListItem>
-                    );
-                  }}
+                  renderItem={this.renderSugerenciaItem}
                 />
               )}
           </View>
         </Animated.View>
       </TouchableWithoutFeedback>
+    );
+  }
+}
+
+class MiPickerUbicacionItem extends React.PureComponent {
+
+  constructor(props) {
+    super(props);
+  }
+
+  onPress = () => {
+    this.props.onPress(this.props.data);
+  }
+
+  render() {
+    let item = this.props.data;
+
+    return (
+      <ListItem style={{ paddingLeft: 8, paddingRight: 8 }} onPress={this.onPress}>
+        <View style={{ display: "flex", width: "100%" }}>
+          {item.observaciones != undefined &&
+            item.observaciones != "" && (
+              <Text style={{ alignSelf: "flex-start", fontWeight: "bold" }}>
+                {toTitleCase(item.observaciones).trim()}
+              </Text>
+            )}
+          <Text style={{ alignSelf: "flex-start" }}>{toTitleCase(item.direccion).trim()}</Text>
+        </View>
+      </ListItem>
     );
   }
 }

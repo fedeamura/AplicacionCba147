@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
+import com.google.gms.googleservices.GoogleServicesPlugin
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -163,7 +164,7 @@ configurations.all {
 //        force "com.google.android.gms:play-services-measurement-base:15.0.2"
 
 //        force 'com.google.android.gms:play-services-gcm:12.0.1'
-//        force 'com.google.android.gms:play-services-base:15.0.0'
+        force 'com.google.android.gms:play-services-base:15.0.1'
     }
 
 //    resolutionStrategy.eachDependency { details ->
@@ -177,6 +178,22 @@ configurations.all {
 }
 
 dependencies {
+//    compile project(':react-native-web-image')
+//    compile project(':react-native-vector-icons')
+//    compile project(':react-native-snackbar')
+//    compile project(':react-native-sensitive-info')
+//    compile project(':react-native-maps')
+//    compile project(':react-native-linear-gradient')
+//    compile project(':react-native-interactable')
+//    compile project(':react-native-image-resizer')
+//    compile project(':react-native-image-picker')
+//    compile project(':react-native-fs')
+//    compile project(':react-native-firebase')
+//    compile project(':react-native-extra-dimensions-android')
+//    compile project(':react-native-code-push')
+//    compile project(':lottie-react-native')
+
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':react-native-snackbar')
     implementation project(':react-native-web-image')
     implementation project(':react-native-sensitive-info')
@@ -189,7 +206,6 @@ dependencies {
     implementation project(':react-native-image-picker')
     implementation project(':react-native-extra-dimensions-android')
     implementation project(':react-native-code-push')
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':react-native-maps')
     implementation project(':RNLocation')
 
@@ -222,3 +238,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply plugin: 'com.google.gms.google-services'
+//GoogleServicesPlugin.config.disableVersionCheck = true

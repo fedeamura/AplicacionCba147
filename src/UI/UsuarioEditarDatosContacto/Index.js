@@ -8,7 +8,6 @@ import {
   Keyboard,
 } from "react-native";
 import {
-  Button,
   Text,
   Spinner
 } from "native-base";
@@ -18,7 +17,6 @@ import {
 } from "react-native-paper";
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import autobind from 'autobind-decorator'
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
@@ -75,8 +73,7 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
-  @autobind
-  keyboardWillShow(event) {
+  keyboardWillShow = (event) => {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -85,10 +82,8 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     }).start();
   }
 
-  @autobind
-  keyboardWillHide(event) {
+  keyboardWillHide = (event) => {
     this.teclado = false;
-
 
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
@@ -96,11 +91,9 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     }).start();
   }
 
-  @autobind
-  buscarDatos() {
+  buscarDatos = () => {
     Rules_Usuario.getDatos()
-      .then(function (datos) {
-
+      .then((datos) => {
 
         let telFijoArea = undefined;
         let telFijoNumero = undefined;
@@ -133,14 +126,16 @@ export default class UsuarioEditarDatosContacto extends React.Component {
           telefonoCelularCaracteristica: celArea,
           telefonoCelularNumero: celNumero
         });
-      }.bind(this))
-      .catch(function (error) {
-        this.setState({ cargando: false, error: error });
-      }.bind(this));
+      })
+      .catch((error) => {
+        this.setState({
+          cargando: false,
+          error: error
+        });
+      });
   }
 
-  @autobind
-  guardarCambios() {
+  guardarCambios = () => {
 
     const algunError =
       this.state.emailError == true ||
@@ -156,16 +151,14 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     const email = this.state.email;
 
     if (email == undefined || email == "") {
-      Alert.alert('', 'Ingrese el e-mail',
-        [
-          {
-            text: 'Aceptar',
-            onPress: function () {
-              this.inputEmail._root.focus();
-            }.bind(this)
+      Alert.alert('', 'Ingrese el e-mail', [
+        {
+          text: 'Aceptar',
+          onPress: () => {
+            this.inputEmail._root.focus();
           }
-        ]
-      );
+        }
+      ]);
       return;
     }
 
@@ -177,16 +170,14 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     if (telefonoCelularNumero == "") telefonoCelularNumero = undefined;
 
     if ((telefonoCelularCaracteristica != undefined) != (telefonoCelularNumero != undefined)) {
-      Alert.alert('', 'Complete el telefono celular',
-        [
-          {
-            text: 'Aceptar',
-            onPress: function () {
-              // this.inputEmail._root.focus();
-            }.bind(this)
+      Alert.alert('', 'Complete el telefono celular', [
+        {
+          text: 'Aceptar',
+          onPress: () => {
+            // this.inputEmail._root.focus();
           }
-        ]
-      );
+        }
+      ]);
       return;
     }
 
@@ -198,22 +189,19 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     if (telefonoFijoNumero == "") telefonoFijoNumero = undefined;
 
     if ((telefonoFijoCaracteristica != undefined) != (telefonoFijoNumero != undefined)) {
-      Alert.alert('', 'Complete el telefono fijo',
-        [
-          {
-            text: 'Aceptar',
-            onPress: function () {
-              // this.inputEmail._root.focus();
-            }.bind(this)
+      Alert.alert('', 'Complete el telefono fijo', [
+        {
+          text: 'Aceptar',
+          onPress: () => {
+            // this.inputEmail._root.focus();
           }
-        ]
-      );
+        }
+      ]);
       return;
     }
 
     Keyboard.dismiss();
-    this.setState({ cargando: true }, function () {
-
+    this.setState({ cargando: true }, () => {
       const comando = {
         email: this.state.email
       };
@@ -226,20 +214,20 @@ export default class UsuarioEditarDatosContacto extends React.Component {
       }
 
       Rules_Usuario.actualizarDatosContacto(comando)
-        .then(function () {
-          this.setState({ cargando: false, dialogoExitoVisible: true });
-        }.bind(this))
-        .catch(function (error) {
+        .then(() => {
+          this.setState({
+            cargando: false,
+            dialogoExitoVisible: true
+          });
+        })
+        .catch((error) => {
           Alert.alert('', error || 'Error procesando la solicitud');
           this.setState({ cargando: false });
-        }.bind(this))
-
-    }.bind(this));
-
+        })
+    });
   }
 
-  @autobind
-  informarExito() {
+  informarExito = () => {
     const { params } = this.props.navigation.state;
     if (params != undefined && params.callback != undefined) {
       params.callback();
@@ -247,103 +235,79 @@ export default class UsuarioEditarDatosContacto extends React.Component {
 
     this.setState({
       dialogoExitoVisible: false
-    }, function () {
+    }, () => {
       App.goBack();
     });
   }
 
-  @autobind
-  cerrar() {
+  cerrar = () => {
     if (this.state.cargando == true) return;
-
     App.goBack();
   }
 
-  @autobind
-  onEmailRef(ref) {
+  onEmailRef = (ref) => {
     this.inputEmail = ref;
   }
 
-  @autobind
-  onEmailChange(val) {
+  onEmailChange = (val) => {
     this.setState({ email: val });
   }
 
-  @autobind
-  onEmailError(error) {
+  onEmailError = (error) => {
     this.setState({ emailError: error });
   }
 
-
-  @autobind
-  onTelFijoCaracteristicaRef(ref) {
+  onTelFijoCaracteristicaRef = (ref) => {
     this.inputTelefonoFijoCaracteristica = ref;
   }
 
-  @autobind
-  onTelFijoCatacteristicaChange(val) {
+  onTelFijoCatacteristicaChange = (val) => {
     this.setState({ telefonoFijoCaracteristica: val });
   }
 
-  @autobind
-  onTelFijoCatacteristicaError(error) {
+  onTelFijoCatacteristicaError = (error) => {
     this.setState({ telefonoFijoCaracteristicaError: error });
   }
 
-
-  @autobind
-  onTelFijoNumeroRef(ref) {
+  onTelFijoNumeroRef = (ref) => {
     this.inputTelefonoFijoNumero = ref;
   }
 
-  @autobind
-  onTelFijoNumeroChange(val) {
+  onTelFijoNumeroChange = (val) => {
     this.setState({ telefonoFijoNumero: val });
   }
 
-  @autobind
-  onTelFijoNumeroError(error) {
+  onTelFijoNumeroError = (error) => {
     this.setState({ telefonoFijoNumeroError: error });
   }
 
-
-  @autobind
-  onCelularCaracteristicaRef(ref) {
+  onCelularCaracteristicaRef = (ref) => {
     this.inputTelefonoCelularCaracteristica = ref;
   }
 
-  @autobind
-  onCelularCatacteristicaChange(val) {
+  onCelularCatacteristicaChange = (val) => {
     this.setState({ telefonoCelularCaracteristica: val });
   }
 
-  @autobind
-  onCelularCatacteristicaError(error) {
+  onCelularCatacteristicaError = (error) => {
     this.setState({ telefonoCelularCaracteristicaError: error });
   }
 
-
-  @autobind
-  onCelularNumeroRef(ref) {
+  onCelularNumeroRef = (ref) => {
     this.inputTelefonoCelularNumero = ref;
   }
 
-  @autobind
-  onCelularNumeroChange(val) {
+  onCelularNumeroChange = (val) => {
     this.setState({ telefonoCelularNumero: val });
   }
 
-  @autobind
-  onCelularNumeroError(error) {
+  onCelularNumeroError = (error) => {
     this.setState({ telefonoCelularNumeroError: error });
   }
 
-
-  @autobind
-  ocultarTeclado() {
+  ocultarTeclado = () => {
     Keyboard.dismiss();
   }
-
 
   render() {
     const initData = global.initData;
@@ -386,24 +350,20 @@ export default class UsuarioEditarDatosContacto extends React.Component {
       return <Spinner color="green" />
     }
 
+    let botones = [];
+    if (this.state.cargando == false) {
+      botones.push({
+        texto: 'Guardar cambios',
+        onPress: this.guardarCambios
+      })
+    }
+
     return <View>
-      <MiCardDetalle>
+      <MiCardDetalle botones={botones}>
         {this.renderContent()}
         {this.renderCargando()}
       </MiCardDetalle>
 
-      {/* Boton Validar datos */}
-      {
-        this.state.cargando != true && (
-          <View style={{ marginTop: 16 }}>
-            <Button
-              rounded
-              style={styles.botonRegistrar} onPress={this.guardarCambios}>
-              <Text>Guardar cambios</Text>
-            </Button>
-          </View>
-        )
-      }
     </View>;
 
   }

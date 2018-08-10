@@ -5,17 +5,13 @@ import {
 import {
   Text
 } from "native-base";
-import WebImage from 'react-native-web-image';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableRipple } from "react-native-paper";
 
-export default class MiItemDetalle extends React.Component {
+export default class MiItemDetalle extends React.PureComponent {
 
   constructor(props) {
     super(props);
-
-    this.state = {
-    };
   }
 
 

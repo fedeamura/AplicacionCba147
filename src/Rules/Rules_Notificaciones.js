@@ -7,7 +7,7 @@ import Rules_Usuario from "@Rules/Rules_Usuario";
 
 const metodos = {
 
-  notificar: function (data) {
+  notificar: (data) => {
     try {
       const notification = new firebase.notifications.Notification({
         sound: 'default',
@@ -30,7 +30,7 @@ const metodos = {
     }
   },
 
-  crearNotificacionDePrueba: function () {
+  crearNotificacionDePrueba: () => {
     Rules_Notificaciones.notificar({
       Titulo: 'Titulo',
       Detalle: 'Detalle',
@@ -39,7 +39,7 @@ const metodos = {
     })
   },
 
-  transformarNotificacion: function (notificacion) {
+  transformarNotificacion: (notificacion) => {
     try {
       if (notificacion == undefined) {
         notificacion = {};
@@ -64,7 +64,7 @@ const metodos = {
     }
   },
 
-  manejar: function (notificacion) {
+  manejar: (notificacion) => {
     Rules_Usuario.isLogin()
       .then((login) => {
         if (login != true) return;
@@ -81,7 +81,7 @@ const metodos = {
       });
   },
 
-  autoEnviarNotificacion: function () {
+  autoEnviarNotificacion: () => {
     return new Promise((callback, callbackError) => {
       const url = 'https://fcm.googleapis.com/fcm/send';
 
@@ -116,6 +116,35 @@ const metodos = {
         .catch((ex) => {
           callbackError('Error procesando la solicitud');
         })
+    });
+  },
+
+  guardarFcmToken: (fcmToken) => {
+    return new Promise((resolve, reject) => {
+      if (global.token == undefined) {
+        reject("Debe iniciar sesion");
+        return;
+      }
+
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/AgregarFCMToken?token={token}&fcmToken={fcmToken}";
+      url = url.replace("{token}", global.token);
+      url = url.replace("{fcmToken}", fcmToken);
+
+      fetch(url, {
+        method: "GET"
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok == false) {
+            reject(data.error);
+            return;
+          }
+
+          resolve(data.return);
+        })
+        .catch(error => {
+          reject("Error procesando la solicitud");
+        });
     });
   }
 }

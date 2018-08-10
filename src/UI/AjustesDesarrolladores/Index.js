@@ -14,12 +14,12 @@ import {
 import {
   Checkbox
 } from "react-native-paper";
-import LinearGradient from 'react-native-linear-gradient';
 
 //Mis componentes
 import App from "@UI/App";
 import MiStatusBar from '@Utils/MiStatusBar';
 import MiToolbar from '@Utils/MiToolbar';
+import MiToolbarSombra from '@Utils/MiToolbarSombra';
 import MiItemDetalle from '@Utils/MiItemDetalle';
 import MiCardDetalle from '@Utils/MiCardDetalle';
 
@@ -64,7 +64,7 @@ export default class AjustesDesarrolladores extends React.Component {
   onTestNotificacionLocalClick = () => {
     Rules_Notificaciones.autoEnviarNotificacion()
       .then(() => {
-        
+
       })
       .catch(() => {
         Alert.alert('', error || 'Error procesando la solicitud');
@@ -167,27 +167,30 @@ export default class AjustesDesarrolladores extends React.Component {
             </MiCardDetalle>
 
             {/* Ajustes debug */}
-            <View style={{ marginTop: 32, marginBottom: 16 }}>
-
-              <Button
-                bordered
-                rounded
-                style={{ alignSelf: 'center', borderColor: 'green' }}
-                onPress={this.onBotonCancelarAjustesParaDesarrolladorClick}><Text style={{ color: 'green', textAlign: 'center' }}>Ocultar ajustes para desarrolladores</Text></Button>
-            </View>
-
+            <View style={{ height: 32 }} />
+            <Button
+              rounded
+              style={{
+                alignSelf: 'center',
+                shadowOpacity: 0.4,
+                shadowRadius: 5,
+                shadowOffset: { width: 0, height: 4 },
+                backgroundColor: initData.colorVerde,
+                textAlign: 'center',
+                shadowColor: initData.colorVerde,
+                backgroundColor: initData.colorVerde
+              }}
+              onPress={this.onBotonCancelarAjustesParaDesarrolladorClick}>
+              <Text style={{
+                color: initData.colorVerdeTexto,
+                shadowColor: initData.colorVerde
+              }}>Ocultar ajustes para desarrolladores</Text></Button>
+            <View style={{ height: 32 }} />
 
           </ScrollView>
           {/* Sombra del toolbar */}
-          <LinearGradient
-            colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
-            backgroundColor="transparent"
-            style={{ left: 0, top: 0, right: 0, height: 16, position: 'absolute' }}
-            pointerEvents="none" />
+          <MiToolbarSombra />
         </View>
-
-
-
       </View >
     );
   }

@@ -1,7 +1,6 @@
 import React from "react";
 import {
   View,
-  Alert,
   Animated,
 } from "react-native";
 import {
@@ -10,7 +9,6 @@ import {
   Item,
 } from "native-base";
 import { validar } from '@Utils/MiValidador'
-import autobind from 'autobind-decorator'
 
 export default class MiInputTextValidar extends React.Component {
 
@@ -31,8 +29,7 @@ export default class MiInputTextValidar extends React.Component {
     return JSON.stringify(nextState) != JSON.stringify(this.state);
   }
 
-  @autobind
-  onChange(val) {
+  onChange = (val) => {
     this.setState({
       valor: val,
       error: validar(val, this.props.validaciones || {})
@@ -44,10 +41,9 @@ export default class MiInputTextValidar extends React.Component {
     }.bind(this));
   }
 
-  @autobind
-  animarError() {
+  animarError = () => {
     clearTimeout(this.timerAnim);
-    this.timerAnim = setTimeout(function () {
+    this.timerAnim = setTimeout(() => {
       let nextValue = this.state.error != undefined ? 1 : 0;
       if (this.animarError._value == nextValue) return;
 
@@ -56,33 +52,29 @@ export default class MiInputTextValidar extends React.Component {
         duration: 500
       }).start();
 
-    }.bind(this), 300);
+    }, 300);
   }
 
-  @autobind
-  informarVal() {
+  informarVal = () => {
     if (this.props.onChange != undefined) {
       this.props.onChange(this.state.valor);
     }
   }
 
-  @autobind
-  informarError() {
+  informarError = () => {
     if (this.props.onError != undefined) {
       this.props.onError(this.state.error != undefined);
     }
   }
 
-  @autobind
-  informarTieneAlgo() {
+  informarTieneAlgo = () => {
     let tieneAlgo = this.state.valor != undefined || this.state.valor != "";
     if (this.props.tieneAlgo != undefined) {
       this.props.tieneAlgo(tieneAlgo);
     }
   }
 
-  @autobind
-  onRef(ref) {
+  onRef = (ref) => {
     if (this.props.onRef != undefined) {
       this.props.onRef(ref);
     }

@@ -1,7 +1,7 @@
 
 const metodos = {
 
-  validar: function (latitud, longitud) {
+  validar: (latitud, longitud) => {
     return new Promise((resolve, reject) => {
 
       if (global.token == undefined) {
@@ -35,7 +35,7 @@ const metodos = {
     })
   },
 
-  buscarSugerencias: function (busqueda) {
+  buscarSugerencias: (busqueda) => {
     return new Promise((resolve, reject) => {
       if (global.token == undefined) {
         reject('Debe iniciar sesion');

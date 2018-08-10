@@ -1,15 +1,21 @@
 import React from "react";
-import { Platform, View, Alert, Easing, Animated, Linking, LayoutAnimation, StatusBar } from "react-native";
+import {
+  View,
+  Easing,
+  Animated,
+  Linking,
+  Alert,
+  StatusBar
+} from "react-native";
 import { StackNavigator, NavigationActions } from "react-navigation";
 import { Provider as PaperProvider } from "react-native-paper";
-import firebase from "react-native-firebase";
 
-//Mis Componentes
-import Introduccion from "@UI/Introduccion/Index";
-import Login from "@UI/Login/Index";
-import Inicio from "@UI/Inicio/Index";
-import RequerimientoNuevo from "@UI/RequerimientoNuevo/Index";
-import RequerimientoDetalle from "@UI/RequerimientoDetalle/Index";
+// Mis Componentes
+import Introduccion from '@UI/Introduccion/Index';
+import Login from '@UI/Login/Index';
+import Inicio from '@UI/Inicio/Index';
+import RequerimientoNuevo from '@UI/RequerimientoNuevo/Index';
+import RequerimientoDetalle from '@UI/RequerimientoDetalle/Index';
 import MiPicker from "@Utils/MiPicker";
 import MiPickerUbicacion from "@Utils/MiPickerUbicacion";
 import AjustesDesarrolladores from "@UI/AjustesDesarrolladores/Index";
@@ -24,11 +30,8 @@ import AppMantenimiento from "./AppMantenimiento";
 
 //Rules
 import Rules_Init from "@Rules/Rules_Init";
-import Rules_Ajustes from "../Rules/Rules_Ajustes";
-import Rules_Notificaciones from "@Rules/Rules_Notificaciones";
 
-
-const transitionConfig = function() {
+const transitionConfig = function () {
   return {
     transitionSpec: {
       duration: 500,
@@ -36,7 +39,7 @@ const transitionConfig = function() {
       timing: Animated.timing,
       useNativeDriver: true
     },
-    screenInterpolator: function(sceneProps) {
+    screenInterpolator: function (sceneProps) {
       const { layout, position, scene } = sceneProps;
 
       const thisSceneIndex = scene.index;
@@ -62,7 +65,11 @@ const transitionConfig = function() {
         transform: [
           {
             translateX: position.interpolate({
-              inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
+              inputRange: [
+                thisSceneIndex - 1,
+                thisSceneIndex,
+                thisSceneIndex + 1
+              ],
               outputRange: [width, 0, 0]
             })
           }
@@ -72,57 +79,57 @@ const transitionConfig = function() {
   };
 };
 
-//Defino el Stack de la App
+// Defino el Stack de la App
 const RootStack = StackNavigator(
   {
     Introduccion: {
-      screen: Introduccion
+      screen: Introduccion,
     },
     Login: {
-      screen: Login
+      screen: Login,
     },
     UsuarioNuevo: {
-      screen: UsuarioNuevo
+      screen: UsuarioNuevo,
     },
     RecuperarCuenta: {
-      screen: UsuarioRecuperarPassword
+      screen: UsuarioRecuperarPassword,
     },
     Inicio: {
-      screen: Inicio
+      screen: Inicio,
     },
     RequerimientoNuevo: {
-      screen: RequerimientoNuevo
+      screen: RequerimientoNuevo,
     },
     RequerimientoDetalle: {
-      screen: RequerimientoDetalle
+      screen: RequerimientoDetalle,
     },
     PickerUbicacion: {
-      screen: MiPickerUbicacion
+      screen: MiPickerUbicacion,
     },
     PickerListado: {
-      screen: MiPicker
+      screen: MiPicker,
     },
     UsuarioValidarDatosRenaper: {
-      screen: UsuarioValidarDatosRenaper
+      screen: UsuarioValidarDatosRenaper,
     },
     UsuarioEditarDatosContacto: {
-      screen: UsuarioEditarDatosContacto
+      screen: UsuarioEditarDatosContacto,
     },
     AjustesDesarrolladores: {
-      screen: AjustesDesarrolladores
-    }
+      screen: AjustesDesarrolladores,
+    },
   },
   {
-    headerMode: "none",
-    initialRouteName: "Login",
+    headerMode: 'none',
+    initialRouteName: 'Login',
     transitionConfig,
     cardStyle: {
-      shadowOpacity: 1
-    }
-  }
+      shadowOpacity: 1,
+    },
+  },
 );
 
-//Init data por default nada
+// Init data por default nada
 global.initData = undefined;
 
 export default class App extends React.Component {
@@ -131,154 +138,60 @@ export default class App extends React.Component {
     console.disableYellowBox = true;
 
     this.state = {
-      descargando: false,
-      progresoDescarga: 0,
       cargando: true,
       initData: undefined,
-      error: undefined
+      error: undefined,
     };
-
-    this.onToken = this.onToken.bind(this);
-    this.informarError = this.informarError.bind(this);
   }
 
-  _handleOpenURL(event) {
-    console.log(event.url);
-  }
 
   componentDidMount() {
     Linking.addEventListener("url", this._handleOpenURL);
 
-    Rules_Init.actualizarApp()
-      .then(
-        function() {
-          //Busco la data inicial
-          Rules_Init.getInitData()
-            .then(
-              function(initData) {
-                global.initData = initData;
-
-                this.setState({
-                  cargando: false,
-                  initData: initData,
-                  error: undefined
-                });
-              }.bind(this)
-            )
-            .catch(
-              function(error) {
-                this.informarError(error);
-              }.bind(this)
-            );
-        }.bind(this)
-      )
-      .catch(
-        function(error) {
-          this.informarError(error);
-        }.bind(this)
-      );
-
-    firebase
-      .messaging()
-      .getToken()
-      .then(
-        function(fcmToken) {
-          this.onToken(fcmToken);
-        }.bind(this)
-      );
-
-    firebase.messaging().onTokenRefresh(
-      function(fcmToken) {
-        this.onToken(fcmToken);
-      }.bind(this)
-    );
-
-    firebase
-      .messaging()
-      .hasPermission()
-      .then(
-        function(enabled) {
-          if (enabled == false) {
-            firebase
-              .messaging()
-              .requestPermission()
-              .then(
-                function() {
-                  // User has authorised
-                }.bind(this)
-              )
-              .catch(
-                function(error) {
-                  Alert.alert("", "Para recibir notificaciones debe conceder el permiso en Ajustes");
-                }.bind(this)
-              );
-          }
-        }.bind(this)
-      );
-
-    //App abierta desde notificacion
-    firebase
-      .notifications()
-      .getInitialNotification()
-      .then(
-        function(notificationOpen) {
-          if (!notificationOpen) return;
-
-          const notification = notificationOpen.notification;
-
-          //Transformo
-          let data = Rules_Notificaciones.transformarNotificacion(notification);
-
-          //Guardo en global... para que el componente de Inicio (Mis requerimiento) maneje lo que hay que hacer
-          //Lo mando para despues porque hay que validar el usuario logeado y esperar que acceda.
-          global.notificacionInicial = data;
-        }.bind(this)
-      );
-
-    const channel = new firebase.notifications.Android.Channel(
-      "channelId",
-      "#CBA147",
-      firebase.notifications.Android.Importance.Max
-    ).setDescription("#CBA147");
-    firebase.notifications().android.createChannel(channel);
-
-    //Al aparecer una notificacion (En foreground)
-    this.notificationListener = firebase.notifications().onNotification(
-      function(notification) {
-        //Transformo y mando a notificar
-        let data = Rules_Notificaciones.transformarNotificacion(notification);
-        if (data == undefined) return;
-
-        Rules_Notificaciones.notificar(data);
-      }.bind(this)
-    );
-
-    //Al hacer click en una notificacion
-    this.notificationOpenedListener = firebase.notifications().onNotificationOpened(
-      function(notificationOpen) {
-        const notification = notificationOpen.notification;
-        Rules_Notificaciones.manejar(notification.data);
-      }.bind(this)
-    );
+    this.init();
   }
 
   componentWillUnmount() {
     Linking.removeEventListener("url", this._handleOpenURL);
 
-    this.notificationListener();
-    this.notificationOpenedListener();
+    // this.notificationListener();
+    // this.notificationOpenedListener();
   }
 
-  onToken(token) {
-    if (token == undefined) {
-      global.notificationToken = undefined;
-      return;
-    }
+  _handleOpenURL() {
 
-    global.notificationToken = token;
   }
 
-  informarError(error) {
+  init = () => {
+    this.setState({
+      error: undefined,
+      cargando: true,
+      initData: undefined
+    }, () => {
+      Rules_Init.actualizarApp()
+        .then(() => {
+          //Busco la data inicial
+          Rules_Init.getInitData()
+            .then((initData) => {
+              global.initData = initData;
+
+              this.setState({
+                cargando: false,
+                initData: initData,
+                error: undefined
+              });
+            })
+            .catch((error) => {
+              this.informarError(error);
+            });
+        })
+        .catch((error) => {
+          this.informarError(error);
+        });
+    });
+  }
+
+  informarError = (error) => {
     global.initData = undefined;
     this.setState({
       cargando: false,
@@ -287,9 +200,13 @@ export default class App extends React.Component {
     });
   }
 
+  onPanelErrorBotonPress = () => {
+    this.init();
+  }
+
   static Navigation;
 
-  static replace(pagina) {
+  static replace = (pagina) => {
     const resetAction = NavigationActions.reset({
       index: 0,
       actions: [NavigationActions.navigate({ routeName: pagina })]
@@ -297,56 +214,68 @@ export default class App extends React.Component {
     global.navigator._navigation.dispatch(resetAction);
   }
 
-  static goBack() {
+  static goBack = () => {
     const { goBack } = global.navigator._navigation;
     goBack(null);
   }
 
-  static navegar(pagina, params) {
+  static navegar = (pagina, params) => {
     App.getNavigator().navigate(pagina, params);
   }
 
-  static getNavigator() {
+  static getNavigator = () => {
     return global.navigator._navigation;
   }
 
-  static animar(callback) {
-    if (Platform.OS != "android") {
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, callback);
-    } else {
-      if (callback != undefined) {
-        callback();
-      }
-    }
-  }
+  // static animar = (callback) => {
+  //   if (Platform.OS != "android") {
+  //     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, callback);
+  //   } else {
+  //     if (callback != undefined) {
+  //       callback();
+  //     }
+  //   }
+  // }
 
   render() {
-    //Cargando
-    if (this.state.cargando == true) {
-      return <AppCargando descargando={this.state.descargando} progresoDescarga={this.state.progresoDescarga} />;
-    }
-
-    //Error
-    if (this.state.initData == undefined || this.state.error != undefined) {
-      return <AppError error={this.state.error || "Error procesando la solicitud"} />;
-    }
-
-    //Mantenimiento
-    if (this.state.initData.mantenimiento == true) {
-      return <AppMantenimiento />;
-    }
+    const cargandoVisible = this.state.cargando == true;
+    const errorVisible = this.state.error != undefined;
+    const mantenimientoVisible =
+      this.state.initData != undefined &&
+      this.state.initData.mantenimiento == true;
+    const contenidoVisible =
+      cargandoVisible == false &&
+      errorVisible == false &&
+      mantenimientoVisible == false;
 
     return (
       <PaperProvider>
-        <View keyboardShouldPersistTaps="handled" style={{ height: "100%", width: "100%", backgroundColor: "white" }}>
-          <StatusBar backgroundColor="white" barStyle="dark-content" />
+        {contenidoVisible == true && (
+          <View
+            keyboardShouldPersistTaps="handled"
+            style={{ height: "100%", width: "100%", backgroundColor: "white" }}
+          >
+            <StatusBar backgroundColor="white" barStyle="dark-content" />
 
-          <RootStack
-            ref={function(ref) {
-              global.navigator = ref;
-            }.bind(this)}
-          />
-        </View>
+            <RootStack
+              ref={function (ref) {
+                global.navigator = ref;
+              }.bind(this)}
+            />
+          </View>
+        )}
+
+        <AppCargando visible={this.state.cargando} />
+
+        <AppError
+          visible={errorVisible == true}
+          error={this.state.error}
+          mostrarBoton={true}
+          botonTexto="Reintentar"
+          onBotonPress={this.onPanelErrorBotonPress}
+        />
+
+        <AppMantenimiento visible={mantenimientoVisible == true} />
       </PaperProvider>
     );
   }

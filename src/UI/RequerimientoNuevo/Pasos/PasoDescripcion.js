@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import { View, Alert } from "react-native";
-import { Button, Text, Textarea } from "native-base";
-import autobind from "autobind-decorator";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Textarea } from "native-base";
+
+//Mis componentes
+import MiBoton from "@Utils/MiBoton";
 
 export default class RequerimientoNuevo_PasoDescripcion extends React.Component {
   constructor(props) {
@@ -13,22 +14,21 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
     };
   }
 
-  @autobind
-  onDescripcionChange(text) {
-    this.setState({ descripcion: text }, function() {
+  onDescripcionChange = (text) => {
+    this.setState({
+      descripcion: text
+    }, () => {
       this.informarDescripcion();
     });
   }
 
-  @autobind
-  informarDescripcion() {
+  informarDescripcion = () => {
     if (this.props.onDescripcion == undefined) return;
     this.props.onDescripcion(this.state.descripcion);
   }
 
-  @autobind
-  informarReady() {
-    if (this.state.descripcion == undefined || this.state.descripcion.trim() == "") {
+  informarReady = () => {
+    if (this.state.descripcion == undefined || this.state.descripcion.trim().length < largoMinimo) {
       Alert.alert("", texto_CompleteLosDatos);
       return;
     }
@@ -39,7 +39,8 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
 
   render() {
     const initData = global.initData;
-    const botonSiguienteDeshabilitado = this.state.descripcion == undefined || this.state.descripcion.trim() == "";
+    const botonSiguienteDeshabilitado =
+      this.state.descripcion == undefined || this.state.descripcion.trim().length < largoMinimo;
 
     return (
       <View>
@@ -56,33 +57,32 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
           />
         </View>
 
+        {this.renderContador()}
         <View style={{ height: 1, width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }} />
 
         {/* Boton siguiente  */}
-        <View style={{ padding: 16 }}>
-          <Button
-            small
-            onPress={this.informarReady}
-            rounded
-            style={{
-              alignSelf: "flex-end",
-              backgroundColor: botonSiguienteDeshabilitado ? "rgba(150,150,150,1)" : initData.colorExito
-            }}
-          >
-            <Text
-              style={{
-                color: "white"
-              }}
-            >
-              {texto_BotonSiguiente}
-            </Text>
-          </Button>
-        </View>
+        <MiBoton
+          rounded
+          small
+          sombra
+          padding={16}
+          color={botonSiguienteDeshabilitado ? "rgba(150,150,150,1)" : initData.colorExito}
+          colorTexto='white'
+          onPress={this.informarReady}
+          texto={texto_BotonSiguiente}
+          derecha />
       </View>
     );
+  }
+
+  renderContador() {
+    return null;
+    // let cantidad = this.state.descripcion.length;
+    // return <Text style={{ marginLeft: 16 , marginBottom:16}}>{cantidad}/{largoMinimo}</Text>;
   }
 }
 
 const texto_Hint = "Indique de la forma más detallada posible toda la información asociada al requerimiento...";
 const texto_BotonSiguiente = "Siguiente";
-const texto_CompleteLosDatos = "Ingrese la descripción";
+const largoMinimo = 50;
+const texto_CompleteLosDatos = "Ingrese una descripción de al menos " + largoMinimo + " caracteres";

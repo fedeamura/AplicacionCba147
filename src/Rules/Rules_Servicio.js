@@ -1,6 +1,6 @@
 
 const metodos = {
-  get: function () {
+  get: () => {
     return new Promise((resolve, reject) => {
 
       if (global.token == undefined) {

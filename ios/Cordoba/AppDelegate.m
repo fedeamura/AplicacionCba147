@@ -32,7 +32,7 @@
   [FIRApp configure];
   [RNFirebaseNotifications configure];
 
-  //Si es modo DEBUG  
+  //Si es modo DEBUG
     #ifdef DEBUG
         jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
     #else
@@ -40,7 +40,7 @@
     #endif
   
   //Si es modo RELEASE
-  // jsCodeLocation = [CodePush bundleURL];
+  //jsCodeLocation = [CodePush bundleURL];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"Cordoba"

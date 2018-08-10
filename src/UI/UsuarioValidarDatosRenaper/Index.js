@@ -121,7 +121,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
 
     this.setState(
       { cargando: true },
-      function() {
+      function () {
         let comando = {
           nombre: datos.nombre,
           apellido: datos.apellido,
@@ -132,12 +132,12 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
 
         Rules_Usuario.actualizarDatosPersonales(comando)
           .then(
-            function(data) {
+            function (data) {
               this.setState({ cargando: false, dialogoExitoVisible: true });
             }.bind(this)
           )
           .catch(
-            function(error) {
+            function (error) {
               this.setState({ cargando: false });
               Alert.alert("", error);
             }.bind(this)
@@ -152,7 +152,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
       {
         dialogoExitoVisible: false
       },
-      function() {
+      function () {
         const { params } = this.props.navigation.state;
         if (params.callback != undefined) {
           params.callback();
@@ -217,7 +217,8 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
         <View style={styles.scrollViewContent}>
           <FormDatosPersonales
             noValidar={true}
-            mostrarInfo={false}
+            mostrarInfo={true}
+            customInfo={texto_Info}
             cargando={this.state.cargando}
             datosIniciales={this.state.datosUsuario}
             onAlgoInsertado={this.onFormularioDatosPersonalesAlgoInsertado}
@@ -327,3 +328,4 @@ const styles = StyleSheet.create({
 
 const texto_Titulo = "Validar datos de Usuario";
 const texto_DialogoCancelarFormulario = "¿Desea cancelar la validacion de su usuario y salir de #CBA147?";
+const texto_Info = "A partir de ahora para poder continuar su información tiene que ser validada formalmente a través del Registro Nacional de las Personas para lo cual debe completar el siguiente formulario";

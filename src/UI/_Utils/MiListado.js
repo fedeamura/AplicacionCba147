@@ -1,13 +1,11 @@
 import React from "react";
 import {
   View,
-  Alert,
   StyleSheet,
   FlatList,
   Animated,
   Text
 } from "react-native";
-import autobind from 'autobind-decorator'
 
 export default class MiListado extends React.Component {
   constructor(props) {
@@ -63,52 +61,44 @@ export default class MiListado extends React.Component {
     });
   }
 
-  @autobind
-  mostrarError() {
+  mostrarError = () => {
     Animated.timing(this.anim_Error, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  @autobind
-  ocultarError() {
+  ocultarError = () => {
     Animated.timing(this.anim_Error, {
       duration: 500,
       toValue: 0
     }).start();
   }
 
-  @autobind
-  mostrarEmpty() {
+  mostrarEmpty = () => {
     Animated.timing(this.anim_Empty, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  @autobind
-  ocultarEmpty() {
+  ocultarEmpty = () => {
     Animated.timing(this.anim_Empty, {
       duration: 500,
       toValue: 0
     }).start();
   }
 
-
-  @autobind
-  onRef(ref) {
+  onRef = (ref) => {
     if (this.props.refListado == undefined) return;
     this.props.refListado(ref);
   }
 
-  @autobind
-  generarKey(item) {
+  generarKey = (item) => {
     return this.props.numColumns + '_' + this.props.keyExtractor(item);
   }
 
   render() {
-
     const colorFondo = this.props.backgroundColor || 'white';
 
     //Empty

@@ -4,7 +4,7 @@ import { Text, Button } from "native-base";
 import WebImage from "react-native-web-image";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-export default class MiPanelError extends React.Component {
+export default class MiPanelError extends React.PureComponent {
   constructor(props) {
     super(props);
   }

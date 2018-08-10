@@ -1,73 +1,73 @@
 import React from "react";
 import { View } from "react-native";
-import { Button, Text } from "native-base";
-import autobind from "autobind-decorator";
 
 //Mis componentes
-import App from "@UI/App";
 import MiItemDetalle from "@Utils/MiItemDetalle";
+import MiBoton from "@Utils/MiBoton";
 
-export default class RequerimientoNuevo_PasoConfirmacion extends React.Component {
+import { toTitleCase } from "@Utils/Helpers";
+
+export default class RequerimientoNuevo_PasoConfirmacion extends React.PureComponent {
   constructor(props) {
     super(props);
-
-    this.state = {};
   }
 
   static defaultProps = {
     ...React.Component.defaultProps,
-    onReady: () => {}
+    onReady: () => { }
   };
 
-  @autobind
-  informarReady() {
+  informarReady = () => {
     this.props.onReady();
   }
 
   render() {
+    const initData = global.initData;
+
     return (
       <View>
         <View style={{ padding: 16 }}>
           {this.props.servicio != undefined && (
-            <MiItemDetalle titulo="Categoria" subtitulo={this.props.servicio} />
+            <MiItemDetalle titulo={texto_Servicio} subtitulo={toTitleCase(this.props.servicio)} />
           )}
           {this.props.motivo != undefined && (
             <View>
               <View style={{ height: 8 }} />
-              <MiItemDetalle titulo="Motivo" subtitulo={this.props.motivo} />
+              <MiItemDetalle titulo={texto_Motivo} subtitulo={toTitleCase(this.props.motivo)} />
             </View>
           )}
           {this.props.descripcion != undefined && (
             <View>
               <View style={{ height: 8 }} />
-              <MiItemDetalle titulo="Descripción" subtitulo={this.props.descripcion} />
+              <MiItemDetalle titulo={texto_Descripcion} subtitulo={this.props.descripcion} />
             </View>
           )}
           {this.props.ubicacion != undefined && (
             <View>
               <View style={{ height: 8 }} />
-              <MiItemDetalle titulo="Descripción" subtitulo={this.props.ubicacion} />
+              <MiItemDetalle titulo={texto_Ubicacion} subtitulo={this.props.ubicacion} />
             </View>
           )}
         </View>
 
         <View style={{ height: 1, width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }} />
 
-        <View style={{ padding: 16 }}>
-          <Button
-            onPress={this.informarReady}
-            rounded
-            small
-            bordered
-            style={{
-              alignSelf: "flex-end",
-              borderColor: "green"
-            }}
-          >
-            <Text style={{ color: "green" }}>Registrar</Text>
-          </Button>
-        </View>
+        <MiBoton
+          padding={16}
+          derecha
+          verde
+          small
+          sombra
+          onPress={this.informarReady}
+          rounded
+          texto={texto_BotonRegistrar} />
       </View>
     );
   }
 }
+
+const texto_Servicio = "Servicio";
+const texto_Motivo = "Motivo";
+const texto_Descripcion = "Descripción";
+const texto_Ubicacion = "Ubicación";
+const texto_BotonRegistrar = "Registrar";

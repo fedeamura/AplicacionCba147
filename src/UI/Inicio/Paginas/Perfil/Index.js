@@ -5,12 +5,12 @@ import {
   ScrollView,
   Alert,
   Keyboard,
-  StyleSheet
+  StyleSheet,
+  TouchableOpacity
 } from "react-native";
 import {
   Text, Spinner, Button
 } from "native-base";
-import { TouchableRipple } from "react-native-paper";
 
 import WebImage from 'react-native-web-image'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,7 +18,6 @@ import Snackbar from 'react-native-snackbar';
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import RNFS from 'react-native-fs';
-import autobind from 'autobind-decorator'
 
 //Mis componentes
 import App from "@UI/App";
@@ -69,8 +68,17 @@ export default class PaginaPerfil extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
-  @autobind
-  keyboardWillShow(event) {
+  componentDidMount() {
+    this.buscarDatos();
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.cargando != this.state.cargando) {
+      Animated.timing(this.animCargando, { toValue: nextState.cargando ? 1 : 0, duration: 300 }).start();
+    }
+  }
+
+  keyboardWillShow = (event) => {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -81,8 +89,7 @@ export default class PaginaPerfil extends React.Component {
     this.setState({ keyboardHeight: event.endCoordinates.height });
   }
 
-  @autobind
-  keyboardWillHide(event) {
+  keyboardWillHide = (event) => {
     this.teclado = false;
 
     Animated.timing(this.keyboardHeight, {
@@ -91,36 +98,28 @@ export default class PaginaPerfil extends React.Component {
     }).start();
   }
 
+  buscarDatos = () => {
 
-  componentDidMount() {
-    this.buscarDatos();
-  }
-
-  @autobind
-  buscarDatos() {
-
-    Animated.timing(this.animCargando, { toValue: 1, duration: 300 }).start(function () {
-      this.setState({ cargando: true }, function () {
+    Animated.timing(this.animCargando, { toValue: 1, duration: 300 }).start(() => {
+      this.setState({ cargando: true }, () => {
         Rules_Usuario.getDatos()
-          .then(function (datos) {
-            this.setState({ cargando: false, datos: datos }, function () {
-              Animated.timing(this.animCargando, { toValue: 0, duration: 300 }).start();
-            }.bind(this));
-
-          }.bind(this))
-          .catch(function (error) {
-            this.setState({ cargando: false, error: error }, function () {
-              Animated.timing(this.animCargando, { toValue: 0, duration: 300 }).start();
-            }.bind(this));
-          }.bind(this));
-      }.bind(this));
-    }.bind(this));
-
-
+          .then((datos) => {
+            this.setState({
+              cargando: false,
+              datos: datos
+            });
+          })
+          .catch((error) => {
+            this.setState({
+              cargando: false,
+              error: error
+            });
+          });
+      });
+    });
   }
 
-  @autobind
-  onBtnCambiarUsernameClick() {
+  onBtnCambiarUsernameClick = () => {
     this.setState({
       dialogoUsernameVisible: true,
       usernameNuevo: undefined,
@@ -129,35 +128,34 @@ export default class PaginaPerfil extends React.Component {
     });
   }
 
-  @autobind
-  cambiarUsername() {
-    this.setState({ cargandoCambioUsername: true },
-      function () {
-        Rules_Usuario.cambiarUsername(this.state.usernameNuevo)
-          .then(function () {
-            this.setState({ dialogoUsernameVisible: false }, function () {
-              setTimeout(function () {
+  cambiarUsername = () => {
+    this.setState({ cargandoCambioUsername: true }, () => {
+      Rules_Usuario.cambiarUsername(this.state.usernameNuevo)
+        .then(() => {
+          this.setState({
+            dialogoUsernameVisible: false
+          }, () => {
+            setTimeout(() => {
 
-                //Mando a buscar de nuevo
-                this.buscarDatos();
+              //Mando a buscar de nuevo
+              this.buscarDatos();
 
-                //Informo
-                Snackbar.show({
-                  title: 'Nombre de usuario cambiado correctamente'
-                });
+              //Informo
+              Snackbar.show({
+                title: 'Nombre de usuario cambiado correctamente'
+              });
 
-              }.bind(this), 300);
-            }.bind(this));
-          }.bind(this))
-          .catch(function (error) {
-            this.setState({ cargandoCambioUsername: false });
-            Snackbar.show({ title: 'Error procesando la solicitud' });
-          }.bind(this));
-      }.bind(this));
+            }, 300);
+          });
+        })
+        .catch((error) => {
+          this.setState({ cargandoCambioUsername: false });
+          Snackbar.show({ title: 'Error procesando la solicitud' });
+        });
+    });
   }
 
-  @autobind
-  onBtnCambiarPasswordClick() {
+  onBtnCambiarPasswordClick = () => {
     this.setState({
       dialogoPasswordVisible: true,
       passwordAnterior: undefined,
@@ -168,113 +166,112 @@ export default class PaginaPerfil extends React.Component {
     });
   }
 
-  @autobind
-  cambiarPassword() {
-    this.setState({ cargandoCambioPassword: true },
-      function () {
-        Rules_Usuario.cambiarPassword(this.state.passwordAnterior, this.state.passwordNueva)
-          .then(function () {
-            this.setState({ dialogoPasswordVisible: false }, function () {
-              //Informo
-              Snackbar.show({ title: 'Contraseña cambiada correctamente' });
-            }.bind(this));
-          }.bind(this))
-          .catch(function (error) {
-            this.setState({ cargandoCambioPassword: false });
-
+  cambiarPassword = () => {
+    this.setState({
+      cargandoCambioPassword: true
+    }, () => {
+      Rules_Usuario.cambiarPassword(this.state.passwordAnterior, this.state.passwordNueva)
+        .then(() => {
+          this.setState({
+            dialogoPasswordVisible: false
+          }, () => {
             //Informo
-            Snackbar.show({ title: error || 'Error procesando la solicitud' });
-          }.bind(this));
-      }.bind(this));
-  }
+            Snackbar.show({ title: 'Contraseña cambiada correctamente' });
+          });
+        })
+        .catch((error) => {
+          this.setState({
+            cargandoCambioPassword: false
+          });
 
-  @autobind
-  onBtnEditarDatosContactoClick() {
-    App.navegar('UsuarioEditarDatosContacto', {
-      callback: function () {
-        this.buscarDatos()
-      }.bind(this)
+          //Informo
+          Snackbar.show({ title: error || 'Error procesando la solicitud' });
+        });
     });
   }
 
-  @autobind
-  cambiarFotoPerfil() {
+  onBtnEditarDatosContactoClick = () => {
+    App.navegar('UsuarioEditarDatosContacto', {
+      callback: () => {
+        this.buscarDatos()
+      }
+    });
+  }
+
+  cambiarFotoPerfil = () => {
     Alert.alert('', 'Cambiar foto de perfil', [
-      { text: 'Cancelar', onPress: function () { }.bind(this) },
+      { text: 'Cancelar', onPress: () => { } },
       { text: 'Galeria', onPress: this.cambiarFotoPerfilDesdeGaleria },
       { text: 'Cámara', onPress: this.cambiarFotoPerfilDesdeCamara },
     ], { cancelable: true });
   }
 
-  @autobind
-  cambiarFotoPerfilDesdeCamara() {
+  cambiarFotoPerfilDesdeCamara = () => {
     var options = {
       title: 'Elegir foto'
     };
 
     this.setState({
       cargandoFoto: true
-    }, function () {
+    }, () => {
       // Mando a buscar la foto
-      ImagePicker.launchCamera(options, function (response) {
+      ImagePicker.launchCamera(options, (response) => {
         if (response.didCancel) {
           this.setState({
             cargandoFoto: false
           });
           return;
         }
-        else if (response.error) {
+
+        if (response.error) {
           this.setState({
             cargandoFoto: false
           });
 
           Alert.alert('', 'Error procesando la solicitud. Error: ' + response.error);
-          return
+          return;
         }
 
-
         this.procesarImagenPerfil(response.uri);
-      }.bind(this));
-
-    }.bind(this));
+      });
+    });
   }
 
-  @autobind
-  cambiarFotoPerfilDesdeGaleria() {
+  cambiarFotoPerfilDesdeGaleria = () => {
     var options = {
       title: 'Elegir foto'
     };
 
     this.setState({
       cargandoFoto: true
-    }, function () {
+    }, () => {
       // Mando a buscar la foto
-      ImagePicker.launchImageLibrary(options, function (response) {
+      ImagePicker.launchImageLibrary(options, (response) => {
         if (response.didCancel) {
           this.setState({
             cargandoFoto: false
           });
           return;
         }
-        else if (response.error) {
+
+        if (response.error) {
           this.setState({
             cargandoFoto: false
           });
 
           Alert.alert('', 'Error procesando la solicitud');
-          return
+          return;
         }
-        this.procesarImagenPerfil(response.uri);
 
-      }.bind(this));
-    }.bind(this));
+        this.procesarImagenPerfil(response.uri);
+      });
+    });
   }
 
-  @autobind
-  procesarImagenPerfil(img) {
+  procesarImagenPerfil = (img) => {
     // Achico la imagen
     ImageResizer.createResizedImage(img, 1000, 1000, 'JPEG', 80)
-      .then(function (responseResize) {
+      .then((responseResize) => {
         // Convierto la imagen a base64
         RNFS.readFile(responseResize.uri, 'base64')
           .then(function (base64) {
@@ -288,31 +285,27 @@ export default class PaginaPerfil extends React.Component {
                   this.buscarDatos();
                 });
 
-
+                //Informo
                 Snackbar.show({ title: 'Imagen de perfil actualizada correctamente' });
               })
               .catch((error) => {
                 this.setState({ cargandoFoto: false });
                 Alert.alert('', error || 'Error procesando la solicitud');
               });
-            // this.setState({
-            //   cargandoFoto: false,
-            //   foto: foto
-            // }, this.informarFoto);
           }.bind(this))
-          .catch(function () {
+          .catch(() => {
             Alert.alert('', 'Error procesando la solicitud');
             this.setState({
               cargandoFoto: false
             });
-          }.bind(this));
-      }.bind(this))
-      .catch(function (err) {
+          });
+      })
+      .catch((err) => {
         Alert.alert('', 'Error procesando la solicitud');
         this.setState({
           cargandoFoto: false
         });
-      }.bind(this));
+      });
   }
 
   render() {
@@ -358,9 +351,9 @@ export default class PaginaPerfil extends React.Component {
 
     let urlFoto;
     if (this.state.datos.identificadorFotoPersonal != undefined) {
-      urlFoto = initData.url_cordoba_files + '/' + this.state.datos.identificadorFotoPersonal + '/3';
+      urlFoto = initData.urlCordobaFiles + '/' + this.state.datos.identificadorFotoPersonal + '/3';
     } else {
-      urlFoto = this.state.datos.sexoMasculino ? initData.url_placeholder_user_male : initData.url_placeholder_user_female;
+      urlFoto = this.state.datos.sexoMasculino ? initData.urlPlaceholderUserMale : initData.urlPlaceholderUserFemale;
     }
 
     return (
@@ -372,7 +365,7 @@ export default class PaginaPerfil extends React.Component {
 
             <View style={styles.imagen}>
 
-              <TouchableRipple onPress={this.cambiarFotoPerfil}>
+              <TouchableOpacity onPress={this.cambiarFotoPerfil}>
                 <View style={{ display: 'flex', justifyContent: 'center' }}>
 
                   <WebImage
@@ -391,7 +384,7 @@ export default class PaginaPerfil extends React.Component {
                   }} color="green" />
                 </View>
 
-              </TouchableRipple>
+              </TouchableOpacity>
 
             </View>
 
@@ -444,7 +437,7 @@ export default class PaginaPerfil extends React.Component {
       fechaNacimiento = this.convertirFecha(this.state.datos.fechaNacimiento)
     }
     const iconoSexo = this.state.datos.sexoMasculino == true ? 'gender-male' : 'gender-female';
-    const sexo = this.state.datos.sexoMasculino == true ? 'Masculino' : 'Femenino';
+    const sexo = this.state.datos.sexoMasculino == true ? texto_Titulo_SexoMasculino : texto_Titulo_SexoFemenino;
     const domicilio = this.toTitleCase(this.state.datos.domicilioLegal || 'Sin datos').trim();
 
     return <View>
@@ -478,11 +471,11 @@ export default class PaginaPerfil extends React.Component {
         flexDirection: 'row',
         alignContent: 'center',
         justifyContent: 'center',
-        marginLeft: 20,
+        marginLeft: 22,
         marginTop: 8,
-        marginRight: 20
+        marginRight: 22
       }}>
-        <Icon name="information-outline" style={{ fontSize: 24 }} />
+        <Icon name="information-outline" style={{ fontSize: 24, color: initData.colorNaranja }} />
         <Text style={{ marginLeft: 4 }}>{texto_InfoUsuarioValidado}</Text>
       </View>
     </View>
@@ -490,68 +483,91 @@ export default class PaginaPerfil extends React.Component {
   }
 
   renderDatosAcceso() {
+    const initData = global.initData;
 
-    let textoUsername = this.state.datos.username != this.state.datos.cuil ? this.state.datos.username + '. Si desea cambiarlo haga click aquí' : texto_SinUsername;
-    return <MiCardDetalle titulo={texto_Titulo_DatosAcceso} padding={false}>
-      <MiItemDetalle
-        icono='account'
-        style={{ padding: 16 }}
-        iconoAlign="flex-start"
-        onPress={this.onBtnCambiarUsernameClick}
-        titulo={texto_Titulo_Username}
-        subtitulo={textoUsername}
-      />
-      <View style={{ height: 1, backgroundColor: 'rgba(0,0,0,0.1)' }} />
-      <MiItemDetalle
-        icono='key'
-        style={{ padding: 16 }}
-        iconoAlign="flex-start"
-        onPress={this.onBtnCambiarPasswordClick}
-        titulo={texto_Titulo_Password} subtitulo={texto_Contraseña_Detalle}
-      />
-    </MiCardDetalle>
+    let textoUsername = this.state.datos.username != this.state.datos.cuil ? this.state.datos.username : texto_SinUsername;
+    return <View>
+      <MiCardDetalle titulo={texto_Titulo_DatosAcceso} padding={false}>
+        <MiItemDetalle
+          icono='account'
+          style={{ padding: 16 }}
+          iconoAlign="flex-start"
+          onPress={this.onBtnCambiarUsernameClick}
+          titulo={texto_Titulo_Username}
+          subtitulo={textoUsername}
+        />
+
+      </MiCardDetalle>
+
+      <View style={{ display: 'flex', flexDirection: 'column' }}>
+
+        <Button
+          transparent
+          small
+          onPress={this.onBtnCambiarUsernameClick}
+          style={{ alignSelf: 'center' }}>
+          <Text style={{ textDecorationLine: 'underline', color: initData.colorVerde }}>{texto_Boton_ModificarUsername}</Text>
+        </Button>
+        <View style={{ height: 8 }} />
+
+        <Button
+          transparent
+          small
+          onPress={this.onBtnCambiarPasswordClick}
+          style={{ alignSelf: 'center' }}><Text style={{ textDecorationLine: 'underline', color: initData.colorVerde }}>{texto_Boton_ModificarContraseña}</Text></Button>
+      </View>
+
+    </View>
   }
 
   renderDatosContacto() {
     const email = this.state.datos.email || 'Sin datos';
-    const telefonoFijo = this.state.datos.telefonoFijo || 'No registrado';
-    const telefonoCelular = this.state.datos.telefonoCelular || 'No registrado';
+    const telefonoFijo = this.state.datos.telefonoFijo || texto_TelefonoNoRegistrado;
+    const telefonoCelular = this.state.datos.telefonoCelular || texto_TelefonoNoRegistrado;
 
-    return <MiCardDetalle titulo={texto_Titulo_DatosContacto} botones={[
-      {
-        texto: texto_Boton_EditarDatosContacto,
-        onPress: this.onBtnEditarDatosContactoClick
-      }
-    ]}>
-      <MiItemDetalle
-        icono='email'
-        titulo={texto_Titulo_Email} subtitulo={email} />
-      <View style={{ height: 16 }} />
-      <MiItemDetalle
-        icono='phone'
-        titulo={texto_Titulo_TelefonoCelular} subtitulo={telefonoCelular} />
-      <View style={{ height: 16 }} />
-      <MiItemDetalle
-        icono='phone'
-        titulo={texto_Titulo_TelefonoFijo} subtitulo={telefonoFijo} />
-    </MiCardDetalle>
+    return <View>
+      <MiCardDetalle titulo={texto_Titulo_DatosContacto}>
+        <MiItemDetalle
+          icono='email'
+          titulo={texto_Titulo_Email} subtitulo={email} />
+        <View style={{ height: 16 }} />
+        <MiItemDetalle
+          icono='phone'
+          titulo={texto_Titulo_TelefonoCelular} subtitulo={telefonoCelular} />
+        <View style={{ height: 16 }} />
+        <MiItemDetalle
+          icono='phone'
+          titulo={texto_Titulo_TelefonoFijo} subtitulo={telefonoFijo} />
+      </MiCardDetalle>
 
+      <Button
+        transparent
+        small
+        onPress={this.onBtnEditarDatosContactoClick}
+        style={{ alignSelf: 'center' }}>
+        <Text style={{ textDecorationLine: 'underline', color: initData.colorVerde, textAlign: 'center' }}>{texto_Boton_EditarDatosContacto}</Text>
+      </Button>
+    </View>
 
   }
 
+  onDialogoUsernameBotonCancelarPress = () => {
+    this.setState({ dialogoUsernameVisible: false });
+  }
+
   renderDialogoCambiarUsername() {
+    const initData = global.initData;
+
     return <MiDialogo
       titulo="Cambiar nombre de usuario"
-      onDismiss={() => { this.setState({ dialogoUsernameVisible: false }) }}
+      onDismiss={this.onDialogoUsernameBotonCancelarPress}
       visible={this.state.dialogoUsernameVisible}
       cancelable={true}
       cargando={this.state.cargandoCambioUsername == true}
       botones={[
         {
           texto: 'Cancelar',
-          onPress: () => {
-            this.setState({ dialogoUsernameVisible: false });
-          }
+          onPress: this.onDialogoUsernameBotonCancelarPress
         },
         {
           texto: 'Cambiar',
@@ -560,9 +576,16 @@ export default class PaginaPerfil extends React.Component {
         }
       ]}
     >
-      <View style={{ display: 'flex', marginBottom: 16, flexDirection: 'row', backgroundColor: 'rgba(0,0,0,0.05)', padding: 8, borderRadius: 8 }}>
-        <Icon name="information-outline" style={{ fontSize: 24 }} />
-        <Text style={{ marginLeft: 8, flex: 1 }}>El nombre de usuario es un alias con el que usted puede acceder a su cuenta. Tenga en cuenta que todavia podrá acceder a través de su numero de CUIL</Text>
+      <View style={{
+        display: 'flex',
+        marginBottom: 16,
+        flexDirection: 'row',
+        backgroundColor: initData.colorNaranja,
+        padding: 8,
+        borderRadius: 16
+      }}>
+        <Icon name="information-outline" style={{ fontSize: 30, color: 'white' }} />
+        <Text style={{ marginLeft: 8, flex: 1, color: 'white', fontWeight: 'bold' }}>{texto_Info_Username}</Text>
       </View>
 
       <MiInputTextValidar
@@ -582,6 +605,38 @@ export default class PaginaPerfil extends React.Component {
     </MiDialogo>
   }
 
+  onDialogoPasswordotonCancelarPress = () => {
+    this.setState({ dialogoPasswordVisible: false });
+  }
+
+  ocultarTeclado = () => {
+    Keyboard.dismiss();
+  }
+
+  onDialogoPasswordAnteriorRef = (ref) => {
+    this.inputPasswordAnterior = ref;
+  }
+
+  onDialogoPasswordInputPasswordAnteriorChange = (val) => {
+    this.setState({ passwordAnterior: val });
+  }
+
+  onDialogoPasswordInputPasswordAnteriorError = (error) => {
+    this.setState({ passwordAnteriorError: error })
+  }
+
+  onDialogoPasswordRef = (ref) => {
+    this.inputPassword = ref;
+  }
+
+  onDialogoPasswordInputPasswordChange = (val) => {
+    this.setState({ passwordNueva: val });
+  }
+
+  onDialogoPasswordInputPasswordError = (error) => {
+    this.setState({ passwordNuevaError: error })
+  }
+
   renderDialogoCambiarPassword() {
     const valido = this.state.passwordAnterior != undefined
       && this.state.passwordAnteriorError == false
@@ -590,16 +645,14 @@ export default class PaginaPerfil extends React.Component {
 
     return <MiDialogo
       titulo="Cambiar contraseña"
-      onDismiss={() => { this.setState({ dialogoPasswordVisible: false }) }}
+      onDismiss={this.onDialogoPasswordotonCancelarPress}
       visible={this.state.dialogoPasswordVisible == true}
       cancelable={true}
       cargando={this.state.cargandoCambioPassword == true}
       botones={[
         {
           texto: 'Cancelar',
-          onPress: () => {
-            this.setState({ dialogoPasswordVisible: false });
-          }
+          onPress: this.onDialogoPasswordotonCancelarPress
         },
         {
           texto: 'Cambiar',
@@ -609,34 +662,31 @@ export default class PaginaPerfil extends React.Component {
       ]}
     >
       <MiInputTextValidar
-        onRef={(ref) => { this.inputPasswordAnterior = ref; }}
+        onRef={this.onDialogoPasswordAnteriorRef}
         valorInicial=''
         placeholder='Contraseña actual'
         keyboardType="default"
         returnKeyType="done"
         secureTextEntry={true}
         autoCorrect={false}
-        onSubmitEditing={() => {
-          Keyboard.dismiss();
-        }}
+        onSubmitEditing={this.ocultarTeclado}
         validaciones={{ requerido: true, minLength: 8, maxLength: 50, tipo: 'libre' }}
-        onChange={(val) => { this.setState({ passwordAnterior: val }); }}
-        onError={(error) => { this.setState({ passwordAnteriorError: error }) }}
+        onChange={this.onDialogoPasswordInputPasswordAnteriorChange}
+        onError={this.onDialogoPasswordInputPasswordAnteriorError}
       />
+
       <MiInputTextValidar
-        onRef={(ref) => { this.inputUsernameNuevo = ref; }}
+        onRef={this.onDialogoPasswordRef}
         valorInicial=''
         placeholder='Contraseña nueva'
         keyboardType="default"
         returnKeyType="done"
         secureTextEntry={true}
         autoCorrect={false}
-        onSubmitEditing={() => {
-          Keyboard.dismiss();
-        }}
+        onSubmitEditing={this.ocultarTeclado}
         validaciones={{ requerido: true, minLength: 8, maxLength: 50, tipo: 'libre' }}
-        onChange={(val) => { this.setState({ passwordNueva: val }); }}
-        onError={(error) => { this.setState({ passwordNuevaError: error }) }}
+        onChange={this.onDialogoPasswordInputPasswordChange}
+        onError={this.onDialogoPasswordInputPasswordError}
       />
 
     </MiDialogo>
@@ -684,16 +734,14 @@ const texto_Titulo_DatosContacto = 'Datos de contacto';
 const texto_Titulo_Email = 'E-Mail';
 const texto_Titulo_TelefonoFijo = 'Teléfono fijo';
 const texto_Titulo_TelefonoCelular = 'Teléfono Celular';
-const texto_Boton_EditarDatosContacto = 'Editar';
+const texto_Boton_EditarDatosContacto = 'Modificar datos de contacto';
 
 //Texto datos de acceso
 const texto_Titulo_DatosAcceso = 'Datos de acceso';
 const texto_Titulo_Username = 'Nombre de usuario';
-const texto_SinUsername = 'Usted no definió un nombre de usuario. Si lo desea puede hacerlo haciendo click aqui';
+const texto_SinUsername = 'No definió un nombre de usuario.';
+const texto_Boton_ModificarUsername = 'Modificar nombre de usuario';
+const texto_Boton_ModificarContraseña = 'Modificar contraseña';
+const texto_Info_Username = 'El nombre de usuario es un alias con el que usted puede acceder a su cuenta. Tenga en cuenta que todavia podrá acceder a través de su numero de CUIL';
 
-const texto_Titulo_Password = 'Contraseña';
-const texto_Contraseña_Detalle = 'Haga click aquí para cambiar su contraseña';
-
-
-
-
+const texto_TelefonoNoRegistrado = 'No registrado';

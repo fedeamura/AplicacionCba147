@@ -1,15 +1,14 @@
 import React from "react";
 import { View, Alert } from "react-native";
-import { Button, Text, ListItem } from "native-base";
+import { Text } from "native-base";
 import _ from "lodash";
-import autobind from "autobind-decorator";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 //Mis componentes
 import App from "@UI/App";
 import MiView from "@Utils/MiView";
 import CardCirculo from "@Utils/CardCirculo";
 import MiItemDetalle from "@Utils/MiItemDetalle";
+import MiBoton from "@Utils/MiBoton";
 import { toTitleCase, quitarAcentos } from "@Utils/Helpers";
 
 //Rules
@@ -38,7 +37,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
   static defaultProps = {
     ...React.Component.defaultProps,
     servicios: [],
-    onCargando: function() {}
+    onCargando: function () { }
   };
 
   componentWillUpdate(prevProps, prevState) {
@@ -47,281 +46,244 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     }
   }
 
-  @autobind
-  seleccionarServicio(servicio) {
-    this.setState({ cargando: true }, function() {
+  seleccionarServicio = (servicio) => {
+    this.setState({
+      cargando: true
+    }, () => {
       Rules_Motivo.get(servicio.id)
-        .then(
-          function(data) {
-            data = _.orderBy(data, "nombre");
-            this.setState(
-              {
-                servicioNombre: servicio.nombre,
-                motivos: data,
-                mostrarServicio: false
-              },
-              function() {
-                setTimeout(
-                  function() {
-                    this.setState({
-                      cargando: false,
-                      mostrarMotivo: true
-                    });
-                  }.bind(this),
-                  300
-                );
-              }
-            );
-          }.bind(this)
-        )
-        .catch(
-          function(error) {
-            this.setState({
-              cargando: false
-            });
-            Alert.alert("", error || "Error procesando la solicitud");
-          }.bind(this)
-        );
-    });
-  }
-
-  @autobind
-  cancelarServicio() {
-    this.setState({ mostrarMotivo: false }, function() {
-      setTimeout(
-        function() {
+        .then((data) => {
+          data = _.orderBy(data, "nombre");
           this.setState({
-            servicioNombre: undefined,
-            motivos: undefined,
-            mostrarServicio: true
+            servicioNombre: servicio.nombre,
+            motivos: data,
+            mostrarServicio: false
+          }, () => {
+            setTimeout(() => {
+              this.setState({
+                cargando: false,
+                mostrarMotivo: true
+              });
+            }, 300);
           });
-        }.bind(this),
-        300
-      );
+        })
+        .catch((error) => {
+          this.setState({
+            cargando: false
+          });
+          Alert.alert("", error || "Error procesando la solicitud");
+        });
     });
   }
 
-  @autobind
-  seleccionarMotivo(motivo) {
-    this.setState(
-      {
-        motivoNombre: motivo.nombre,
-        motivoId: motivo.id,
-        mostrarMotivo: false
-      },
-      function() {
-        this.informar();
-        setTimeout(
-          function() {
-            this.setState({ mostrarResultado: true });
-          }.bind(this),
-          300
-        );
-      }.bind(this)
-    );
+  cancelarServicio = () => {
+    this.setState({
+      mostrarMotivo: false
+    }, () => {
+      setTimeout(() => {
+        this.setState({
+          servicioNombre: undefined,
+          motivos: undefined,
+          mostrarServicio: true
+        });
+      }, 300);
+    });
   }
 
-  @autobind
-  seleccionarServicioMotivo(entity) {
-    this.setState(
-      {
-        servicioNombre: entity.servicioNombre,
-        motivoNombre: entity.motivoNombre,
-        motivoId: entity.motivoId,
-        mostrarMotivo: false,
-        mostrarServicio: false
-      },
-      function() {
-        this.informar();
-
-        setTimeout(
-          function() {
-            this.setState({ mostrarResultado: true });
-          }.bind(this)
-        );
-      }.bind(this)
-    );
-
-    // this.setState({
-    //     servicio: servicio,
-    //     motivo: motivo,
-    //     mostrarServicio: false,
-    //     mostrarMotivo: false
-    // }, function () {
-    //     this.informar();
-
-    //     setTimeout(function () {
-    //         this.setState({ mostrarResultado: true });
-    //     }.bind(this), 300);
-    // });
+  seleccionarMotivo = (motivo) => {
+    this.setState({
+      motivoNombre: motivo.nombre,
+      motivoId: motivo.id,
+      mostrarMotivo: false
+    }, () => {
+      this.informar();
+      setTimeout(() => {
+        this.setState({
+          mostrarResultado: true
+        });
+      }, 300);
+    });
   }
 
-  @autobind
-  cancelarMotivo() {
-    this.setState(
-      {
-        mostrarResultado: false,
-        mostrarMotivo: false
-      },
-      function() {
-        setTimeout(
-          function() {
-            this.setState(
-              {
-                motivoNombre: undefined,
-                servicioNombre: undefined,
-                motivoId: undefined,
-                mostrarServicio: true
-              },
-              () => {
-                this.informar();
-              }
-            );
-          }.bind(this),
-          300
-        );
-      }
-    );
+  seleccionarServicioMotivo = (entity) => {
+    this.setState({
+      servicioNombre: entity.servicioNombre,
+      motivoNombre: entity.motivoNombre,
+      motivoId: entity.motivoId,
+      mostrarMotivo: false,
+      mostrarServicio: false
+    }, () => {
+      this.informar();
+
+      setTimeout(() => {
+        this.setState({
+          mostrarResultado: true
+        });
+      });
+    });
   }
 
-  @autobind
-  verTodosLosServicios() {
+  cancelarMotivo = () => {
+    this.setState({
+      mostrarResultado: false,
+      mostrarMotivo: false
+    }, () => {
+      setTimeout(() => {
+        this.setState(
+          {
+            motivoNombre: undefined,
+            servicioNombre: undefined,
+            motivoId: undefined,
+            mostrarServicio: true
+          }, () => {
+            this.informar();
+          }
+        );
+      }, 300);
+    });
+  }
+
+  verTodosLosServicios = () => {
     App.navegar("PickerListado", {
       busqueda: true,
       backgroundColor: initData.backgroundColor,
-      placeholderBusqueda: "Buscar categoría...",
-      textoEmpty: "Categoría no encontrada",
-      cumpleBusqueda: function(item, texto) {
-        let campo = quitarAcentos(item.nombre.trim()).toLowerCase();
-        let filtro = quitarAcentos(texto.trim()).toLowerCase();
-        return campo.indexOf(filtro) != -1;
-      },
-      keyExtractor: function(data) {
-        return data.id;
-      },
+      placeholderBusqueda: "Buscar servicio...",
+      textoEmpty: "Servicio no encontrado",
+      cumpleBusqueda: this.cumpleFiltroTodosLosServicios,
+      keyExtractor: this.keyExtractorTodosLosServicios,
       data: this.state.servicios,
-      title: function(item) {
-        return toTitleCase(item.nombre);
-      },
+      title: this.titleTodosLosServicios,
       onPress: this.seleccionarServicio
     });
   }
 
-  @autobind
-  verTodosLosMotivos() {
+  keyExtractorTodosLosServicios = (data) => {
+    return data.id;
+  }
+
+  titleTodosLosServicios = (item) => {
+    return toTitleCase(item.nombre);
+  }
+
+  cumpleFiltroTodosLosServicios = (item, texto) => {
+    let campo = quitarAcentos(item.nombre.trim()).toLowerCase();
+    let filtro = quitarAcentos(texto.trim()).toLowerCase();
+    return campo.indexOf(filtro) != -1;
+  }
+
+  verTodosLosMotivos = () => {
     App.navegar("PickerListado", {
       busqueda: true,
       backgroundColor: initData.backgroundColor,
       placeholderBusqueda: "Buscar motivo...",
       textoEmpty: "Motivo no encontrado",
-      keyExtractor: function(data) {
-        return data.id;
-      },
-      cumpleBusqueda: function(item, texto) {
-        let campoNombre = quitarAcentos(item.nombre.trim()).toLowerCase();
-        let campoKeywords = quitarAcentos(item.keywords || "")
-          .trim()
-          .toLowerCase()
-          .split(" ");
-        let filtro = quitarAcentos(texto.trim()).toLowerCase();
-
-        let cumpleNombre = campoNombre.indexOf(filtro) != -1;
-        let cumpleKeyword = false;
-        for (let i = 0; i < campoKeywords.length; i++) {
-          let cumple = campoKeywords[i].indexOf(filtro) != -1;
-          if (cumple) {
-            cumpleKeyword = true;
-          }
-        }
-
-        return cumpleNombre == true || cumpleKeyword == true;
-      },
+      keyExtractor: this.keyExtractorTodosLosMotivos,
+      cumpleBusqueda: this.cumpleBusquedaTodosLosMotivos,
       data: this.state.motivos,
-      title: function(item) {
-        return toTitleCase(item.nombre).trim();
-      },
+      title: this.titleTodosLosMotivos,
       onPress: this.seleccionarMotivo
     });
   }
 
-  @autobind
-  buscar() {
-    this.setState({ cargando: true }, function() {
-      Rules_Motivo.getParaBuscar().then(
-        function(data) {
-          this.setState({ cargando: false });
+  keyExtractorTodosLosMotivos = (data) => {
+    return data.id;
+  }
 
-          data = _.orderBy(data, "motivoNombre");
-          App.navegar("PickerListado", {
-            busqueda: true,
-            backgroundColor: initData.backgroundColor,
-            placeholderBusqueda: "Buscar motivo...",
-            cumpleBusqueda: function(item, texto) {
-              let campoNombre = quitarAcentos(item.motivoNombre.toLowerCase().trim());
-              let campoServicio = quitarAcentos(item.servicioNombre.toLowerCase().trim());
-              let campoKeywords = quitarAcentos(item.motivoKeywords || "")
-                .trim()
-                .toLowerCase()
-                .split(" ");
+  titleTodosLosMotivos = (item) => {
+    return toTitleCase(item.nombre).trim();
+  }
 
-              let filtro = quitarAcentos(texto.toLowerCase().trim());
+  cumpleBusquedaTodosLosMotivos = (item, texto) => {
+    let campoNombre = quitarAcentos(item.nombre.trim()).toLowerCase();
+    let campoKeywords = quitarAcentos(item.keywords || "")
+      .trim()
+      .toLowerCase()
+      .split(" ");
+    let filtro = quitarAcentos(texto.trim()).toLowerCase();
 
-              let cumpleNombre = campoNombre.indexOf(filtro) != -1;
-              let cumpleServicio = campoServicio.indexOf(filtro) != -1;
-              let cumpleKeyword = false;
-              for (let i = 0; i < campoKeywords.length; i++) {
-                let cumple = campoKeywords[i].indexOf(filtro) != -1;
-                if (cumple) {
-                  cumpleKeyword = true;
-                }
-              }
+    let cumpleNombre = campoNombre.indexOf(filtro) != -1;
+    let cumpleKeyword = false;
+    for (let i = 0; i < campoKeywords.length; i++) {
+      let cumple = campoKeywords[i].indexOf(filtro) != -1;
+      if (cumple) {
+        cumpleKeyword = true;
+      }
+    }
 
-              return cumpleNombre == true || cumpleKeyword == true || cumpleServicio == true;
-            },
-            data: data,
-            keyExtractor: function(data) {
-              return data.motivoId;
-            },
-            renderItem: function(item) {
-              return (
-                <View style={{ width: "100%" }}>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "100%",
-                      alignItems: "flex-start",
-                      justifyContent: "flex-start"
-                    }}
-                  >
-                    <Text style={{ fontWeight: "bold", alignSelf: "flex-start" }}>Categoría:</Text>
-                    <Text style={{ flex: 1, alignSelf: "flex-start" }}>{toTitleCase(item.servicioNombre).trim()}</Text>
-                  </View>
-                  <View
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "100%",
-                      alignItems: "flex-start",
-                      justifyContent: "flex-start",
-                      marginTop: 8
-                    }}
-                  >
-                    <Text style={{ fontWeight: "bold", alignSelf: "flex-start" }}>Motivo:</Text>
-                    <Text style={{ flex: 1, alignSelf: "flex-start" }}>{toTitleCase(item.motivoNombre).trim()}</Text>
-                  </View>
-                </View>
-              );
-            },
-            onPress: this.seleccionarServicioMotivo
+    return cumpleNombre == true || cumpleKeyword == true;
+  }
+
+  buscar = () => {
+    if (global.motivosParaBusqueda != undefined) {
+      this.onMotivosParaBusquedaReady(global.motivosParaBusqueda);
+      return;
+    }
+
+    this.setState({ cargando: true }, () => {
+      Rules_Motivo.getParaBuscar()
+        .then((data) => {
+          this.setState({
+            cargando: false
           });
-        }.bind(this)
-      );
+          this.onMotivosParaBusquedaReady(data);
+        });
     });
   }
 
-  @autobind
-  informar() {
+  onMotivosParaBusquedaReady = (data) => {
+    global.motivosParaBusqueda = data;
+
+    data = _.orderBy(data, "motivoNombre");
+    App.navegar("PickerListado", {
+      busqueda: true,
+      backgroundColor: initData.backgroundColor,
+      placeholderBusqueda: "Buscar motivo...",
+      cumpleBusqueda: this.cumpleBusquedaMotivoBusqueda,
+      data: data,
+      keyExtractor: this.keyExtractorBusquedaMotivo,
+      renderItem: this.renderItemMotivoBusqueda,
+      onPress: this.seleccionarServicioMotivo
+    });
+  }
+
+  cumpleBusquedaMotivoBusqueda = (item, texto) => {
+    let campoNombre = quitarAcentos(item.motivoNombre.toLowerCase().trim());
+    let campoServicio = quitarAcentos(item.servicioNombre.toLowerCase().trim());
+    let campoKeywords = quitarAcentos(item.motivoKeywords || "")
+      .trim()
+      .toLowerCase()
+      .split(" ");
+
+    let filtro = quitarAcentos(texto.toLowerCase().trim());
+
+    let cumpleNombre = campoNombre.indexOf(filtro) != -1;
+    let cumpleServicio = campoServicio.indexOf(filtro) != -1;
+    let cumpleKeyword = false;
+    for (let i = 0; i < campoKeywords.length; i++) {
+      let cumple = campoKeywords[i].indexOf(filtro) != -1;
+      if (cumple) {
+        cumpleKeyword = true;
+      }
+    }
+
+    return cumpleNombre == true || cumpleKeyword == true || cumpleServicio == true;
+  }
+
+  keyExtractorBusquedaMotivo = (data) => {
+    return data.motivoId;
+  }
+
+  renderItemMotivoBusqueda = (item) => {
+    return (
+      <View key={item.motivoId} style={{ width: "100%" }}>
+        <Text style={{ flex: 1, alignSelf: "flex-start", fontSize: 20 }}>{toTitleCase(item.motivoNombre).trim()}</Text>
+        <Text style={{ flex: 1, alignSelf: "flex-start", fontSize: 16, opacity: 0.9 }}>
+          Servicio: {toTitleCase(item.servicioNombre).trim()}
+        </Text>
+      </View>
+    );
+  }
+
+  informar = () => {
     if (this.props.onMotivo == undefined) return;
     this.props.onMotivo({
       servicioNombre: this.state.servicioNombre,
@@ -330,14 +292,22 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     });
   }
 
-  @autobind
-  informarReady() {
+  informarReady = () => {
     if (this.props.onReady == undefined) return;
     this.props.onReady({
       servicioNombre: this.state.servicioNombre,
       motivoNombre: this.state.motivoNombre,
       motivoId: this.state.motivoId
     });
+  }
+
+  onLayout = (event) => {
+    var { width, height } = event.nativeEvent.layout;
+    this.setState({ height: height, width: width - 32 });
+  }
+
+  onServicioPrincipalPress = (servicio) => {
+    this.seleccionarServicio(servicio);
   }
 
   render() {
@@ -352,16 +322,10 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     );
   }
 
-  @autobind
-  onLayout(event) {
-    var { width, height } = event.nativeEvent.layout;
-    this.setState({ height: height, width: width - 32 });
-  }
-
   renderViewServiciosPrincipales() {
-    const wCirculo = (this.state.width || 0) / 3;
+    const wCirculo = (this.state.width || 0) / 2;
     const iconoFontSize = 24;
-    const textoFontSize = 12;
+    const textoFontSize = 16;
     const cardColorFondo = "rgba(230,230,230,1)";
     const iconoColor = "white";
 
@@ -379,11 +343,13 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
       let iconColor = iconoColor;
 
       return (
-        <View style={{ width: wCirculo }}>
+        <View style={{ width: wCirculo }} key={servicio.id}>
           <CardCirculo
-            key={servicio.Id}
-            onPress={this.seleccionarServicio.bind(this, servicio)}
+            key={servicio.id}
+            data={servicio}
+            onPress={this.onServicioPrincipalPress}
             icono={servicio.icono || "flash"}
+            urlIcono={servicio.urlIcono || ""}
             texto={toTitleCase(servicio.nombre || "Sin datos")}
             textoLines={2}
             iconoStyle={{ fontSize: iconoFontSize, color: iconColor }}
@@ -399,22 +365,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
       <MiView visible={this.state.mostrarServicio}>
         <View style={{ padding: 16 }} onLayout={this.onLayout}>
           {/* Buscar */}
-          <View>
-            <Button
-              small
-              rounded
-              bordered
-              onPress={this.buscar}
-              style={{ alignSelf: "flex-end", borderColor: "rgba(130,130,130,1)" }}
-            >
-              <Icon name="magnify" style={{ fontSize: 18, marginLeft: 4 }} />
-              <Text style={{ color: "rgba(130,130,130,1)" }}>{texto_BotonBuscar}</Text>
-            </Button>
+          {this.renderBotonBuscar()}
 
-            <View style={{ height: 16 }} />
-          </View>
-
-          {/* <Text style={{ alignSelf: 'center', fontSize: 22, marginBottom: 8 }}>Categorias principales</Text> */}
           <View
             style={{
               display: "flex",
@@ -429,69 +381,64 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
           </View>
 
           {/* Boton ver todas  */}
-          <Button
+          <MiBoton
+            centro
             bordered
-            small
+            verde
             rounded
+            small
             onPress={this.verTodosLosServicios}
-            style={{
-              alignSelf: "center",
-              borderColor: initData.colorVerde
-            }}
-          >
-            <Text style={{ color: initData.colorVerde }}>{texto_BotonTodosLosServicios}</Text>
-          </Button>
+            texto={texto_BotonTodosLosServicios} />
         </View>
       </MiView>
     );
   }
 
-  renderViewSeleccionarMotivo() {
-    const initData = global.initData;
+  renderBotonBuscar() {
+    return (
+      <MiBoton
+        padding={16}
+        texto={texto_BotonBuscar}
+        icono="magnify"
+        bordered
+        small
+        rounded
+        onPress={this.buscar}
+        centro />
+    );
+  }
 
+  renderViewSeleccionarMotivo() {
     const nombreServicio = this.state.servicioNombre == undefined ? "" : toTitleCase(this.state.servicioNombre);
-    const motivos = [];
-    if (this.state.motivos != undefined) {
-      for (var i = 0; i < this.state.motivos.length; i++) {
-        let motivo = this.state.motivos[i];
-        if (motivo && motivo.principal == true) {
-          motivos.push(motivo);
-        }
-      }
-    }
+    // const motivos = [];
+    // if (this.state.motivos != undefined) {
+    //   for (var i = 0; i < this.state.motivos.length; i++) {
+    //     let motivo = this.state.motivos[i];
+    //     if (motivo && motivo.principal == true) {
+    //       motivos.push(motivo);
+    //     }
+    //   }
+    // }
 
     return (
       <MiView visible={this.state.mostrarMotivo}>
         <View style={{ padding: 16 }}>
           {/* Buscar */}
-          <View>
-            <Button
-              small
-              rounded
-              onPress={this.buscar}
-              bordered
-              style={{ alignSelf: "flex-end", borderColor: "rgba(130,130,130,1)" }}
-            >
-              <Icon name="magnify" style={{ fontSize: 18, marginLeft: 4 }} />
-              <Text style={{ color: "rgba(130,130,130,1)" }}>{texto_BotonBuscar}</Text>
-            </Button>
+          {/* {this.renderBotonBuscar()} */}
 
-            <View style={{ height: 16 }} />
-          </View>
-
-          {/* Categoria seleccionada */}
+          {/* Servicio seleccionada */}
           <View style={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <MiItemDetalle titulo={texto_ServicioSeleccionado} subtitulo={nombreServicio} />
 
-            <Button transparent small onPress={this.cancelarServicio}>
-              <Text style={{ color: initData.colorError, marginLeft: -16, textDecorationLine: "underline" }}>
-                {texto_BotonCancelarServicio}
-              </Text>
-            </Button>
+            <MiBoton
+              link
+              onPress={this.cancelarServicio}
+              texto={texto_BotonCancelarServicio}
+              rojo />
           </View>
 
           {/* Listado de motivos principales */}
-          <View style={{ height: 32 }} />
+          {/* <View style={{ height: 32 }} />
           <Text style={{ fontWeight: "bold" }}>{texto_SeleccioneMotivo}</Text>
           <View style={{ height: 8 }} />
           {motivos.map(item => {
@@ -500,26 +447,25 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                 <Text>{toTitleCase(item.nombre).trim()}</Text>
               </ListItem>
             );
-          })}
-          <View style={{ height: 16 }} />
+          })} */}
+          <View style={{ height: 32 }} />
 
           {/* Boton ver todos los motivos */}
-          <Button
-            onPress={this.verTodosLosMotivos}
+          <MiBoton
+            rounded
             bordered
             small
-            rounded
-            style={{ alignSelf: "center", borderColor: "green" }}
-          >
-            <Text style={{ color: "green" }}>{texto_BotonTodosLosMotivos}</Text>
-          </Button>
+            centro
+            verde
+            onPress={this.verTodosLosMotivos}
+            texto={texto_BotonTodosLosMotivos}
+          />
         </View>
       </MiView>
     );
   }
 
   renderViewMotivoSeleccionado() {
-    const initData = global.initData;
 
     const nombreServicio = toTitleCase(this.state.servicioNombre || "Sin datos").trim();
     const nombreMotivo = toTitleCase(this.state.motivoNombre || "Sin datos").trim();
@@ -538,19 +484,29 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
               </View>
             </View>
 
-            <View style={{ height: 16 }} />
-            <Button small onPress={this.cancelarMotivo} transparent style={{}}>
-              <Text style={{ color: initData.colorError, textDecorationLine: "underline", marginLeft: -16 }}>
-                {texto_BotonCancelarSeleccion}
-              </Text>
-            </Button>
+            <MiBoton
+              link
+              onPress={this.cancelarMotivo}
+              texto={texto_BotonCancelarSeleccion}
+              rojo />
+
+
           </View>
 
           <View style={{ height: 16 }} />
           <View style={{ height: 1, width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }} />
 
           {/* Boton siguiente  */}
-          <View style={{ padding: 16 }}>
+          <MiBoton
+            verde
+            sombra
+            small
+            rounded
+            onPress={this.informarReady}
+            texto={texto_botonSiguiente}
+            padding={16}
+            derecha />
+          {/* <View style={{ padding: 16 }}>
             <Button
               small
               onPress={this.informarReady}
@@ -568,7 +524,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
                 {texto_botonSiguiente}
               </Text>
             </Button>
-          </View>
+          </View> */}
         </View>
       </MiView>
     );
@@ -576,12 +532,12 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 }
 
 const colorCancelar = "#E53935";
-const texto_BotonTodosLosServicios = "Ver todas las categorías";
-const texto_BotonBuscar = "Buscar";
-const texto_BotonCancelarServicio = "Cancelar categoría";
+const texto_BotonTodosLosServicios = "Ver todos los servicios";
+const texto_BotonBuscar = "Buscar motivo";
+const texto_BotonCancelarServicio = "Cancelar servicio";
 const texto_SeleccioneMotivo = "Ahora seleccione un motivo:";
-const texto_ServicioSeleccionado = "Categoria seleccionada";
-const texto_BotonTodosLosMotivos = "Ver todos los motivos";
+const texto_ServicioSeleccionado = "Servicio seleccionado";
+const texto_BotonTodosLosMotivos = "Seleccionar motivo";
 const texto_MotivoSeleccionado = "Motivo seleccionado";
 const texto_BotonCancelarSeleccion = "Cancelar selección";
 const texto_botonSiguiente = "Siguiente";

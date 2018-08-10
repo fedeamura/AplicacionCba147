@@ -1,29 +1,14 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  Animated,
-} from "react-native";
-import {
-  Button,
-  Text,
-} from "native-base";
-import LottieView from 'lottie-react-native';
+import { StyleSheet, View, Animated } from "react-native";
+import { Text } from "native-base";
+import LottieView from "lottie-react-native";
 
 //Mis componentes
-import App from "Cordoba/src/UI/App";
+import MiBoton from "@Utils/MiBoton";
 
-
-export default class RequerimientoNuevo_Resultado extends React.Component {
-
-
+export default class RequerimientoNuevo_Resultado extends React.PureComponent {
   constructor(props) {
     super(props);
-
-    this.state = {
-      visible: props.visible,
-      cargando: props.cargando
-    };
 
     this.anim = new Animated.Value(0);
     this.animTextos = new Animated.Value(0);
@@ -43,24 +28,22 @@ export default class RequerimientoNuevo_Resultado extends React.Component {
     }
   }
 
-
   componentWillReceiveProps(nextProps) {
-    if (nextProps.visible == true) {
-      this.mostrar();
-    } else {
-      this.ocultar();
+    if (this.props.visible != nextProps.visible) {
+      if (nextProps.visible == true) {
+        this.mostrar();
+      } else {
+        this.ocultar();
+      }
     }
 
-    if (nextProps.cargando == true) {
-      this.mostrarCargando();
-    } else {
-      this.ocultarCargando();
+    if (this.props.cargando != nextProps.cargando) {
+      if (nextProps.cargando == true) {
+        this.mostrarCargando();
+      } else {
+        this.ocultarCargando();
+      }
     }
-
-    this.setState({
-      visible: nextProps.visible,
-      cargando: nextProps.cargando
-    });
   }
 
   mostrar = () => {
@@ -68,14 +51,14 @@ export default class RequerimientoNuevo_Resultado extends React.Component {
       toValue: 1,
       timing: 300
     }).start();
-  }
+  };
 
   ocultar = () => {
     Animated.timing(this.anim, {
       toValue: 0,
       timing: 300
     }).start();
-  }
+  };
 
   mostrarCargando = () => {
     Animated.timing(this.animTextos, {
@@ -97,8 +80,9 @@ export default class RequerimientoNuevo_Resultado extends React.Component {
           toValue: 0,
           duration: 1000
         })
-      ])).start();
-  }
+      ])
+    ).start();
+  };
 
   ocultarCargando = () => {
     Animated.timing(this.animTextos, {
@@ -114,23 +98,34 @@ export default class RequerimientoNuevo_Resultado extends React.Component {
       toValue: 1,
       duration: 1500
     }).start();
-  }
+  };
 
   render() {
-    const textoResultado = texto_RequerimientoRegistrado.replace('{numero}', this.props.numero || 'sin número');
-
+    const initData = global.initData;
+    const textoResultado = texto_RequerimientoRegistrado;
+    let textoNumero = "";
+    if (this.props.numero != undefined) {
+      textoNumero = this.props.numero;
+    } else {
+      textoNumero = "Sin datos";
+    }
     return (
       <Animated.View
-        pointerEvents={this.props.visible == true ? 'auto' : 'none'}
-        style={[styles.contenedor_Resultado, {
-          opacity: this.anim
-        }]}>
+        pointerEvents={this.props.visible == true ? "auto" : "none"}
+        style={[
+          styles.contenedor_Resultado,
+          {
+            opacity: this.anim
+          }
+        ]}
+      >
         <View style={styles.animacion_Resultado}>
           <LottieView
-            style={{ width: '100%', height: '100%' }}
-            resizeMode='contain'
-            source={require('@Resources/animacion_exito.json')}
-            progress={this.animLottie} />
+            style={{ width: "100%", height: "100%" }}
+            resizeMode="contain"
+            source={require("@Resources/animacion_exito.json")}
+            progress={this.animLottie}
+          />
         </View>
 
         <View style={styles.contenedor_Textos}>
@@ -138,29 +133,48 @@ export default class RequerimientoNuevo_Resultado extends React.Component {
             style={[
               styles.texto_Registrando,
               {
-                position: 'absolute',
+                position: "absolute",
                 opacity: this.animTextosCargando
-              }]
-            }>{texto_Registrando}</Animated.Text>
+              }
+            ]}
+          >
+            {texto_Registrando}
+          </Animated.Text>
 
-          <Animated.View style={[
-            {
-              opacity: this.animTextos
-            }]}>
-            <Text style={styles.texto_Resultado}>{textoResultado}</Text>
-            <View style={{ marginTop: 16 }}>
-              <Button
-                bordered
-                rounded
-                style={{ alignSelf: 'center', borderColor: 'green' }}
-                onPress={this.props.onPressVerDetalle}>
-                <Text style={{ color: 'green' }}>{texto_BotonVerDetalle}</Text>
-              </Button>
+          <Animated.View
+            style={[
+              {
+                opacity: this.animTextos
+              }
+            ]}
+          >
+            <View>
+              <Text style={styles.texto_Resultado}>{textoResultado}</Text>
+              <Text style={[styles.texto_ResultadoNumero, { color: initData.colorVerde }]}>{textoNumero}</Text>
+              <Text style={styles.texto_ResultadoEmail}>{texto_EmailEnviado}</Text>
             </View>
+            <View style={{ marginTop: 16 }}>
+              <MiBoton
+                rounded
+                centro
+                sombra
+                verde
+                onPress={this.props.onPressVerDetalle}
+                texto={texto_BotonVerDetalle}
+              />
 
+              <View style={{ height: 16 }} />
+
+              <MiBoton
+                texto={texto_BotonVolver}
+                centro
+                rounded
+                bordered
+                onPress={this.props.onPressVolver}
+                small />
+            </View>
           </Animated.View>
         </View>
-
       </Animated.View>
     );
   }
@@ -168,40 +182,61 @@ export default class RequerimientoNuevo_Resultado extends React.Component {
 
 const styles = StyleSheet.create({
   contenedor_Resultado: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
+    width: "100%",
+    height: "100%",
+    position: "absolute",
     left: 0,
     top: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'white',
-    display: 'flex',
-    justifyContent: 'center'
+    backgroundColor: "white",
+    display: "flex",
+    justifyContent: "center"
   },
   animacion_Resultado: {
     width: 200,
     height: 200,
-    alignSelf: 'center'
+    alignSelf: "center"
   },
   contenedor_Textos: {
-    width: '100%',
+    width: "100%"
   },
   texto_Registrando: {
     fontSize: 24,
     height: 72,
-    textAlign: 'center',
+    textAlign: "center",
     maxWidth: 300,
-    alignSelf: 'center'
+    alignSelf: "center"
   },
   texto_Resultado: {
     fontSize: 24,
-    textAlign: 'center',
+    textAlign: "center",
     maxWidth: 300,
-    alignSelf: 'center'
+    alignSelf: "center"
+  },
+  texto_ResultadoNumero: {
+    fontSize: 32,
+    textAlign: "center",
+    maxWidth: 300,
+    alignSelf: "center"
+  },
+  texto_ResultadoEmail: {
+    fontSize: 18,
+    marginTop: 16,
+    textAlign: "center",
+    maxWidth: 300,
+    alignSelf: "center"
+  },
+  botonDetalle: {
+    shadowOpacity: 0.4,
+    alignSelf: "center",
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 7 }
   }
 });
 
-const texto_Registrando = 'Registrando su requerimiento';
-const texto_RequerimientoRegistrado = 'Requerimiento número {numero} registrado correctamente';
-const texto_BotonVerDetalle = 'Ver detalle';
+const texto_Registrando = "Registrando su requerimiento";
+const texto_RequerimientoRegistrado = "Requerimiento registrado correctamente";
+const texto_EmailEnviado = "Se ha enviado un e-mail a su casilla de correo con el comprobante de la operación";
+const texto_BotonVerDetalle = "Ver detalle";
+const texto_BotonVolver = "Volver";

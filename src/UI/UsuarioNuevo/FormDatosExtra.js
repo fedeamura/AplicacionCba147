@@ -3,10 +3,10 @@ import { StyleSheet, View, Keyboard, Alert } from "react-native";
 import { Button, Text } from "native-base";
 import { Card, CardContent } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import autobind from "autobind-decorator";
 
 //Mis componentes
 import MiInputTextValidar from "@Utils/MiInputTextValidar";
+import MiBoton from "../_Utils/MiBoton";
 
 export default class NuevoUsuario_FormDatosExtra extends React.Component {
   constructor(props) {
@@ -37,8 +37,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     };
   }
 
-  @autobind
-  validarCampos() {
+  validarCampos = () => {
     let tieneContraseña = this.state.contraseña != undefined && this.state.contraseña != "";
     let tieneRepetirContraseña = this.state.repetirContraseña != undefined && this.state.repetirContraseña != "";
     let tieneEmail = this.state.email != undefined && this.state.email != "";
@@ -60,18 +59,13 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     });
   }
 
-  @autobind
-  onUsernameChange(val) {
-    this.setState(
-      {
-        username: val
-      },
-      this.validarCampos
-    );
+  onUsernameChange = (val) => {
+    this.setState({
+      username: val
+    }, this.validarCampos);
   }
 
-  @autobind
-  onContraseñaChange(val) {
+  onContraseñaChange = (val) => {
     this.setState(
       {
         contraseña: val
@@ -80,8 +74,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     );
   }
 
-  @autobind
-  onRepetirContraseñaChange(val) {
+  onRepetirContraseñaChange = (val) => {
     this.setState(
       {
         repetirContraseña: val
@@ -90,8 +83,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     );
   }
 
-  @autobind
-  onEmailChange(val) {
+  onEmailChange = (val) => {
     this.setState(
       {
         email: val
@@ -100,8 +92,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     );
   }
 
-  @autobind
-  onTelefonoFijoCaracteristicaChange(val) {
+  onTelefonoFijoCaracteristicaChange = (val) => {
     this.setState(
       {
         telefonoFijoCaracteristica: val
@@ -110,8 +101,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     );
   }
 
-  @autobind
-  onTelefonoFijoNumeroChange(val) {
+  onTelefonoFijoNumeroChange = (val) => {
     this.setState(
       {
         telefonoFijoNumero: val
@@ -120,8 +110,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     );
   }
 
-  @autobind
-  onTelefonoCelularCaracteristicaChange(val) {
+  onTelefonoCelularCaracteristicaChange = (val) => {
     this.setState(
       {
         telefonoCelularCaracteristica: val
@@ -130,8 +119,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     );
   }
 
-  @autobind
-  onTelefonoCelularNumeroChange(val) {
+  onTelefonoCelularNumeroChange = (val) => {
     this.setState(
       {
         telefonoCelularNumero: val
@@ -140,8 +128,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     );
   }
 
-  @autobind
-  registrar() {
+  registrar = () => {
     Keyboard.dismiss();
 
     //Valido password
@@ -149,9 +136,9 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
       Alert.alert("", texto_Error_IngreseContraseña, [
         {
           text: "Aceptar",
-          onPress: function() {
+          onPress: () => {
             this.inputContraseña._root.focus();
-          }.bind(this)
+          }
         }
       ]);
       return;
@@ -162,9 +149,9 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
       Alert.alert("", texto_Error_IngreseRepetirContraseña, [
         {
           text: "Aceptar",
-          onPress: function() {
+          onPress: () => {
             this.inputRepetirContraseña._root.focus();
-          }.bind(this)
+          }
         }
       ]);
       return;
@@ -175,9 +162,9 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
       Alert.alert("", texto_Error_ContraseñasNoCoinciden, [
         {
           text: "Aceptar",
-          onPress: function() {
+          onPress: () => {
             this.inputRepetirContraseña._root.focus();
-          }.bind(this)
+          }
         }
       ]);
       return;
@@ -188,9 +175,9 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
       Alert.alert("", texto_Error_IngreseEmail, [
         {
           text: "Aceptar",
-          onPress: function() {
+          onPress: () => {
             this.inputEmail._root.focus();
-          }.bind(this)
+          }
         }
       ]);
       return;
@@ -216,9 +203,9 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
         Alert.alert("", mensaje, [
           {
             text: "Aceptar",
-            onPress: function() {
+            onPress: () => {
               input.focus();
-            }.bind(this)
+            }
           }
         ]);
         return;
@@ -244,10 +231,10 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
         Alert.alert("", mensaje, [
           {
             text: "Aceptar",
-            onPress: function() {
+            onPress: () => {
               input.focus();
             }
-          }.bind(this)
+          }
         ]);
         return;
       }
@@ -289,88 +276,71 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     }
   }
 
-  @autobind
-  onInputUsernameRef(ref) {
+  onInputUsernameRef = (ref) => {
     this.inputUsername = ref;
   }
 
-  @autobind
-  onInputUsernameError(error) {
+  onInputUsernameError = (error) => {
     this.setState({ usernameError: error });
   }
 
-  @autobind
-  onInputPasswordRef(ref) {
+  onInputPasswordRef = (ref) => {
     this.inputContraseña = ref;
   }
 
-  @autobind
-  onInputPasswordError(error) {
+  onInputPasswordError = (error) => {
     this.setState({ contraseñaError: error });
   }
 
-  @autobind
-  onInputRepetirPasswordRef(ref) {
+  onInputRepetirPasswordRef = (ref) => {
     this.inputRepetirContraseña = ref;
   }
 
-  @autobind
-  onInputRepetirPasswordError(error) {
+  onInputRepetirPasswordError = (error) => {
     this.setState({ repetirContraseñaError: error });
   }
 
-  @autobind
-  onInputEmailRef(ref) {
+  onInputEmailRef = (ref) => {
     this.inputEmail = ref;
   }
 
-  @autobind
-  onInputEmailError(error) {
+  onInputEmailError = (error) => {
     this.emailError = error;
   }
 
-  @autobind
-  onInputTelefonoCelularCaracteristicaRef(ref) {
+  onInputTelefonoCelularCaracteristicaRef = (ref) => {
     this.inputTelefonoCelularCaracteristica = ref;
   }
 
-  @autobind
-  onInputTelefonoCelularCaracteristicaError(error) {
+  onInputTelefonoCelularCaracteristicaError = (error) => {
     this.setState({ telefonoCelularCaracteristicaError: error });
   }
 
-  @autobind
-  onInputTelefonoCelularNumeroRef(ref) {
+  onInputTelefonoCelularNumeroRef = (ref) => {
     this.inputTelefonoCelularNumero = ref;
   }
 
-  @autobind
-  onInputTelefonoCelularNumeroError(error) {
+  onInputTelefonoCelularNumeroError = (error) => {
     this.setState({ telefonoCelularNumeroError: error });
   }
 
-  @autobind
-  onInputTelefonoFijoCaracteristicaRef(ref) {
+  onInputTelefonoFijoCaracteristicaRef = (ref) => {
     this.inputTelefonoFijoCaracteristica = ref;
   }
 
-  @autobind
-  onInputTelefonoFijoCaracteristicaError(error) {
+  onInputTelefonoFijoCaracteristicaError = (error) => {
     this.setState({ telefonoFijoCaracteristicaError: error });
   }
 
-  @autobind
-  onInputTelefonoFijoNumeroRef(ref) {
+  onInputTelefonoFijoNumeroRef = (ref) => {
     this.inputTelefonoFijoNumero = ref;
   }
 
-  @autobind
-  onInputTelefonoFijoNumeroError(error) {
+  onInputTelefonoFijoNumeroError = (error) => {
     this.setState({ telefonoFijoNumeroError: error });
   }
 
-  @autobind
-  focusInputPassword() {
+  focusInputPassword = () => {
     if (this.state.contraseña == undefined || this.state.contraseña == "") {
       if (this.inputContraseña == undefined) return;
       this.inputContraseña._root.focus();
@@ -379,8 +349,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     }
   }
 
-  @autobind
-  focusInputRepetirPassword() {
+  focusInputRepetirPassword = () => {
     if (this.state.repetirContraseña == undefined || this.state.repetirContraseña == "") {
       if (this.inputRepetirContraseña == undefined) return;
       this.inputRepetirContraseña._root.focus();
@@ -389,8 +358,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     }
   }
 
-  @autobind
-  focusInputTelefonoCelularCaracteristica() {
+  focusInputTelefonoCelularCaracteristica = () => {
     if (this.state.telefonoCelularCaracteristica == undefined || this.state.telefonoCelularCaracteristica == "") {
       if (this.inputTelefonoCelularCaracteristica == undefined) return;
       this.inputTelefonoCelularCaracteristica._root.focus();
@@ -399,8 +367,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     }
   }
 
-  @autobind
-  focusTelefonoCelularNumero() {
+  focusTelefonoCelularNumero = () => {
     if (this.state.telefonoCelularNumero == undefined || this.state.telefonoCelularNumero == "") {
       if (this.inputTelefonoCelularNumero == undefined) return;
       this.inputTelefonoCelularNumero._root.focus();
@@ -409,8 +376,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     }
   }
 
-  @autobind
-  focusTelefonoFijoCaracteristica() {
+  focusTelefonoFijoCaracteristica = () => {
     if (this.state.telefonoFijoCaracteristica == undefined || this.state.telefonoFijoCaracteristica == "") {
       if (this.inputTelefonoFijoCaracteristica == undefined) return;
       this.inputTelefonoFijoCaracteristica._root.focus();
@@ -419,8 +385,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
     }
   }
 
-  @autobind
-  focusTelefonoFijoNumero() {
+  focusTelefonoFijoNumero = () => {
     if (this.state.telefonoFijoNumero == undefined || this.state.telefonoFijoNumero == "") {
       if (this.inputTelefonoFijoNumero == undefined) return;
       this.inputTelefonoFijoNumero._root.focus();
@@ -431,7 +396,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
 
   render() {
     const initData = global.initData;
-    
+
     return (
       <View style={{}}>
         <Text style={{ fontSize: 24, marginLeft: 24, marginTop: 32 }}>{texto_TituloDatosAcceso}</Text>
@@ -518,15 +483,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
                   minLength: 2,
                   maxLength: 5,
                   tipo: "numeroEntero",
-                  mensajes: {
-                    minLength: function(val) {
-                      return "*";
-                    }.bind(this),
-                    maxLength: function(val) {
-                      return "*";
-                    }.bind(this),
-                    tipo: "*"
-                  }
+                  mensajes: mensajes
                 }}
                 onChange={this.onTelefonoCelularCaracteristicaChange}
                 onError={this.onInputTelefonoCelularCaracteristicaError}
@@ -564,15 +521,7 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
                   minLength: 2,
                   maxLength: 5,
                   tipo: "numeroEntero",
-                  mensajes: {
-                    minLength: function(val) {
-                      return "*";
-                    }.bind(this),
-                    maxLength: function(val) {
-                      return "*";
-                    }.bind(this),
-                    tipo: "*"
-                  }
+                  mensajes: mensajes
                 }}
                 onChange={this.onTelefonoFijoCaracteristicaChange}
                 onError={this.onInputTelefonoFijoCaracteristicaError}
@@ -595,7 +544,8 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
 
         {/* Boton Registrar */}
         <View style={{ marginTop: 32 }}>
-          <Button
+        <MiBoton />
+          {/* <Button
             rounded
             style={[
               styles.botonRegistrar,
@@ -607,11 +557,20 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
             onPress={this.registrar}
           >
             <Text>{texto_BotonRegistrar}</Text>
-          </Button>
+          </Button> */}
         </View>
       </View>
     );
   }
+}
+const mensajes = {
+  minLength: (val) => {
+    return "*";
+  },
+  maxLength: (val) => {
+    return "*";
+  },
+  tipo: "*"
 }
 
 const styles = StyleSheet.create({

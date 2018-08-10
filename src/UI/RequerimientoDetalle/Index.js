@@ -1,27 +1,24 @@
 import React from "react";
-import {
-  View,
-  Animated,
-  StyleSheet,
-  ScrollView,
-  Keyboard,
-  TouchableOpacity
-} from "react-native";
-import { Text, Spinner, Button } from 'native-base'
-import LinearGradient from 'react-native-linear-gradient';
+import { View, Animated, StyleSheet, ScrollView, Keyboard, Alert } from "react-native";
+import { Text, Spinner } from "native-base";
 import WebImage from "react-native-web-image";
-import openMap from 'react-native-open-maps';
+import openMap from "react-native-open-maps";
 
 //Mis componentes
 import App from "@UI/App";
 import MiStatusBar from "@Utils/MiStatusBar";
 import MiToolbar from "@Utils/MiToolbar";
-import MiCardDetalle from '@Utils/MiCardDetalle';
-import MiItemDetalle from '@Utils/MiItemDetalle';
-import MiGaleria from '@Utils/MiGaleria';
+import MiToolbarSombra from "@Utils/MiToolbarSombra";
+import MiCardDetalle from "@Utils/MiCardDetalle";
+import MiItemDetalle from "@Utils/MiItemDetalle";
+import MiGaleria from "@Utils/MiGaleria";
+import ItemFoto from "@UI/RequerimientoDetalle/ItemFoto";
+import MiBoton from "@Utils/MiBoton";
+
+import { toTitleCase, stringDateToString } from "@Utils/Helpers";
 
 //Rules
-import Rules_Requerimiento from '@Rules/Rules_Requerimiento';
+import Rules_Requerimiento from "@Rules/Rules_Requerimiento";
 
 export default class RequerimientoDetalle extends React.Component {
   static navigationOptions = {
@@ -39,18 +36,7 @@ export default class RequerimientoDetalle extends React.Component {
       id: params.id,
       cargando: true,
       datos: undefined,
-      error: undefined,
-      imagenes: [
-        "https://i1.wp.com/www.roshfrans.com/wp-content/uploads/2015/08/Bache3.png?zoom=2&resize=1277%2C547",
-        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
-        "https://lucidezheterogenea.files.wordpress.com/2016/06/bache.jpg?w=496&h=299&crop=1",
-        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
-        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
-        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
-        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
-        "https://lasillarota.blob.core.windows.net.optimalcdn.com/images/2017/01/22/98710_bache13_focus_0_0_480_345.jpg",
-      ]
-
+      error: undefined
     };
 
     this.animContenido = new Animated.Value(0);
@@ -58,8 +44,8 @@ export default class RequerimientoDetalle extends React.Component {
   }
 
   componentWillMount() {
-    this.keyboardWillShowSub = Keyboard.addListener('keyboardWillShow', this.keyboardWillShow);
-    this.keyboardWillHideSub = Keyboard.addListener('keyboardWillHide', this.keyboardWillHide);
+    this.keyboardWillShowSub = Keyboard.addListener("keyboardWillShow", this.keyboardWillShow);
+    this.keyboardWillHideSub = Keyboard.addListener("keyboardWillHide", this.keyboardWillHide);
   }
 
   componentWillUnmount() {
@@ -71,23 +57,30 @@ export default class RequerimientoDetalle extends React.Component {
     this.buscarDatos();
   }
 
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.cargando != this.state.cargando) {
+      Animated.timing(this.animContenido, { toValue: nextState.cargando == true ? 0 : 1, duration: 300 }).start();
+    }
+  }
+
   buscarDatos = () => {
-
-    this.setState({ cargando: true }, () => {
-      Animated.timing(this.animContenido, { toValue: 0, duration: 300 }).start(() => {
-
-        Rules_Requerimiento.getDetalle(this.state.id)
-          .then((data) => {
-            this.setState({ cargando: false, datos: data }, () => {
-              Animated.timing(this.animContenido, { toValue: 1, duration: 300 }).start();
-            });
-          })
-          .catch((error) => {
-            this.setState({ cargando: false, datos: undefined, error: error }, () => {
-              Animated.timing(this.animContenido, { toValue: 1, duration: 300 }).start();
-            });
+    this.setState({
+      cargando: true
+    }, () => {
+      Rules_Requerimiento.getDetalle(this.state.id)
+        .then((data) => {
+          this.setState({
+            cargando: false,
+            datos: data
           });
-      });
+        })
+        .catch((error) => {
+          this.setState({
+            cargando: false,
+            datos: undefined,
+            error: error
+          });
+        });
     });
   }
 
@@ -96,7 +89,7 @@ export default class RequerimientoDetalle extends React.Component {
 
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
-      toValue: event.endCoordinates.height,
+      toValue: event.endCoordinates.height
     }).start();
   }
 
@@ -105,211 +98,348 @@ export default class RequerimientoDetalle extends React.Component {
 
     Animated.timing(this.keyboardHeight, {
       duration: event.duration,
-      toValue: 0,
+      toValue: 0
     }).start();
   }
 
-  abrirImagen = (identificador, index) => {
-    this.setState({ visorImagenesVisible: true, indexImagenVisible: index });
+  onFotoPress = (identificador, index) => {
+    this.setState({
+      visorFotosVisible: true,
+      indexFotoVisible: index
+    });
+  }
+
+  cerrarVisorFotos = () => {
+    this.setState({
+      visorFotosVisible: false
+    });
   }
 
   abrirMapa = () => {
-    openMap({ latitude: -31.414965, longitude: -64.190731, query: 'Ubicación de su requerimiento' });
+    try {
+      if (this.state.datos == undefined) return;
+      if (this.state.datos.domicilioLatitud == undefined || this.state.datos.domicilioLongitud == undefined) return;
+      let lat = parseFloat(this.state.datos.domicilioLatitud.replace(",", "."));
+      let lng = parseFloat(this.state.datos.domicilioLongitud.replace(",", "."));
+      openMap({ latitude: lat, longitude: lng, query: "Ubicación de su requerimiento" });
+    } catch (ex) {
+
+    }
+  }
+
+  onBotonCancelarPress = () => {
+    Alert.alert("", texto_Cancelar, [
+      {
+        text: "Cancelar",
+        onPress: () => { }
+      },
+      {
+        text: "Si",
+        onPress: this.cancelarRequerimiento
+      }
+    ]);
+  }
+
+  cancelarRequerimiento = () => {
+    this.setState({
+      cargando: true
+    }, () => {
+      Rules_Requerimiento.cancelar(this.state.id)
+        .then(() => {
+          App.goBack();
+          const { params } = this.props.navigation.state;
+          if (params != undefined && "callback" in params && params.callback != undefined) {
+            params.callback();
+          }
+        })
+        .catch((error) => {
+          this.setState({
+            cargando: false
+          });
+          Alert.alert("", error || "Error procesando la solicitud");
+        });
+    });
+  }
+
+  goBack = () => {
+    App.goBack();
+  }
+
+  onBotonEnviarComprobantePress = () => {
+    this.setState({ cargando: true }, () => {
+      Rules_Requerimiento.enviarComprobante(this.state.id)
+        .then(() => {
+          this.setState({ cargando: false });
+          Alert.alert('', 'Se ha enviado a su e-mail el comprobante del requerimiento');
+        })
+        .catch((error) => {
+          this.setState({ cargando: false });
+          Alert.alert('', error || 'Error procesando la solicitud');
+        })
+
+    });
   }
 
   render() {
     const initData = global.initData;
 
-    const urlMapa = 'https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=2&size=600x600&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7Ccordoba+argentina';
-
     return (
-      <View style={style.contenedor} >
-
+      <View style={style.contenedor}>
         <MiStatusBar />
 
         <MiToolbar
           titulo={texto_Titulo}
-          onBackPress={() => { App.goBack(); }}
+          onBackPress={this.goBack}
         />
 
-        {/* Contenido */}
-        < View style={[style.contenido, { backgroundColor: initData.backgroundColor }]} >
-
-          <ScrollView
-            contentContainerStyle={{}}>
-
-            <View style={{ padding: 16 }}>
-
-              <Animated.View style={{
-                position: 'absolute',
-                margin: 16,
-                left: 0,
-                right: 0,
-                top: 0,
-                opacity: this.animContenido.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [1, 0]
-                })
-              }}>
-                <Spinner color="green" />
-              </Animated.View>
-
-              <Animated.View style={{ opacity: this.animContenido }} >
-
-                {/* Encabezado */}
-                <View style={{ marginLeft: 24, marginTop: 32 }}>
-                  <Text style={{ fontSize: 32 }}>QAZWSX/2018</Text>
-                </View>
-
-
-                {/* Basicos */}
-                <MiCardDetalle>
-                  <MiItemDetalle titulo='Servicio' subtitulo='Alumbrado público' />
-                  <View style={{ height: 16 }} />
-                  <MiItemDetalle titulo='Motivo' subtitulo='Foco roto' />
-                  <View style={{ height: 16 }} />
-                  <MiItemDetalle titulo='Descripción' subtitulo='Test de la descripcion del requerimiento. Aca iria todo el texto que ingreso el vecino' />
-                </MiCardDetalle>
-
-                {/* Estado */}
-                <MiCardDetalle titulo='Estado actual'>
-                  <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ width: 16, height: 16, borderRadius: 16, backgroundColor: 'red', marginRight: 8 }}></View>
-                    <Text style={{ fontSize: 20 }}>Nuevo</Text>
-                  </View>
-                  <View style={{ height: 16 }} />
-                  <MiItemDetalle titulo='Fecha' subtitulo='10/10/2018 10:00' />
-                  <View style={{ height: 16 }} />
-                  <MiItemDetalle titulo='Motivo' subtitulo='Motivo del cambio de estado al actual' />
-                </MiCardDetalle>
-
-                {/* Ubicacion */}
-                <MiCardDetalle titulo='Ubicación' botones={[
-                  { texto: 'Abrir mapa', onPress: () => { this.abrirMapa(); } }
-                ]}>
-                  <View style={{ display: 'flex', flexDirection: 'row' }}>
-                    <View style={{ flex: 1 }}>
-                      <MiItemDetalle titulo='Direccion' subtitulo='Independencia 710 4f' />
-                      <View style={{ height: 16 }} />
-                      <MiItemDetalle titulo='Observaciones' subtitulo='13b arriba de la perla' />
-                      <View style={{ height: 16 }} />
-                      <MiItemDetalle titulo='CPC' subtitulo='Nº 10 - Central' />
-                      <View style={{ height: 16 }} />
-                      <MiItemDetalle titulo='Barrio' subtitulo='Centro' />
-                    </View>
-                    <WebImage
-                      resizeMode="cover"
-                      style={{ width: 104, height: 104, borderRadius: 16 }}
-                      source={{ uri: urlMapa }}
-                    />
-                  </View>
-
-                </MiCardDetalle>
-
-                {/* Imagenes */}
-                {this.renderImagenes()}
-
-                {/* Informacion organica */}
-                <MiCardDetalle titulo='Area encargada'>
-                  <MiItemDetalle titulo='Area' subtitulo='Alumbrado publico' />
-                  <View style={{ height: 16 }} />
-                  <MiItemDetalle titulo='Responsable' subtitulo='Federico Amura' />
-                  <View style={{ height: 16 }} />
-                  <MiItemDetalle titulo='Dirección' subtitulo='Municipalidad de Cordoba. Oficina 3' />
-                  <View style={{ height: 16 }} />
-                  <MiItemDetalle titulo='Teléfono' subtitulo='3517449132' />
-                </MiCardDetalle>
-
-
-                {/* Informacion adicional */}
-                <MiCardDetalle titulo='Información adicional'>
-                  <MiItemDetalle titulo='Fecha de creación' subtitulo='10/10/2018 10:00' />
-                </MiCardDetalle>
-
-                <View style={{
-                  padding: 16,
-                  marginTop: 32,
-                  width: '100%'
-                }}>
-
-                  <Button
-                    bordered
-                    small
-                    style={{
-                      borderColor: '#D32F2F',
-                      alignSelf: 'center'
-                    }}>
-                    <Text style={{ color: '#D32F2F', }}>Cancelar requerimiento</Text>
-                  </Button>
-                </View>
-
-              </Animated.View>
-
-            </View>
-
-          </ScrollView>
-
+        <View style={[style.contenido, { backgroundColor: initData.backgroundColor }]}>
+          {/* Contenido */}
+          {this.renderContent()}
+          {/* Cargando */}
+          {this.renderCargando()}
           {/* Sombra del toolbar */}
-          <LinearGradient
-            colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
-            backgroundColor="transparent"
-            style={{ left: 0, top: 0, right: 0, height: 16, position: 'absolute' }}
-            pointerEvents="none" />
-        </View >
+          <MiToolbarSombra />
+        </View>
 
         {/* Keyboard */}
-        < Animated.View style={[{ height: '100%' }, { maxHeight: this.keyboardHeight }]} ></Animated.View >
+        <Animated.View style={[{ height: "100%" }, { maxHeight: this.keyboardHeight }]} />
 
-        {/* Galeria de imagenes */}
-        <MiGaleria
-          urls={this.state.imagenes}
-          visible={this.state.visorImagenesVisible == true}
-          onClose={() => { this.setState({ visorImagenesVisible: false }) }}
-          index={this.state.indexImagenVisible} />
-
-      </View >
+        {/* Galeria de fotos */}
+        {this.renderVisorFotos()}
+      </View>
     );
   }
 
-  renderImagenes() {
+  renderContent() {
+    const initData = global.initData;
+    const urlMapa =
+      "https://maps.googleapis.com/maps/api/staticmap?center=cordoba+argentina&zoom=13&scale=2&size=600x600&maptype=roadmap&format=png&visual_refresh=true&markers=size:mid%7Ccolor:0xff0000%7Clabel:%7Ccordoba+argentina";
 
-    return <MiCardDetalle titulo='Imágenes' padding={false}>
+    let numero = "Sin datos";
+    let servicioNombre = "Sin datos";
+    let motivoNombre = "Sin datos";
+    let descripcion = "Sin datos";
+    let fechaAlta = "Sin datos";
 
-      <ScrollView horizontal={true}>
+    let estadoColor = "";
+    let estadoNombre = "Sin datos";
+    let estadoFecha = "Sin datos";
+    let estadoObservaciones = "Sin datos";
 
-        <View style={{ display: 'flex', flexDirection: 'row', padding: 8 }}>
-          {
-            this.state.imagenes.map((url, index) => {
+    let domicilioDireccion = "Sin datos";
+    let domicilioObservaciones = "Sin datos";
+    let domicilioCpc = "Sin datos";
+    let domicilioBarrio = "Sin datos";
 
-              return (
-                <TouchableOpacity
-                  onPress={() => this.abrirImagen(url, index)}
-                  style={{ width: 104, height: 104, borderRadius: 16, overflow: 'hidden', margin: 8 }}>
-                  <View style={{ width: 104, height: 104, borderRadius: 16, overflow: 'hidden', backgroundColor: '#ccc' }}>
-                    <WebImage
-                      resizeMode="cover"
-                      style={{ width: '100%', height: '100%' }}
-                      source={{ uri: url }}
-                    />
-                  </View>
-                </TouchableOpacity>)
+    let infoOrganicaSecretaria = "Sin datos";
+    let infoOrganicaDireccion = "Sin datos";
+    let infoOrganicaArea = "Sin datos";
+    let infoOrganicaDomilicio = "Sin datos";
 
-            })
-          }
+    let mostrarBotonCancelar = false;
 
+    if (this.state.datos != undefined) {
+      numero = this.state.datos.numero + "/" + this.state.datos.año;
+      servicioNombre = toTitleCase(this.state.datos.servicioNombre);
+      motivoNombre = toTitleCase(this.state.datos.motivoNombre);
+      descripcion = this.state.datos.descripcion;
+      // fechaAlta = this.state.datos.fechaAlta;
+
+      estadoColor = "#" + (this.state.datos.estadoPublicoColor || this.state.datos.estadoColor);
+      estadoNombre = toTitleCase(this.state.datos.estadoPublicoNombre || this.state.datos.estadoNombre);
+      estadoFecha = stringDateToString(this.state.datos.estadoFecha);
+      estadoObservaciones = this.state.datos.estadoObservaciones;
+
+      domicilioDireccion = toTitleCase(this.state.datos.domicilioDireccion);
+      domicilioObservaciones = this.state.datos.domicilioObservaciones;
+      domicilioCpc =
+        "Nº " + this.state.datos.domicilioCpcNumero + " · " + toTitleCase(this.state.datos.domicilioCpcNombre);
+      domicilioBarrio = toTitleCase(this.state.datos.domicilioBarrioNombre);
+
+      infoOrganicaSecretaria = toTitleCase(this.state.datos.informacionOrganicaSecretariaNombre);
+      infoOrganicaDireccion = toTitleCase(this.state.datos.informacionOrganicaDireccionNombre);
+      infoOrganicaArea = toTitleCase(this.state.datos.informacionOrganicaAreaNombre);
+      infoOrganicaDomilicio = this.state.datos.informacionOrganicaDomicilio;
+
+      mostrarBotonCancelar = this.state.datos.estadoKeyValue == 1;
+    }
+
+    return (
+      <ScrollView contentContainerStyle={{}}>
+        <View style={{ padding: 16 }}>
+          <Animated.View style={{ opacity: this.animContenido }}>
+            {/* Basicos */}
+            <MiCardDetalle titulo={texto_TituloDatos}>
+              <Text style={{ fontSize: 28, marginBottom: 16 }}>Nº {numero}</Text>
+              <MiItemDetalle titulo={texto_Servicio} subtitulo={servicioNombre} />
+              <View style={{ height: 8 }} />
+              <MiItemDetalle titulo={texto_Motivo} subtitulo={motivoNombre} />
+              <View style={{ height: 8 }} />
+              <MiItemDetalle titulo={texto_Descripcion} subtitulo={descripcion} />
+              {/* <View style={{ height: 8 }} />
+              <MiItemDetalle titulo={texto_FechaAlta} subtitulo={fechaAlta} /> */}
+            </MiCardDetalle>
+
+            {/* Estado */}
+            <MiCardDetalle titulo={texto_Estado}>
+              <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                <View
+                  style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: 16,
+                    shadowColor: estadoColor,
+                    shadowOpacity: 0.4,
+                    shadowRadius: 5,
+                    shadowOffset: { width: 0, height: 4 },
+                    backgroundColor: estadoColor,
+                    marginRight: 8
+                  }}
+                />
+                <Text style={{ fontSize: 20 }}>{estadoNombre}</Text>
+              </View>
+              <View style={{ height: 16 }} />
+              <MiItemDetalle titulo={texto_FechaEstado} subtitulo={estadoFecha} />
+              <View style={{ height: 8 }} />
+              <MiItemDetalle titulo={texto_EstadoObservaciones} subtitulo={estadoObservaciones} />
+
+              {/* <View style={{ height: 16 }} />
+              <MiItemDetalle titulo="Motivo" subtitulo="Motivo del cambio de estado al actual" /> */}
+            </MiCardDetalle>
+
+            {/* Ubicacion */}
+            <MiCardDetalle
+              titulo={texto_TituloUbicacion}
+              botones={[
+                {
+                  texto: texto_BotonAbrirMapa,
+                  onPress: this.abrirMapa
+                }
+              ]}
+            >
+              <View style={{ display: "flex", flexDirection: "row" }}>
+                <View style={{ flex: 1 }}>
+                  <MiItemDetalle titulo={texto_Direccion} subtitulo={domicilioDireccion} />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo={texto_Observaciones} subtitulo={domicilioObservaciones} />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo={texto_Cpc} subtitulo={domicilioCpc} />
+                  <View style={{ height: 16 }} />
+                  <MiItemDetalle titulo={texto_Barrio} subtitulo={domicilioBarrio} />
+                </View>
+                <WebImage
+                  resizeMode="cover"
+                  style={{ width: 104, height: 104, borderRadius: 16 }}
+                  source={{ uri: urlMapa }}
+                />
+              </View>
+            </MiCardDetalle>
+
+            {/* Imagenes */}
+            {this.renderFotos()}
+
+            {/* Informacion organica */}
+            <MiCardDetalle titulo={texto_TituloInfoOrganica}>
+              <MiItemDetalle titulo={texto_InfoOrganicaSecretaria} subtitulo={infoOrganicaSecretaria} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle titulo={texto_InfoOrganicaDireccion} subtitulo={infoOrganicaDireccion} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle titulo={texto_InfoOrganicaArea} subtitulo={infoOrganicaArea} />
+              <View style={{ height: 16 }} />
+              <MiItemDetalle titulo={texto_InfoOrganicaDomicilio} subtitulo={infoOrganicaDomilicio} />
+            </MiCardDetalle>
+
+            <View style={{ height: 32 }} />
+
+            <MiBoton
+              padding={16}
+              link
+              centro
+              verde
+              small
+              texto={texto_BotonEnviarComprobante}
+              onPress={this.onBotonEnviarComprobantePress}
+            />
+
+            {mostrarBotonCancelar && (
+              <MiBoton
+                padding={16}
+                link
+                centro
+                rojo
+                small
+                texto={texto_BotonCancelar}
+                onPress={this.onBotonCancelarPress}
+              />
+            )}
+          </Animated.View>
         </View>
       </ScrollView>
+    );
+  }
 
-    </MiCardDetalle>
+  renderCargando() {
+    const initData = global.initData;
+    return (
+      <Animated.View
+        style={{
+          position: "absolute",
+          margin: 16,
+          left: 0,
+          right: 0,
+          top: 0,
+          opacity: this.animContenido.interpolate({
+            inputRange: [0, 1],
+            outputRange: [1, 0]
+          })
+        }}
+      >
+        <Spinner color={initData.colorVerde} />
+      </Animated.View>
+    );
+  }
 
+  renderFotos() {
+
+    let fotos = [];
+    if (this.state.datos != undefined && this.state.datos.fotos != undefined) {
+      fotos = this.state.datos.fotos;
+    }
+
+    if (fotos == undefined || fotos.length == 0) return null;
+
+    return (
+      <MiCardDetalle titulo={texto_TituloImagenes} padding={false}>
+        <ScrollView horizontal={true}>
+          <View style={{ display: "flex", flexDirection: "row", padding: 8 }}>
+            {fotos.map((url, index) => {
+              return <ItemFoto identificador={url} index={index} onPress={this.onFotoPress} />;
+            })}
+          </View>
+        </ScrollView>
+      </MiCardDetalle>
+    );
+  }
+
+  renderVisorFotos() {
+    if (this.state.datos == undefined) return null;
+    const fotos = this.state.datos.fotos || [];
+    const urls = [];
+
+    for (let i = 0; i < fotos.length; i++) {
+      urls.push(initData.urlCordobaFiles + "/" + fotos[i]);
+    }
+
+    return (
+      <MiGaleria urls={urls} visible={this.state.visorFotosVisible == true} onClose={this.cerrarVisorFotos} index={0} />
+    );
   }
 }
 
-
 const style = StyleSheet.create({
   contenedor: {
-    width: '100%',
-    height: '100%'
+    width: "100%",
+    height: "100%"
   },
   contenido: {
     flex: 1
@@ -320,5 +450,34 @@ const style = StyleSheet.create({
   }
 });
 
-const texto_Titulo = 'Detalle de requerimiento';
+const texto_Titulo = "Detalle de requerimiento";
+const texto_TituloDatos = "Datos básicos";
+const texto_Servicio = "Servicio";
+const texto_Motivo = "Motivo";
+const texto_Descripcion = "Descripción";
 
+const texto_Estado = "Último estado";
+const texto_FechaEstado = "Fecha";
+const texto_FechaAlta = "Fecha de creación";
+const texto_EstadoObservaciones = "Observaciones del estado";
+
+const texto_TituloUbicacion = "Ubicación";
+const texto_Direccion = "Dirección";
+const texto_Observaciones = "Observaciones del domicilio";
+const texto_Cpc = "CPC";
+const texto_Barrio = "Barrio";
+
+const texto_BotonAbrirMapa = "Abrir mapa";
+
+const texto_TituloImagenes = "Imágenes";
+
+const texto_TituloInfoOrganica = "Área encargada";
+const texto_InfoOrganicaArea = "Área";
+const texto_InfoOrganicaDireccion = "Dirección";
+const texto_InfoOrganicaSecretaria = "Secretaría";
+const texto_InfoOrganicaDomicilio = "Domicilio";
+
+const texto_BotonCancelar = "Cancelar requerimiento";
+const texto_Cancelar = "¿Esta seguro de querer cancelar su requerimiento? Esta acción no se puede deshacer";
+
+const texto_BotonEnviarComprobante = "Reenviar comprobante por e-mail";

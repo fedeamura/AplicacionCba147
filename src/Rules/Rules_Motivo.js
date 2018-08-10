@@ -1,5 +1,5 @@
 const metodos = {
-  get: function (idServicio) {
+  get: (idServicio) => {
     return new Promise((resolve, reject) => {
       if (global.token == undefined) {
         reject('Debe iniciar sesion');
@@ -28,7 +28,7 @@ const metodos = {
     });
   },
 
-  getParaBuscar: function () {
+  getParaBuscar: () => {
     return new Promise((resolve, reject) => {
       if (global.token == undefined) {
         reject('Debe iniciar sesion');

@@ -1,16 +1,15 @@
 import React from "react";
 import { StyleSheet, View, Alert, Animated, ScrollView, Keyboard, Dimensions } from "react-native";
-import { Button, Text } from "native-base";
+import { Text } from "native-base";
 import ExtraDimensions from "react-native-extra-dimensions-android";
 import WebImage from "react-native-web-image";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Kohana } from "react-native-textinput-effects";
-import autobind from "autobind-decorator";
-import LinearGradient from "react-native-linear-gradient";
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
 import MiStatusBar from "@Utils/MiStatusBar";
+import MiBoton from "@Utils/MiBoton";
 
 //Rules
 import Rules_Usuario from "@Rules/Rules_Usuario";
@@ -50,8 +49,7 @@ export default class Login extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
-  @autobind
-  keyboardWillShow(event) {
+  keyboardWillShow = (event) => {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -60,8 +58,7 @@ export default class Login extends React.Component {
     }).start();
   }
 
-  @autobind
-  keyboardWillHide(event) {
+  keyboardWillHide = (event) => {
     this.teclado = false;
 
     Animated.timing(this.keyboardHeight, {
@@ -70,75 +67,59 @@ export default class Login extends React.Component {
     }).start();
   }
 
-  @autobind
-  animarInicio() {
+  animarInicio = () => {
     Animated.spring(this.anim_Logo, {
       toValue: 1
     }).start(this.consultarLogin);
   }
 
-  @autobind
-  consultarLogin() {
+  consultarLogin = () => {
     Rules_Ajustes.esIntroVista()
-      .then(
-        function(vista) {
-          if (vista == false) {
-            App.navegar("Introduccion", {
-              callback: function() {
-                this.consultarLogin();
-              }.bind(this)
-            });
-          } else {
-            Rules_Usuario.isLogin()
-              .then(
-                function(login) {
-                  if (login) {
-                    Animated.spring(this.anim_Logo, { toValue: 0 }).start(
-                      function() {
-                        App.replace("Inicio");
-                      }.bind(this)
-                    );
-                    return;
-                  }
+      .then((vista) => {
+        if (vista == false) {
+          App.navegar("Introduccion", {
+            callback: () => {
+              this.consultarLogin();
+            }
+          });
+        } else {
+          Rules_Usuario.isLogin()
+            .then((login) => {
+              if (login) {
+                Animated.spring(this.anim_Logo, { toValue: 0 }).start(() => {
+                  App.replace("Inicio");
+                });
+                return;
+              }
 
-                  Animated.spring(this.anim_Form, {
-                    toValue: 1
-                  }).start();
-                }.bind(this)
-              )
-              .catch(
-                function(error) {
-                  Alert.alert("", error, [{ text: "Reintentar", onPress: this.consultarLogin }]);
-                }.bind(this)
-              );
-          }
-        }.bind(this)
-      )
-      .catch(function() {}.bind(this));
+              Animated.spring(this.anim_Form, { toValue: 1 }).start();
+            })
+            .catch((error) => {
+              Alert.alert("", error, [{ text: "Reintentar", onPress: this.consultarLogin }]);
+            });
+        }
+      })
+      .catch(function () { }.bind(this));
   }
 
-  @autobind
-  mostrarFormulario() {
+  mostrarFormulario = () => {
     Animated.timing(this.anim_Form, {
       duration: 500,
       toValue: 1
     }).start();
   }
 
-  @autobind
-  onUsernameChange(text) {
+  onUsernameChange = (text) => {
     this.setState({ username: text });
     Animated.timing(this.anim_ErrorUsername, { toValue: 0, duration: 300 }).start();
   }
 
-  @autobind
-  onPasswordChange(text) {
+  onPasswordChange = (text) => {
     this.setState({ password: text });
     Animated.timing(this.anim_ErrorPassword, { toValue: 0, duration: 300 }).start();
   }
 
-  @autobind
-  login() {
+  login = () => {
     Keyboard.dismiss();
 
     //Valido el form
@@ -151,145 +132,110 @@ export default class Login extends React.Component {
     if (tieneUsername == false || tienePassword == false) return;
 
     //Cierro keyboard y empiezo a animar
-    setTimeout(
-      function() {
-        //Achico el formulario
-        Animated.spring(this.anim_Form, { toValue: 0 }).start(
-          function() {
-            this.setState(
-              {
-                cargando: true
-              },
-              function() {
-                Rules_Usuario.validarUsuarioActivado(this.state.username, this.state.password)
-                  .then(
-                    function(validado) {
-                      if (validado == false) {
-                        //Muestro el error
-                        Alert.alert(
-                          "",
-                          texto_UsuarioNoActivado,
-                          [
-                            {
-                              text: "Aceptar",
-                              onPress: () => {
-                                this.setState({
-                                  cargando: false
-                                });
-
-                                Animated.spring(this.anim_Form, { toValue: 1 }).start();
-                              }
-                            },
-                            {
-                              text: "Volver a enviar e-mail",
-                              onPress: () => {
-                                Rules_Usuario.solicitarEmailActivacion(this.state.username, this.state.password)
-                                  .then(
-                                    function(email) {
-                                      this.setState({
-                                        cargando: false
-                                      });
-
-                                      Animated.spring(this.anim_Form, { toValue: 1 }).start();
-
-                                      let mensaje = texto_EmailActivacionEnviado;
-                                      mensaje = mensaje.replace("{email}", email);
-
-                                      //Muestro el error
-                                      Alert.alert("", mensaje);
-                                    }.bind(this)
-                                  )
-                                  .catch(
-                                    function(error) {
-                                      this.setState({
-                                        cargando: false
-                                      });
-
-                                      Animated.spring(this.anim_Form, { toValue: 1 }).start();
-
-                                      //Muestro el error
-                                      Alert.alert("", error || texto_ErrorGenerico);
-                                    }.bind(this)
-                                  );
-                              }
-                            }
-                          ],
-                          { cancelable: false }
-                        );
-
-                        return;
-                      }
-
-                      Rules_Usuario.login(this.state.username, this.state.password)
-                        .then(
-                          function() {
-                            Animated.spring(this.anim_Logo, { toValue: 0 }).start(
-                              function() {
-                                App.replace("Inicio");
-                              }.bind(this)
-                            );
-                          }.bind(this)
-                        )
-                        .catch(
-                          function(error) {
-                            this.setState({
-                              cargando: false
-                            });
-
-                            Animated.spring(this.anim_Form, { toValue: 1 }).start();
-
-                            //Muestro el error
-                            Alert.alert(
-                              "",
-                              error || texto_ErrorGenerico,
-                              [
-                                {
-                                  text: "Aceptar",
-                                  onPress: function() {}
-                                }
-                              ],
-                              { cancelable: true }
-                            );
-                          }.bind(this)
-                        );
-                    }.bind(this)
-                  )
-                  .catch(
-                    function(error) {
+    setTimeout(() => {
+      //Achico el formulario
+      Animated.spring(this.anim_Form, { toValue: 0 }).start(() => {
+        this.setState({
+          cargando: true
+        }, () => {
+          Rules_Usuario.validarUsuarioActivado(this.state.username, this.state.password)
+            .then((validado) => {
+              if (validado == false) {
+                //Muestro el error
+                Alert.alert("", texto_UsuarioNoActivado, [
+                  {
+                    text: "Aceptar",
+                    onPress: () => {
                       this.setState({
                         cargando: false
                       });
 
                       Animated.spring(this.anim_Form, { toValue: 1 }).start();
+                    }
+                  },
+                  {
+                    text: "Volver a enviar e-mail",
+                    onPress: () => {
+                      Rules_Usuario.solicitarEmailActivacion(this.state.username, this.state.password)
+                        .then((email) => {
+                          this.setState({
+                            cargando: false
+                          });
 
-                      //Muestro el error
-                      Alert.alert(
-                        "",
-                        error || texto_ErrorGenerico,
-                        [
-                          {
-                            text: "Aceptar",
-                            onPress: function() {}
-                          }
-                        ],
-                        { cancelable: true }
-                      );
-                    }.bind(this)
-                  );
-              }.bind(this)
-            );
-          }.bind(this)
-        );
-      }.bind(this),
-      300
-    );
+                          Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+                          let mensaje = texto_EmailActivacionEnviado;
+                          mensaje = mensaje.replace("{email}", email);
+
+                          //Muestro el error
+                          Alert.alert("", mensaje);
+                        })
+                        .catch((error) => {
+                          this.setState({
+                            cargando: false
+                          });
+
+                          Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+                          //Muestro el error
+                          Alert.alert("", error || texto_ErrorGenerico);
+                        });
+                    }
+                  }
+                ],
+                  { cancelable: false }
+                );
+
+                return;
+              }
+
+              Rules_Usuario.login(this.state.username, this.state.password)
+                .then(() => {
+                  Animated.spring(this.anim_Logo, { toValue: 0 }).start(() => {
+                    App.replace("Inicio");
+                  });
+                })
+                .catch((error) => {
+                  this.setState({
+                    cargando: false
+                  });
+
+                  Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+                  //Muestro el error
+                  Alert.alert("", error || texto_ErrorGenerico, [
+                    {
+                      text: "Aceptar",
+                      onPress: function () { }
+                    }
+                  ], { cancelable: true });
+                });
+            })
+            .catch((error) => {
+              this.setState({
+                cargando: false
+              });
+
+              Animated.spring(this.anim_Form, { toValue: 1 }).start();
+
+              //Muestro el error
+              Alert.alert("", error || texto_ErrorGenerico, [
+                {
+                  text: "Aceptar",
+                  onPress: function () { }
+                }
+              ], { cancelable: true });
+            });
+        });
+      });
+    }, 300);
   }
 
-  nuevoUsuario() {
+  nuevoUsuario = () => {
     App.navegar("UsuarioNuevo");
   }
 
-  recuperarCuenta() {
+  recuperarCuenta = () => {
     App.navegar("RecuperarCuenta");
   }
 
@@ -300,7 +246,7 @@ export default class Login extends React.Component {
       <View style={[styles.contenedor, { backgroundColor: initData.backgroundColor }]} onLayout={this.animarInicio}>
         <MiStatusBar />
 
-        <WebImage resizeMode="cover" style={styles.imagenFondo} source={{ uri: url_ImagenFondo }} />
+        {/* <WebImage resizeMode="cover" style={styles.imagenFondo} source={{ uri: url_ImagenFondo }} /> */}
 
         {/* <LinearGradient
         start={{x: 0, y: 0}}
@@ -447,41 +393,42 @@ export default class Login extends React.Component {
                 </Animated.View>
               </View>
 
-              <View style={styles.contenedorBotones}>
+              <View style={[styles.contenedorBotones]}>
                 <View style={{ height: 16 }} />
 
-                <Button
-                  full={true}
-                  rounded={true}
+                <MiBoton
+                  verde
+                  centro
+                  rounded
+                  sombra
+                  full
                   disabled={this.state.cargandoLogin}
-                  style={[styles.botonAcceder, { backgroundColor: initData.colorExito }]}
                   onPress={this.login}
-                >
-                  <Text style={styles.botonAccederTexto}>{texto_BotonAcceder}</Text>
-                </Button>
+                  style={{ width:'100%', justifyContent:'center'}}
+                  texto={texto_BotonAcceder}
+                />
 
-                <Button
-                  full={true}
-                  transparent={true}
+                <MiBoton
+                  centro
+                  color='black'
+                  transparent
                   disabled={this.state.cargandoLogin}
                   onPress={this.recuperarCuenta}
-                  style={styles.botonRecuperarCuenta}
-                >
-                  <Text style={styles.botonRecuperarCuentaTexto}>{texto_BotonOlvidoContraseña}</Text>
-                </Button>
+                  texto={texto_BotonOlvidoContraseña}
+                />
+
 
                 <View style={{ height: 32 }} />
 
-                <Button
-                  full={false}
-                  rounded={false}
-                  transparent={true}
+                <MiBoton
+                  centro
+                  link
+                  verde
+                  transparent
                   disabled={this.state.cargandoLogin}
-                  style={styles.botonNuevoUsuario}
                   onPress={this.nuevoUsuario}
-                >
-                  <Text style={styles.botonNuevoUsuarioTexto}>{texto_BotonCrearUsuario}</Text>
-                </Button>
+                  texto={texto_BotonCrearUsuario}
+                />
 
                 <View style={{ height: 16 }} />
               </View>

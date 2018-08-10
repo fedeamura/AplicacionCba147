@@ -1,15 +1,14 @@
 import React from "react";
 import { View, Alert, Animated, StyleSheet, ScrollView, BackHandler, Keyboard } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
 import { Spinner } from "native-base";
 import { Dialog, Text, Button as ButtonPeper, DialogActions, DialogContent } from "react-native-paper";
 import _ from "lodash";
-import autobind from "autobind-decorator";
 
 //Mis componentes
 import App from "@UI/App";
 import MiStatusBar from "@Utils/MiStatusBar";
 import MiToolbar from "@Utils/MiToolbar";
+import MiToolbarSombra from '@Utils/MiToolbarSombra';
 import Paso from "./Paso";
 import PasoServicio from "@RequerimientoNuevoPasos/PasoServicio";
 import PasoDescripcion from "@RequerimientoNuevoPasos/PasoDescripcion";
@@ -17,6 +16,7 @@ import PasoUbicacion from "@RequerimientoNuevoPasos/PasoUbicacion";
 import PasoFoto from "@RequerimientoNuevoPasos/PasoFoto";
 import PasoConfirmacion from "@RequerimientoNuevoPasos/PasoConfirmacion";
 import Resultado from "./Resultado";
+import { toTitleCase } from "@Utils/Helpers";
 
 import Rules_Servicio from "@Rules/Rules_Servicio";
 import Rules_Requerimiento from "@Rules/Rules_Requerimiento";
@@ -37,8 +37,8 @@ export default class RequerimientoNuevo extends React.Component {
     this.state = {
       cargando: true,
       pasoActual: 1,
-      servicioNombre:undefined,
-      motivoNombre:undefined,
+      servicioNombre: undefined,
+      motivoNombre: undefined,
       motivoId: undefined,
       descripcion: undefined,
       ubicacion: undefined,
@@ -54,22 +54,46 @@ export default class RequerimientoNuevo extends React.Component {
     this.keyboardHeight = new Animated.Value(0);
 
     this._didFocusSubscription = props.navigation.addListener(
-      "didFocus",
-      function(payload) {
+      "didFocus", (payload) => {
         BackHandler.addEventListener("hardwareBackPress", this.back);
-      }.bind(this)
+      }
     );
 
     this._willBlurSubscription = props.navigation.addListener(
-      "willBlur",
-      function(payload) {
+      "willBlur", (payload) => {
         BackHandler.removeEventListener("hardwareBackPress", this.back);
-      }.bind(this)
+      }
     );
   }
 
-  @autobind
-  back() {
+  componentWillMount() {
+    this.keyboardWillShowSub = Keyboard.addListener("keyboardWillShow", this.keyboardWillShow);
+    this.keyboardWillHideSub = Keyboard.addListener("keyboardWillHide", this.keyboardWillHide);
+  }
+
+  componentWillUnmount() {
+    this.keyboardWillShowSub.remove();
+    this.keyboardWillHideSub.remove();
+  }
+
+  componentDidMount() {
+    if (global.servicios != undefined) {
+      this.onServicios(global.servicios);
+      return;
+    }
+
+    Rules_Servicio.get()
+      .then(
+        function (data) {
+          this.onServicios(data);
+        }.bind(this)
+      )
+      .catch(function () {
+        Alert.alert("", "Error procesando la solicitud");
+      });
+  }
+
+  back = () => {
     //Se esta mostrando el panel de registracion
     if (this.state.mostrarPanelResultado == true) {
       //Registrando....
@@ -100,65 +124,70 @@ export default class RequerimientoNuevo extends React.Component {
     return false;
   }
 
-  componentWillMount() {
-    this.keyboardWillShowSub = Keyboard.addListener("keyboardWillShow", this.keyboardWillShow);
-    this.keyboardWillHideSub = Keyboard.addListener("keyboardWillHide", this.keyboardWillHide);
+  onServicios = (data) => {
+    global.servicios = data;
+    data = _.orderBy(data, "nombre");
+    this.setState({
+      cargando: false,
+      servicios: data
+    });
   }
 
-  componentWillUnmount() {
-    this.keyboardWillShowSub.remove();
-    this.keyboardWillHideSub.remove();
-  }
+  registrar = () => {
+    const initData = global.initData;
 
-  componentDidMount() {
-    Rules_Servicio.get()
-      .then(
-        function(data) {
-          data = _.orderBy(data, "nombre");
-          this.setState({ cargando: false, servicios: data });
-        }.bind(this)
-      )
-      .catch(function() {
-        Alert.alert("", "Error procesando la solicitud");
-      });
-  }
-
-  @autobind
-  registrar() {
     Keyboard.dismiss();
 
-    this.setState(
-      {
-        mostrarPanelResultado: true,
-        registrando: true
-      },
-      function() {
-        let comando = { param: 1 };
-        Rules_Requerimiento.insertar(comando)
-          .then(
-            function() {
-              this.setState({
-                numero: "QWSTGH/2018",
-                registrando: false
-              });
-            }.bind(this)
-          )
-          .catch(
-            function(error) {
-              Alert.alert("", error);
+    this.setState({
+      mostrarPanelResultado: true,
+      registrando: true
+    }, () => {
+      let comando = {
+        autenticacion: {
+          keyValidacionReCaptcha: initData.keyValidacionReCaptcha,
+          origenAlias: initData.origenAlias,
+          origenKey: initData.origenKey
+        },
+        idMotivo: this.state.motivoId,
+        descripcion: this.state.descripcion,
+        domicilio: {
+          direccion: this.state.ubicacion.direccion,
+          observaciones: this.state.ubicacion.observaciones,
+          latitud: parseFloat(this.state.ubicacion.latitud.replace(",", ".")),
+          longitud: parseFloat(this.state.ubicacion.longitud.replace(",", "."))
+        },
+        imagen: this.state.foto
+      };
 
-              this.setState({
-                mostrarPanelResultado: false,
-                registrando: false
-              });
-            }.bind(this)
-          );
-      }
-    );
+      Rules_Requerimiento.insertar(comando)
+        .then((data) => {
+
+          Rules_Requerimiento.enviarComprobante(data.id)
+            .then(() => {
+
+            })
+            .catch(() => {
+
+            });
+
+          this.setState({
+            id: data.id,
+            numero: data.numero + "/" + data.año,
+            registrando: false
+          });
+        })
+        .catch((error) => {
+          Alert.alert("", error);
+
+          this.setState({
+            mostrarPanelResultado: false,
+            registrando: false
+          });
+        });
+    });
   }
 
-  @autobind
-  keyboardWillShow(event) {
+  keyboardWillShow = (event) => {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -167,8 +196,7 @@ export default class RequerimientoNuevo extends React.Component {
     }).start();
   }
 
-  @autobind
-  keyboardWillHide(event) {
+  keyboardWillHide = (event) => {
     this.teclado = false;
 
     Animated.timing(this.keyboardHeight, {
@@ -177,8 +205,7 @@ export default class RequerimientoNuevo extends React.Component {
     }).start();
   }
 
-  @autobind
-  mostrarPaso(paso) {
+  mostrarPaso = (paso) => {
     Keyboard.dismiss();
 
     this.setState({
@@ -186,8 +213,7 @@ export default class RequerimientoNuevo extends React.Component {
     });
   }
 
-  @autobind
-  onPasoClick(paso) {
+  onPasoClick = (paso) => {
     Keyboard.dismiss();
 
     if (this.state.pasoActual == paso) {
@@ -196,7 +222,7 @@ export default class RequerimientoNuevo extends React.Component {
     }
 
     let conMotivo = this.state.motivoId != undefined;
-    let conDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim() != "";
+    let conDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim() != "" && this.state.descripcion.length >= 50;
     let conUbicacion = this.state.ubicacion != undefined;
 
     let cumple = false;
@@ -236,43 +262,37 @@ export default class RequerimientoNuevo extends React.Component {
     this.mostrarPaso(paso);
   }
 
-  @autobind
-  onBtnVerDetalleClick(id) {
+  onBtnVerDetalleClick = () => {
     App.goBack();
 
-    setTimeout(
-      function() {
-        const { params } = this.props.navigation.state;
+    setTimeout(() => {
+      const { params } = this.props.navigation.state;
 
-        if (params != undefined && "verDetalleRequerimiento" in params && params.verDetalleRequerimiento != undefined) {
-          params.verDetalleRequerimiento(id);
-        }
-      }.bind(this),
-      300
-    );
+      if (params != undefined && "verDetalleRequerimiento" in params && params.verDetalleRequerimiento != undefined) {
+        params.verDetalleRequerimiento({ id: this.state.id });
+      }
+    }, 300);
   }
 
-  @autobind
-  onToolbarBack() {
+  onBtnVolverClick = () => {
+    App.goBack();
+  }
+
+  onToolbarBack = () => {
     if (!this.back()) {
       App.goBack();
     }
   }
 
-  @autobind
-  onPaso1Cargando(cargando) {
+  onPaso1Cargando = (cargando) => {
     this.setState({ paso1Cargando: cargando });
   }
 
-  @autobind
-  onPaso4Cargando(cargando) {
+  onPaso4Cargando = (cargando) => {
     this.setState({ paso4Cargando: cargando });
   }
 
-  @autobind
-  onMotivo(data) {
-    Alert.alert('', JSON.stringify(data));
-    
+  onMotivo = (data) => {
     this.setState({
       servicioNombre: data.servicioNombre,
       motivoNombre: data.motivoNombre,
@@ -280,42 +300,35 @@ export default class RequerimientoNuevo extends React.Component {
     });
   }
 
-  @autobind
-  onPaso1Ready() {
+  onPaso1Ready = () => {
     this.mostrarPaso(2);
   }
 
-  @autobind
-  onDescripcion(descripcion) {
+  onDescripcion = (descripcion) => {
     this.setState({ descripcion: descripcion });
   }
 
-  @autobind
-  onPaso2Ready() {
+  onPaso2Ready = () => {
     this.mostrarPaso(3);
   }
 
-  @autobind
-  onUbicacion(ubicacion) {
+  onUbicacion = (ubicacion) => {
     this.setState({
       ubicacion: ubicacion
     });
   }
 
-  @autobind
-  onPaso3Ready() {
+  onPaso3Ready = () => {
     this.mostrarPaso(4);
   }
 
-  @autobind
-  onFoto(foto) {
+  onFoto = (foto) => {
     this.setState({
       foto: foto
     });
   }
 
-  @autobind
-  onPaso4Ready() {
+  onPaso4Ready = () => {
     this.mostrarPaso(5);
   }
 
@@ -325,6 +338,9 @@ export default class RequerimientoNuevo extends React.Component {
     let textoUbicacion = undefined;
     if (this.state.ubicacion != undefined) {
       textoUbicacion = this.state.ubicacion.direccion;
+      if (this.state.ubicacion.sugerido == true) {
+        textoUbicacion = "Aproximadamente en " + toTitleCase(textoUbicacion);
+      }
     }
     return (
       <View style={style.contenedor}>
@@ -338,84 +354,86 @@ export default class RequerimientoNuevo extends React.Component {
           {this.state.cargando == true ? (
             <Spinner color={initData.colorExito} />
           ) : (
-            <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ padding: 16 }}>
-              {/* Paso 1 - Servicio motivo */}
-              <Paso
-                numero={1}
-                cargando={this.state.paso1Cargando}
-                titulo={texto_Titulo_Servicio}
-                onPress={this.onPasoClick}
-                expandido={this.state.pasoActual == 1 ? true : false}
-                completado={this.state.motivoId != undefined}
-              >
-                <PasoServicio
-                  servicios={this.state.servicios}
-                  onCargando={this.onPaso1Cargando}
-                  onMotivo={this.onMotivo}
-                  onReady={this.onPaso1Ready}
-                />
-              </Paso>
+              <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ padding: 16, display: "flex" }}>
+                <View style={{ maxWidth: 400, alignSelf: "center", width: "100%" }}>
+                  {/* Paso 1 - Servicio motivo */}
+                  <Paso
+                    numero={1}
+                    cargando={this.state.paso1Cargando}
+                    titulo={texto_Titulo_Servicio}
+                    onPress={this.onPasoClick}
+                    expandido={this.state.pasoActual == 1 ? true : false}
+                    completado={this.state.motivoId != undefined}
+                  >
+                    <PasoServicio
+                      servicios={this.state.servicios}
+                      onCargando={this.onPaso1Cargando}
+                      onMotivo={this.onMotivo}
+                      onReady={this.onPaso1Ready}
+                    />
+                  </Paso>
 
-              {/* Paso 2 */}
-              <Paso
-                numero={2}
-                titulo={texto_Titulo_Descripcion}
-                onPress={this.onPasoClick}
-                expandido={this.state.pasoActual == 2}
-                completado={this.state.descripcion != undefined && this.state.descripcion.trim() != ""}
-              >
-                <PasoDescripcion onDescripcion={this.onDescripcion} onReady={this.onPaso2Ready} />
-              </Paso>
+                  {/* Paso 2 */}
+                  <Paso
+                    numero={2}
+                    titulo={texto_Titulo_Descripcion}
+                    onPress={this.onPasoClick}
+                    expandido={this.state.pasoActual == 2}
+                    completado={
+                      this.state.descripcion != undefined &&
+                      this.state.descripcion.trim() != "" &&
+                      this.state.descripcion.length >= 50
+                    }
+                  >
+                    <PasoDescripcion onDescripcion={this.onDescripcion} onReady={this.onPaso2Ready} />
+                  </Paso>
 
-              {/* Paso 3 */}
-              <Paso
-                numero={3}
-                titulo={texto_Titulo_Ubicacion}
-                onPress={this.onPasoClick}
-                expandido={this.state.pasoActual == 3}
-                completado={this.state.ubicacion != undefined}
-              >
-                <PasoUbicacion onUbicacion={this.onUbicacion} onReady={this.onPaso3Ready} />
-              </Paso>
+                  {/* Paso 3 */}
+                  <Paso
+                    numero={3}
+                    titulo={texto_Titulo_Ubicacion}
+                    onPress={this.onPasoClick}
+                    expandido={this.state.pasoActual == 3}
+                    completado={this.state.ubicacion != undefined}
+                  >
+                    <PasoUbicacion onUbicacion={this.onUbicacion} onReady={this.onPaso3Ready} />
+                  </Paso>
 
-              {/* Paso 4 - Foto */}
-              <Paso
-                numero={4}
-                cargando={this.state.paso4Cargando}
-                titulo={texto_Titulo_Foto}
-                onPress={this.onPasoClick}
-                expandido={this.state.pasoActual == 4}
-                completado={this.state.foto != undefined}
-              >
-                <PasoFoto onFoto={this.onFoto} onCargando={this.onPaso4Cargando} onReady={this.onPaso4Ready} />
-              </Paso>
+                  {/* Paso 4 - Foto */}
+                  <Paso
+                    numero={4}
+                    cargando={this.state.paso4Cargando}
+                    titulo={texto_Titulo_Foto}
+                    onPress={this.onPasoClick}
+                    expandido={this.state.pasoActual == 4}
+                    completado={this.state.foto != undefined}
+                  >
+                    <PasoFoto onFoto={this.onFoto} onCargando={this.onPaso4Cargando} onReady={this.onPaso4Ready} />
+                  </Paso>
 
-              {/* Paso 5 */}
-              <Paso
-                numero={5}
-                titulo={texto_Titulo_Confirmacion}
-                onPress={this.onPasoClick}
-                expandido={this.state.pasoActual == 5}
-                completado={false}
-              >
-                <PasoConfirmacion
-                  servicio={this.state.servicioNombre}
-                  motivo={this.state.motivoNombre}
-                  descripcion={this.state.descripcion}
-                  ubicacion={textoUbicacion}
-                  onReady={this.registrar}
-                />
-              </Paso>
-            </ScrollView>
-          )}
+                  {/* Paso 5 */}
+                  <Paso
+                    numero={5}
+                    titulo={texto_Titulo_Confirmacion}
+                    onPress={this.onPasoClick}
+                    expandido={this.state.pasoActual == 5}
+                    completado={false}
+                  >
+                    <PasoConfirmacion
+                      servicio={this.state.servicioNombre}
+                      motivo={this.state.motivoNombre}
+                      descripcion={this.state.descripcion}
+                      ubicacion={textoUbicacion}
+                      onReady={this.registrar}
+                    />
+                  </Paso>
+                </View>
+              </ScrollView>
+            )}
 
           {/* Sombra del toolbar */}
-          <LinearGradient
-            colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
-            backgroundColor="transparent"
-            style={{ left: 0, top: 0, right: 0, height: 16, position: "absolute" }}
-            pointerEvents="none"
-          />
+          <MiToolbarSombra />
+
         </View>
 
         {/* Keyboard */}
@@ -427,6 +445,7 @@ export default class RequerimientoNuevo extends React.Component {
           visible={this.state.mostrarPanelResultado}
           cargando={this.state.registrando}
           onPressVerDetalle={this.onBtnVerDetalleClick}
+          onPressVolver={this.onBtnVolverClick}
         />
 
         {this.renderDialogoConfirmarSalida()}
@@ -434,21 +453,16 @@ export default class RequerimientoNuevo extends React.Component {
     );
   }
 
-  @autobind
-  ocultarDialogoConfirmarSalida() {
+  ocultarDialogoConfirmarSalida = () => {
     this.setState({ dialogoConfirmarSalidaVisible: false });
   }
 
-  @autobind
-  onConfirmarSalida() {
-    this.setState(
-      {
-        dialogoConfirmarSalidaVisible: false
-      },
-      function() {
-        App.goBack();
-      }
-    );
+  onConfirmarSalida = () => {
+    this.setState({
+      dialogoConfirmarSalidaVisible: false
+    }, () => {
+      App.goBack();
+    });
   }
 
   renderDialogoConfirmarSalida() {

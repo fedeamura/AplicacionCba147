@@ -1,8 +1,6 @@
 import React from "react";
-import { View, StyleSheet, Alert, Animated, ScrollView, BackHandler } from "react-native";
-
+import { View, StyleSheet, ScrollView, BackHandler } from "react-native";
 import { Dialog, Paragraph, Button as ButtonPeper, DialogActions, DialogContent } from "react-native-paper";
-import autobind from "autobind-decorator";
 
 //Mis componentes
 import App from "@UI/App";
@@ -76,14 +74,14 @@ export default class Inicio extends React.Component {
     //Back
     this._didFocusSubscription = props.navigation.addListener(
       "didFocus",
-      function(payload) {
+      function () {
         BackHandler.addEventListener("hardwareBackPress", this.back);
       }.bind(this)
     );
 
     this._willBlurSubscription = props.navigation.addListener(
       "willBlur",
-      function(payload) {
+      function () {
         BackHandler.removeEventListener("hardwareBackPress", this.back);
       }.bind(this)
     );
@@ -93,8 +91,7 @@ export default class Inicio extends React.Component {
     this.consultarUsuarioValidadoRenaper();
   }
 
-  @autobind
-  back() {
+  back = () => {
     if (this.state.expandido == true) {
       return false;
     }
@@ -103,64 +100,68 @@ export default class Inicio extends React.Component {
     return true;
   }
 
-  @autobind
-  consultarUsuarioValidadoRenaper() {
-    this.setState(
-      { cargando: true, error: undefined, mostrandoPanelRenaper: false },
-      function() {
-        Rules_Usuario.esUsuarioValidadoRenaper()
-          .then(
-            function(validado) {
-              this.setState({
-                cargando: false,
-                validadoRenaper: validado,
-                mostrandoPanelRenaper: validado == false
-              });
-            }.bind(this)
-          )
-          .catch(
-            function(error) {
-              this.setState({
-                cargando: false,
-                validadoRenaper: false,
-                mostrandoPanelRenaper: true,
-                error: error
-              });
-            }.bind(this)
-          );
-      }.bind(this)
-    );
-  }
-
-  @autobind
-  onBtnValidarClick() {
-    App.navegar("UsuarioValidarDatosRenaper", {
-      callback: function() {
-        this.consultarUsuarioValidadoRenaper();
-      }.bind(this)
+  consultarUsuarioValidadoRenaper = () => {
+    this.setState({
+      cargando: true,
+      error: undefined,
+      mostrandoPanelRenaper: false
+    }, () => {
+      Rules_Usuario.esUsuarioValidadoRenaper()
+        .then((validado) => {
+          this.setState({
+            cargando: false,
+            validadoRenaper: validado,
+            mostrandoPanelRenaper: validado == false
+          });
+        })
+        .catch((error) => {
+          this.setState({
+            cargando: false,
+            validadoRenaper: false,
+            mostrandoPanelRenaper: true,
+            error: error
+          });
+        });
     });
   }
 
-  @autobind
-  onBtnRecargarClick() {
+  onBtnValidarClick = () => {
+    App.navegar("UsuarioValidarDatosRenaper", {
+      callback: () => {
+        this.consultarUsuarioValidadoRenaper();
+      }
+    });
+  }
+
+  onBtnRecargarClick = () => {
     this.consultarUsuarioValidadoRenaper();
   }
 
-  @autobind
-  onToolbarMenuOpen() {
+  onToolbarMenuOpen = () => {
     this.setState({ expandido: true });
   }
 
-  @autobind
-  onToolbarMenuClose() {
+  onToolbarMenuClose = () => {
     this.setState({ expandido: false });
+  }
+
+  ocultarDialogoConfirmarSalida = () => {
+    this.setState({ dialogoConfirmarSalidaVisible: false });
+  }
+
+  onConfirmarSalida = () => {
+    this.setState({
+      dialogoConfirmarSalidaVisible: false
+    }, () => {
+      BackHandler.exitApp();
+    });
   }
 
   render() {
     if (this.state.cargando == true) return null;
 
     const initData = global.initData;
-    const colorToolbar = initData.toolbar_Dark ? "white" : "black";
+    const colorToolbar = initData.toolbarDark ? "white" : "black";
 
     //Mostrando panel validar renaper
     if (this.state.mostrandoPanelRenaper == true) {
@@ -208,8 +209,8 @@ export default class Inicio extends React.Component {
         <MiStatusBar />
 
         <MiToolbarMenu
-          toolbarHeight={initData.toolbar_Height}
-          toolbarBackgroundColor={initData.toolbar_BackgroundColor}
+          toolbarHeight={initData.toolbarHeight}
+          toolbarBackgroundColor={initData.toolbarBackgroundColor}
           toolbarTituloColor={colorToolbar}
           opciones={this.state.opciones}
           expandirAlHacerClick={false}
@@ -225,23 +226,6 @@ export default class Inicio extends React.Component {
 
         {this.renderDialogoConfirmarSalida()}
       </View>
-    );
-  }
-
-  @autobind
-  ocultarDialogoConfirmarSalida() {
-    this.setState({ dialogoConfirmarSalidaVisible: false });
-  }
-
-  @autobind
-  onConfirmarSalida() {
-    this.setState(
-      {
-        dialogoConfirmarSalidaVisible: false
-      },
-      function() {
-        BackHandler.exitApp();
-      }.bind(this)
     );
   }
 

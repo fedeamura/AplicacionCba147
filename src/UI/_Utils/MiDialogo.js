@@ -1,21 +1,7 @@
 import React from "react";
-import {
-  Animated,
-  View,
-  Alert,
-  Text,
-  ScrollView
-} from "react-native";
-import {
-  Spinner
-} from 'native-base';
-import {
-  Dialog,
-  Button as ButtonPaper,
-  DialogActions,
-  DialogTitle,
-  DialogContent
-} from "react-native-paper";
+import { Animated, View, ScrollView } from "react-native";
+import { Spinner } from "native-base";
+import { Dialog, Button as ButtonPaper, DialogActions, DialogTitle, DialogContent } from "react-native-paper";
 
 export default class MiDialogo extends React.Component {
   constructor(props) {
@@ -37,12 +23,11 @@ export default class MiDialogo extends React.Component {
     botones: [],
     cancelable: true,
     cargando: false
-  }
+  };
 
+  ocultar = () => { }
 
-  ocultar() {
-
-  }
+  onPress() { }
 
   render() {
     let cancelable = this.props.cancelable;
@@ -50,21 +35,25 @@ export default class MiDialogo extends React.Component {
       cancelable = false;
     }
 
-    return <Dialog
-      dismissable={cancelable}
-      style={[{
-        borderRadius: 16,
-        maxWidth: 400,
-        width: '90%',
-        alignSelf: 'center'
-      }, this.props.style]}
-      visible={this.props.visible}
-      onDismiss={this.props.onDismiss}
-    >
-      {this.renderCargando()}
-      {this.renderContent()}
-
-    </Dialog >;
+    return (
+      <Dialog
+        dismissable={cancelable}
+        style={[
+          {
+            borderRadius: 16,
+            maxWidth: 400,
+            width: "90%",
+            alignSelf: "center"
+          },
+          this.props.style
+        ]}
+        visible={this.props.visible}
+        onDismiss={this.props.onDismiss}
+      >
+        {this.renderCargando()}
+        {this.renderContent()}
+      </Dialog>
+    );
   }
 
   renderCargando() {
@@ -77,38 +66,42 @@ export default class MiDialogo extends React.Component {
     const cargando = this.props.cargando == true || false;
     if (cargando == true) return null;
 
-    const botones = this.props.botones.map((boton) => {
+    const botones = this.props.botones.map((boton, index) => {
       let habilitado = boton.enabled == undefined || boton.enabled == true;
-
-      return <ButtonPaper
-        style={{ opacity: habilitado ? 1 : 0.5 }}
-        onPress={() => {
-          if (habilitado == false) return;
-          boton.onPress();
-        }}
-      >{boton.texto || 'Boton'}
-      </ButtonPaper>
+      return <MiDialogoBoton key={index} onPress={boton.onPress} habilitado={habilitado} texto={boton.texto || "Boton"} />;
     });
 
-    return <View>
-      {
-        this.props.titulo != undefined && (
-          <DialogTitle>{this.props.titulo}</DialogTitle>
-        )
-      }
+    return (
+      <View>
+        {this.props.titulo != undefined && <DialogTitle>{this.props.titulo}</DialogTitle>}
 
-      <DialogContent>
-        <ScrollView style={{ maxHeight: 500 }}>
-          {this.props.children}
-        </ScrollView>
-      </DialogContent>
+        <DialogContent>
+          <ScrollView style={{ maxHeight: 500 }}>{this.props.children}</ScrollView>
+        </DialogContent>
 
-      {this.props.botones.length != 0 && (
-        <DialogActions>
-          {botones}
-        </DialogActions>
-      )}
-    </View>
+        {this.props.botones.length != 0 && <DialogActions>{botones}</DialogActions>}
+      </View>
+    );
+  }
+}
 
+class MiDialogoBoton extends React.PureComponent {
+
+  constructor(props) {
+    super(props);
+  }
+
+  onPress = () => {
+    let habilitado = this.props.habilitado;
+    if (habilitado == false) return;
+    this.props.onPress();
+  }
+
+  render() {
+    return (
+      <ButtonPaper style={{ opacity: this.props.habilitado ? 1 : 0.5 }} onPress={this.onPress}>
+        {this.props.texto || "Boton"}
+      </ButtonPaper>
+    );
   }
 }

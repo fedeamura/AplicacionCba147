@@ -1,13 +1,13 @@
 import React from "react";
-import { View, Alert } from "react-native";
-import { Button, Text } from "native-base";
+import { View } from "react-native";
 import WebImage from "react-native-web-image";
-import LinearGradient from "react-native-linear-gradient";
-import autobind from "autobind-decorator";
 
 //Mis componentes
 import App from "@UI/App";
 import MiView from "@Utils/MiView";
+import MiItemDetalle from "@Utils/MiItemDetalle";
+import MiBoton from "@Utils/MiBoton";
+import { toTitleCase } from "@Utils/Helpers";
 
 export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
   constructor(props) {
@@ -22,52 +22,51 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
 
   static defaultProps = {
     ...React.Component.defaultProps,
-    onReady: function() {},
-    onUbicacion: function() {}
+    onReady: function () { },
+    onUbicacion: function () { }
   };
 
-  @autobind
-  onUbicacion(ubicacion) {
-    this.setState({ ubicacion: ubicacion, viewSeleccionarVisible: false }, function() {
+  onUbicacion = (ubicacion) => {
+    this.setState({
+      ubicacion: ubicacion,
+      viewSeleccionarVisible: false
+    }, () => {
       this.informarUbicacion();
 
-      setTimeout(
-        function() {
-          this.setState({ viewSeleccionadoVisible: true });
-        }.bind(this),
-        300
-      );
+      setTimeout(() => {
+        this.setState({
+          viewSeleccionadoVisible: true
+        });
+      }, 300);
     });
   }
 
-  @autobind
-  cancelarUbicacion() {
-    this.setState({ ubicacion: undefined, viewSeleccionadoVisible: false }, function() {
+  cancelarUbicacion = () => {
+    this.setState({
+      ubicacion: undefined,
+      viewSeleccionadoVisible: false
+    }, () => {
       this.informarUbicacion();
 
-      setTimeout(
-        function() {
-          this.setState({ viewSeleccionarVisible: true });
-        }.bind(this),
-        300
-      );
+      setTimeout(() => {
+        this.setState({
+          viewSeleccionarVisible: true
+        });
+      }, 300);
     });
   }
 
-  @autobind
-  seleccionarUbicacion() {
+  seleccionarUbicacion = () => {
     App.navegar("PickerUbicacion", {
       onUbicacionSeleccionada: this.onUbicacion
     });
   }
 
-  @autobind
-  informarUbicacion() {
+  informarUbicacion = () => {
     this.props.onUbicacion(this.state.ubicacion);
   }
 
-  @autobind
-  informarReady() {
+  informarReady = () => {
     this.props.onReady();
   }
 
@@ -81,21 +80,23 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
   }
 
   renderViewSeleccionar() {
+
     return (
       <MiView visible={this.state.viewSeleccionarVisible}>
-        <Button
-          bordered
-          rounded
-          small
-          onPress={this.seleccionarUbicacion}
-          style={{
-            borderColor: "green",
-            alignSelf: "center",
-            margin: 32
-          }}
-        >
-          <Text style={{ color: "green" }}>{texto_BotonSeleccionar}</Text>
-        </Button>
+        <View style={{ padding: 16 }}>
+
+          <MiBoton
+            bordered
+            padding={16}
+            verde
+            centro
+            rounded
+            small
+            texto={texto_BotonSeleccionar}
+            onPress={this.seleccionarUbicacion}
+          />
+        </View>
+
       </MiView>
     );
   }
@@ -113,8 +114,18 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
     let textoDireccion =
       (this.state.ubicacion.sugerido == true ? "Aproximadamente en " : "") + this.state.ubicacion.direccion;
     let textoObservaciones = this.state.ubicacion.observaciones;
-    let textoCpc = "Nº " + this.state.ubicacion.cpc.numero + " - " + this.state.ubicacion.barrio.nombre;
-    let textoBarrio = this.state.ubicacion.barrio.nombre;
+    let textoCpc;
+    if (this.state.ubicacion.cpc != undefined) {
+      textoCpc = "Nº " + this.state.ubicacion.cpc.numero + " - " + toTitleCase(this.state.ubicacion.barrio.nombre);
+    } else {
+      textoCpc = "Sin datos";
+    }
+    let textoBarrio;
+    if (this.state.ubicacion.barrio != undefined) {
+      textoBarrio = toTitleCase(this.state.ubicacion.barrio.nombre);
+    } else {
+      textoBarrio = toTitleCase("Sin datos");
+    }
 
     return (
       <MiView visible={this.state.viewSeleccionadoVisible}>
@@ -131,55 +142,53 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
 
             <View style={{}}>
               <View style={{ padding: 16 }}>
-                <Text style={{ fontWeight: "bold" }}>Dirección</Text>
-                <Text>{textoDireccion}</Text>
-                <Text style={{ fontWeight: "bold", marginTop: 8 }}>Observaciones</Text>
-                <Text>{textoObservaciones}</Text>
-                <Text style={{ fontWeight: "bold", marginTop: 8 }}>CPC</Text>
-                <Text>{textoCpc}</Text>
-                <Text style={{ fontWeight: "bold", marginTop: 8 }}>Barrio</Text>
-                <Text>{textoBarrio}</Text>
+                <MiItemDetalle titulo={texto_Direccion} subtitulo={textoDireccion} />
+                <View style={{ height: 8 }} />
+                <MiItemDetalle titulo={texto_Observaciones} subtitulo={textoObservaciones} />
+                <View style={{ height: 8 }} />
+                <MiItemDetalle titulo={texto_Cpc} subtitulo={textoCpc} />
+                <View style={{ height: 8 }} />
+                <MiItemDetalle titulo={texto_Barrio} subtitulo={textoBarrio} />
+
+                <View style={{ height: 8 }} />
+                <View style={{ height: 8 }} />
+
+                <MiBoton
+                  small
+                  link
+                  rojo
+                  onPress={this.cancelarUbicacion}
+                  texto={texto_BotonCancelar}
+                />
               </View>
             </View>
           </View>
 
-          <Button
-            small
-            transparent
-            rounded
-            onPress={this.cancelarUbicacion}
-            style={{ borderColor: initData.colorError }}
-          >
-            <Text style={{ color: initData.colorError, textDecorationLine: "underline" }}>Cancelar ubicacion</Text>
-          </Button>
+
         </View>
 
         <View style={{ height: 16 }} />
         <View style={{ height: 1, width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }} />
 
-        <View style={{ padding: 16 }}>
-          <Button
-            small
-            onPress={this.informarReady}
-            rounded
-            bordered
-            style={{
-              alignSelf: "flex-end",
-              backgroundColor: initData.colorExito
-            }}
-          >
-            <Text
-              style={{
-                color: "white"
-              }}
-            >
-              Siguiente
-            </Text>
-          </Button>
-        </View>
+        <MiBoton
+          texto={texto_BotonSiguiente}
+          padding={16}
+          sombra
+          verde
+          rounded
+          small
+          onPress={this.informarReady}
+          derecha
+        />
       </MiView>
     );
   }
 }
 
 const texto_BotonSeleccionar = "Seleccionar ubicacion";
+const texto_Direccion = "Dirección";
+const texto_Observaciones = "Observaciones del domicilio";
+const texto_Barrio = "Barrio";
+const texto_Cpc = "CPC";
+const texto_BotonCancelar = "Cancelar ubicación";
+const texto_BotonSiguiente = "Siguiente";

@@ -1,49 +1,42 @@
 import React from "react";
 import { View, Animated, TouchableWithoutFeedback } from "react-native";
 import { Text, Spinner } from "native-base";
-import autobind from "autobind-decorator";
 
-export default class RequerimientoNuevo extends React.Component {
+export default class RequerimientoNuevo extends React.PureComponent {
   constructor(props) {
     super(props);
-
-    this.state = {
-      completado: props.completado
-    };
 
     this.animPress = new Animated.Value(0);
     this.animCompletado = new Animated.Value(props.completado ? 1 : 0);
     this.animCargando = new Animated.Value(0);
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   componentWillReceiveProps(nextProps) {
     //Completado
-    if (nextProps.completado != this.state.completado) {
+    if (nextProps.completado != this.props.completado) {
       Animated.timing(this.animCompletado, {
         duration: 300,
         toValue: nextProps.completado ? 1 : 0
       }).start();
-
-      this.setState({ completado: nextProps.completado });
     }
 
-    Animated.timing(this.animCargando, {
-      duration: 300,
-      toValue: nextProps.cargando == true ? 1 : 0
-    }).start();
+    if (this.props.cargando != nextProps.cargando) {
+      Animated.timing(this.animCargando, {
+        duration: 300,
+        toValue: nextProps.cargando == true ? 1 : 0
+      }).start();
+    }
   }
 
-  @autobind
-  onPressIn() {
+  onPressIn = () => {
     Animated.spring(this.animPress, {
       toValue: 1
     }).start();
   }
 
-  @autobind
-  onPressOut() {
+  onPressOut = () => {
     Animated.spring(this.animPress, {
       toValue: 0
     }).start();

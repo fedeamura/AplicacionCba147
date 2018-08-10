@@ -1,8 +1,7 @@
 import React from "react";
 import {
   Animated,
-  View,
-  Text
+  View
 } from "react-native";
 
 export default class MiView extends React.Component {

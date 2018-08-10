@@ -1,12 +1,12 @@
 import React from "react";
 import {
-  View,
   StyleSheet
 } from "react-native";
-import { Toolbar, ToolbarBackAction, ToolbarContent, ToolbarAction } from "react-native-paper";
+import { Toolbar, ToolbarBackAction, ToolbarContent } from "react-native-paper";
 
 
-export default class MiToolbar extends React.Component {
+export default class MiToolbar extends React.PureComponent {
+
   constructor(props) {
     super(props);
   }
@@ -20,12 +20,12 @@ export default class MiToolbar extends React.Component {
 
   render() {
     const initData = global.initData;
-    const backgroundColor = this.props.backgroundColor || initData.toolbar_BackgroundColor;
-    const dark = this.props.dark || initData.toolbar_Dark;
+    const backgroundColor = this.props.backgroundColor || initData.toolbarBackgroundColor;
+    const dark = this.props.dark || initData.toolbarDark;
     return (
       <Toolbar style={[styles.toolbar, {
         backgroundColor: backgroundColor,
-        height: initData.toolbar_Height
+        height: initData.toolbarHeight
       }, this.props.style]}
         elevation={0}
         dark={dark}>

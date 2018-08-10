@@ -5,7 +5,7 @@ import codePush from "react-native-code-push";
 import Rules_Ajustes from "@Rules/Rules_Ajustes";
 
 const metodos = {
-  actualizarApp: function() {
+  actualizarApp: () => {
     return new Promise((callback, reject) => {
       //Valido si soy beta tester
       Rules_Ajustes.isBetaTester()
@@ -22,36 +22,31 @@ const metodos = {
           const key = Platform.OS == "ios" ? (test ? key_ios_test : key_ios) : test ? key_android_test : key_android;
 
           //Mando a actualizar
-          codePush.sync(
-            {
-              deploymentKey: key,
-              installMode: codePush.InstallMode.IMMEDIATE
-            },
-            //Status change
-            syncStatus => {
-              switch (syncStatus) {
-                case codePush.SyncStatus.CHECKING_FOR_UPDATE:
-                  break;
-                case codePush.SyncStatus.DOWNLOADING_PACKAGE:
-                  break;
-                case codePush.SyncStatus.INSTALLING_UPDATE:
-                  break;
-                case codePush.SyncStatus.UP_TO_DATE:
-                  callback();
-                  break;
-                case codePush.SyncStatus.UPDATE_IGNORED:
-                  callback();
-                  break;
-                case codePush.SyncStatus.UPDATE_INSTALLED:
-                  callback();
-                  break;
-                case codePush.SyncStatus.UNKNOWN_ERROR:
-                  reject("Error procesando la solicitud");
-                  break;
-              }
-            },
-            progress => {}
-          );
+          codePush.sync({
+            deploymentKey: key,
+            installMode: codePush.InstallMode.IMMEDIATE
+          }, syncStatus => {
+            switch (syncStatus) {
+              case codePush.SyncStatus.CHECKING_FOR_UPDATE:
+                break;
+              case codePush.SyncStatus.DOWNLOADING_PACKAGE:
+                break;
+              case codePush.SyncStatus.INSTALLING_UPDATE:
+                break;
+              case codePush.SyncStatus.UP_TO_DATE:
+                callback();
+                break;
+              case codePush.SyncStatus.UPDATE_IGNORED:
+                callback();
+                break;
+              case codePush.SyncStatus.UPDATE_INSTALLED:
+                callback();
+                break;
+              case codePush.SyncStatus.UNKNOWN_ERROR:
+                reject("Error procesando la solicitud");
+                break;
+            }
+          });
         })
         .catch(error => {
           reject(error);
@@ -59,27 +54,33 @@ const metodos = {
     });
   },
 
-  getInitData: function() {
-    return new Promise((callback, callbackError) => {
-      callback({
-        colorVerde: "#01a15a",
-        colorNaranja: "#f68a1e",
-        colorRosa: "#c6148c",
-        colorExito: "#01a15a",
-        colorError: "#F4511E",
-        mantenimiento: false,
-        backgroundColor: "rgba(230,230,230,1)",
-        toolbar_BackgroundColor: "white",
-        toolbar_Dark: false,
-        toolbar_Height: 56,
-        statusBar_BackgroundColor: "white",
-        statusBar_Dark: false,
-        url_cordoba_files: "https://servicios2.cordoba.gov.ar/CordobaFiles/Archivo",
-        url_placeholder_user_male:
-          "https://servicios2.cordoba.gov.ar/cordobafiles/archivo/f_qdag0f9irgka9xj2l6mbll69gxmhlghezkmkj2mykg1pj0uuhwogqiqfic_c327l9gmyk9tutz1fuq0rc3_z2byq5gcg2j5tjpqcn6jid4x2rlv2nsaa2it7s64d7m2k4h7e_xegt2w8p79uvk4jj42a7uvrcfm1cn8jpq31o4raxvsv8ktwtsa_q6iqbxeop56c_zee/3",
-        url_placeholder_user_female:
-          "https://servicios2.cordoba.gov.ar/cordobafiles/archivo/f_zq38nzky73iwxm6fz4m812vx68ggr28xgokqfwx7zf9ws7rd6_s7mn985gcqtehf6vpicq_chqiv3_e9rdlsjal4pmw_uhnu9318riap_p07eoe5cd_q4z65kw304ataczwaihsic6t4lo0bh18qi81k86x6qlv_7z5q2ew6w1n8gbu772sdcd3e8mcnuw31ku8wtkkd/3"
-      });
+  getInitData: () => {
+    return new Promise((resolve, reject) => {
+      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Ajustes/AppData";
+      fetch(url, {
+        method: "GET",
+        headers: new Headers({
+          Identificador: "Df4d4Ad6aweNvrtyhrtyIrffsEfdsfsdfsdfL",
+          Key: "V18sa4v19t7I14r9ca24LLfa46g3aE8h4G6AS"
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data == undefined) {
+            reject("Error procesando la solicitud");
+            return;
+          }
+
+          if (data.ok != true) {
+            reject(data.error || "Error procesando la solicitud");
+            return;
+          }
+
+          resolve(data.return);
+        })
+        .catch(() => {
+          reject("Error procesando la solicitud");
+        });
     });
   }
 };
