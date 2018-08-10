@@ -5,13 +5,10 @@ import {
   Animated,
 } from "react-native";
 import {
-  Button,
   Text,
 } from "native-base";
 import LottieView from 'lottie-react-native';
-
-//Mis componentes
-import autobind from 'autobind-decorator'
+import MiBoton from "@Utils/MiBoton";
 
 export default class UsuarioNuevo_Resultado extends React.Component {
 
@@ -71,24 +68,21 @@ export default class UsuarioNuevo_Resultado extends React.Component {
     });
   }
 
-  @autobind
-  mostrar() {
+  mostrar = () => {
     Animated.timing(this.anim, {
       toValue: 1,
       timing: 300
     }).start();
   }
 
-  @autobind
-  ocultar() {
+  ocultar = () => {
     Animated.timing(this.anim, {
       toValue: 0,
       timing: 300
     }).start();
   }
 
-  @autobind
-  mostrarCargando() {
+  mostrarCargando = () => {
     Animated.timing(this.animTextos, {
       toValue: 0,
       timing: 300
@@ -111,8 +105,7 @@ export default class UsuarioNuevo_Resultado extends React.Component {
       ])).start();
   }
 
-  @autobind
-  ocultarCargando() {
+  ocultarCargando = () => {
     Animated.timing(this.animTextos, {
       toValue: 1,
       timing: 300
@@ -128,8 +121,7 @@ export default class UsuarioNuevo_Resultado extends React.Component {
     }).start();
   }
 
-  @autobind
-  onButtonPress() {
+  onButtonPress = () => {
     this.props.onButtonPress();
   }
 
@@ -168,12 +160,13 @@ export default class UsuarioNuevo_Resultado extends React.Component {
             <Text style={[styles.texto_EmailActivacion, { marginTop: 8 }]}>{textoDetalle}</Text>
             <Text style={[styles.texto_Username]}>{textoDetalle2}</Text>
             <View style={{ marginTop: 16 }}>
-
-              <Button
-                bordered
+              <MiBoton
+                centro
+                verde
                 rounded
-                style={{ alignSelf: 'center', borderColor: 'green' }}
-                onPress={this.onButtonPress}><Text style={{ color: 'green' }}>{texto_BotonAceptar}</Text></Button>
+                onPress={this.onButtonPress}
+                texto={texto_BotonAceptar}
+                sombra />
             </View>
 
           </Animated.View>
@@ -216,10 +209,10 @@ const styles = StyleSheet.create({
   },
   texto_Username: {
     fontSize: 16,
-    marginTop:8,
+    marginTop: 8,
     textAlign: 'center',
     maxWidth: 300,
-    opacity:0.9,
+    opacity: 0.9,
     alignSelf: 'center'
   }
 });

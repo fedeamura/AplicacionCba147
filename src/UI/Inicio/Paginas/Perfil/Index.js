@@ -727,7 +727,7 @@ const texto_Titulo_Sexo = 'Sexo';
 const texto_Titulo_SexoMasculino = 'Masculino';
 const texto_Titulo_SexoFemenino = 'Femenino';
 const texto_Titulo_DomicilioLegal = 'Domicilio legal'
-const texto_InfoUsuarioValidado = "Como sus datos se encuentran validados por el registro nacional de personas, estos no se pueden editar.";
+const texto_InfoUsuarioValidado = "Como sus Datos Personales se encuentran validados por el Registro Nacional de las Personas, estos no se pueden editar.";
 
 //Texto datos de contacto
 const texto_Titulo_DatosContacto = 'Datos de contacto';

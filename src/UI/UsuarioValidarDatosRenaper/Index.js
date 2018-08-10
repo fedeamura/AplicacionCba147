@@ -2,16 +2,14 @@ import React from "react";
 import { StyleSheet, View, Alert, Animated, ScrollView, BackHandler, Keyboard } from "react-native";
 import { Text, Spinner } from "native-base";
 import { Dialog, Button as ButtonPeper, DialogActions, DialogContent } from "react-native-paper";
-import LinearGradient from "react-native-linear-gradient";
-import autobind from "autobind-decorator";
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
 import MiStatusBar from "@Utils/MiStatusBar";
 import MiToolbar from "@Utils/MiToolbar";
+import MiToolbarSombra from "@Utils/MiToolbarSombra";
 import FormDatosPersonales from "@UI/UsuarioNuevo/FormDatosPersonales";
 import MiPanelError from "@Utils/MiPanelError";
-import { dateToString } from "@Utils/Helpers";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -58,8 +56,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     this.buscarDatosPersonales();
   }
 
-  @autobind
-  back() {
+  back = () => {
     if (this.state.cargando == true) {
       return true;
     }
@@ -68,8 +65,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     return true;
   }
 
-  @autobind
-  keyboardWillShow(event) {
+  keyboardWillShow = (event) => {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -78,7 +74,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     }).start();
   }
 
-  keyboardWillHide(event) {
+  keyboardWillHide = (event) => {
     this.teclado = false;
 
     Animated.timing(this.keyboardHeight, {
@@ -87,8 +83,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     }).start();
   }
 
-  @autobind
-  buscarDatosPersonales() {
+  buscarDatosPersonales = () => {
     this.setState({ cargando: true }, () => {
       Rules_Usuario.getDatos()
         .then(datos => {
@@ -100,67 +95,57 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     });
   }
 
-  @autobind
-  mostrarDialogoExito() {
+  mostrarDialogoExito = () => {
     this.setState({ dialogoExitoVisible: true });
   }
 
-  @autobind
-  ocultarDialogoExito() {
+  ocultarDialogoExito = () => {
     this.setState({ dialogoExitoVisible: false });
   }
 
-  @autobind
-  onFormularioDatosPersonalesAlgoInsertado(algoInsertado) {
+  onFormularioDatosPersonalesAlgoInsertado = (algoInsertado) => {
     this.setState({ algoInsertadoEnDatosPersonales: algoInsertado });
   }
 
-  @autobind
-  onDatosPersonalesReady(datos) {
+  onDatosPersonalesReady = (datos) => {
     Keyboard.dismiss();
 
-    this.setState(
-      { cargando: true },
-      function () {
-        let comando = {
-          nombre: datos.nombre,
-          apellido: datos.apellido,
-          dni: datos.dni,
-          fechaNacimiento: datos.fechaNacimiento,
-          sexoMasculino: datos.sexoMasculino
-        };
+    this.setState({
+      cargando: true
+    }, () => {
+      let comando = {
+        nombre: datos.nombre,
+        apellido: datos.apellido,
+        dni: datos.dni,
+        fechaNacimiento: datos.fechaNacimiento,
+        sexoMasculino: datos.sexoMasculino
+      };
 
-        Rules_Usuario.actualizarDatosPersonales(comando)
-          .then(
-            function (data) {
-              this.setState({ cargando: false, dialogoExitoVisible: true });
-            }.bind(this)
-          )
-          .catch(
-            function (error) {
-              this.setState({ cargando: false });
-              Alert.alert("", error);
-            }.bind(this)
-          );
-      }.bind(this)
-    );
+      Rules_Usuario.actualizarDatosPersonales(comando)
+        .then((data) => {
+          this.setState({
+            cargando: false,
+            dialogoExitoVisible: true
+          });
+        })
+        .catch((error) => {
+          this.setState({ cargando: false });
+          Alert.alert("", error);
+        });
+    });
   }
 
-  @autobind
-  informarExito() {
-    this.setState(
-      {
-        dialogoExitoVisible: false
-      },
-      function () {
-        const { params } = this.props.navigation.state;
-        if (params.callback != undefined) {
-          params.callback();
-        }
+  informarExito = () => {
+    this.setState({
+      dialogoExitoVisible: false
+    }, () => {
+      const { params } = this.props.navigation.state;
+      if (params.callback != undefined) {
+        params.callback();
+      }
 
-        App.goBack();
-      }.bind(this)
-    );
+      App.goBack();
+    });
   }
 
   render() {
@@ -180,12 +165,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
           {this.renderContent()}
 
           {/* Sombra del toolbar */}
-          <LinearGradient
-            colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
-            backgroundColor="transparent"
-            style={{ left: 0, top: 0, right: 0, height: 16, position: "absolute" }}
-            pointerEvents="none"
-          />
+          <MiToolbarSombra />
         </View>
 
         <Animated.View style={[{ height: "100%" }, { maxHeight: this.keyboardHeight }]} />
@@ -251,6 +231,18 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
     );
   }
 
+  onDialogoConfirmarSalidaBotonCancelarPress = () => {
+    this.setState({ dialogoConfirmarSalidaVisible: false });
+  }
+
+  onDialogoConfirmarSalidaBotonAceptarPress = () => {
+    this.setState({
+      dialogoConfirmarSalidaVisible: false
+    }, () => {
+      BackHandler.exitApp();
+    });
+  }
+
   renderDialogoConfirmarSalida() {
     {
       /* Dialogo cambios version */
@@ -260,9 +252,7 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
         dismissable={false}
         style={{ borderRadius: 16 }}
         visible={this.state.dialogoConfirmarSalidaVisible}
-        onDismiss={() => {
-          this.setState({ dialogoConfirmarSalidaVisible: false });
-        }}
+        onDismiss={this.onDialogoConfirmarSalidaBotonCancelarPress}
       >
         <DialogContent>
           <ScrollView style={{ maxHeight: 300, maxWidth: 400 }}>
@@ -271,23 +261,12 @@ export default class UsuarioValidarDatosRenaper extends React.Component {
         </DialogContent>
         <DialogActions>
           <ButtonPeper
-            onPress={() => {
-              this.setState({ dialogoConfirmarSalidaVisible: false });
-            }}
+            onPress={this.onDialogoConfirmarSalidaBotonCancelarPress}
           >
             No
           </ButtonPeper>
           <ButtonPeper
-            onPress={() => {
-              this.setState(
-                {
-                  dialogoConfirmarSalidaVisible: false
-                },
-                () => {
-                  BackHandler.exitApp();
-                }
-              );
-            }}
+            onPress={this.onDialogoConfirmarSalidaBotonAceptarPress}
           >
             Si
           </ButtonPeper>

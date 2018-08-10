@@ -1,6 +1,7 @@
 import React from "react";
 import {
   View,
+  Platform,
   Easing,
   Animated,
   Linking,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 import { StackNavigator, NavigationActions } from "react-navigation";
 import { Provider as PaperProvider } from "react-native-paper";
+import VersionNumber from 'react-native-version-number';
 
 // Mis Componentes
 import Introduccion from '@UI/Introduccion/Index';
@@ -45,11 +47,6 @@ const transitionConfig = function () {
       const thisSceneIndex = scene.index;
 
       const width = layout.initWidth;
-
-      // const opacity = position.interpolate({
-      //   inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1,],
-      //   outputRange: [0, 0, 1]
-      // });
 
       // const translateY = position.interpolate({
       //   inputRange: [thisSceneIndex - 1, thisSceneIndex, thisSceneIndex + 1],
@@ -147,7 +144,6 @@ export default class App extends React.Component {
 
   componentDidMount() {
     Linking.addEventListener("url", this._handleOpenURL);
-
     this.init();
   }
 
@@ -204,6 +200,19 @@ export default class App extends React.Component {
     this.init();
   }
 
+
+  isVersionAppValida = () => {
+    let version = VersionNumber.buildVersion;
+    if (version == undefined) return true;
+
+    if (global.initData == undefined) return true;
+    if (Platform.os == 'ios') {
+      return version>= global.initData.versionIOS;
+    } else {
+      return version >=global.initData.versionAndroid;
+    }
+  }
+
   static Navigation;
 
   static replace = (pagina) => {
@@ -237,16 +246,34 @@ export default class App extends React.Component {
   //   }
   // }
 
+  onBotonTiendaPress = () => {
+    try {
+      let url;
+      if (Platform.os == 'ios') {
+        url = 'https://itunes.apple.com/ar/app/cba147/id1349553071?mt=8';
+      } else {
+        url = 'https://play.google.com/store/apps/details?id=com.cordoba';
+      }
+      Linking.openURL(url);
+    } catch (ex) {
+
+    }
+  }
+
   render() {
     const cargandoVisible = this.state.cargando == true;
     const errorVisible = this.state.error != undefined;
     const mantenimientoVisible =
       this.state.initData != undefined &&
       this.state.initData.mantenimiento == true;
+
+    const errorVersionAppVisible = this.isVersionAppValida() == false && errorVisible == false && mantenimientoVisible == false;
+
     const contenidoVisible =
       cargandoVisible == false &&
       errorVisible == false &&
-      mantenimientoVisible == false;
+      mantenimientoVisible == false &&
+      errorVersionAppVisible == false;
 
     return (
       <PaperProvider>
@@ -267,12 +294,22 @@ export default class App extends React.Component {
 
         <AppCargando visible={this.state.cargando} />
 
+        {/* Algun error generado */}
         <AppError
           visible={errorVisible == true}
           error={this.state.error}
           mostrarBoton={true}
           botonTexto="Reintentar"
           onBotonPress={this.onPanelErrorBotonPress}
+        />
+
+        {/* Error de version de app */}
+        <AppError
+          visible={errorVersionAppVisible == true}
+          error={'Hay una actualización de la aplicación disponible. Por favor, actualice para continuar'}
+          mostrarBoton={true}
+          botonTexto="Ir a la tienda de aplicaciones"
+          onBotonPress={this.onBotonTiendaPress}
         />
 
         <AppMantenimiento visible={mantenimientoVisible == true} />

@@ -98,6 +98,34 @@ const metodos = {
     });
   },
 
+  getVersionApp: () => {
+    return new Promise((resolve, reject) => {
+
+      DB.getItem("versionApp")
+        .then((val) => {
+          if (val == undefined) {
+            val = '';
+          }
+          resolve(val);
+        })
+        .catch((error) => {
+          reject('Error procesando la solicitud');
+        });
+    });
+  },
+
+  setVersionApp: (version) => {
+    return new Promise((resolve, reject) => {
+      DB.setItem("versionApp", version + '')
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          reject('Error procesando la solicitud');
+        });
+    });
+  },
+
   //Validar coneccion
   validarConeccion: () => {
     return new Promise((callback, reject) => {

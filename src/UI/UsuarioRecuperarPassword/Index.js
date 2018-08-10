@@ -1,15 +1,15 @@
 import React from "react";
-import { Platform, StyleSheet, View, Alert, Animated, ScrollView, Keyboard } from "react-native";
-import { Button, Text, Spinner } from "native-base";
-import { Card, CardContent } from "react-native-paper";
+import { StyleSheet, View, Alert, Animated, ScrollView, Keyboard } from "react-native";
+import { Text, Spinner } from "native-base";
 import MiInputTextValidar from "@Utils/MiInputTextValidar";
-import LinearGradient from "react-native-linear-gradient";
-import autobind from "autobind-decorator";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
 import MiStatusBar from "@Utils/MiStatusBar";
 import MiToolbar from "@Utils/MiToolbar";
+import MiToolbarSombra from "@Utils/MiToolbarSombra";
+import MiCardDetalle from "@Utils/MiCardDetalle";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -27,8 +27,6 @@ export default class UsuarioRecuperarPassword extends React.Component {
     this.state = {
       username: undefined,
       usernameError: undefined,
-      // email: undefined,
-      // emailError: undefined,
       completado: false,
       error: true,
       cargando: false
@@ -48,8 +46,7 @@ export default class UsuarioRecuperarPassword extends React.Component {
     this.keyboardWillHideSub.remove();
   }
 
-  @autobind
-  keyboardWillShow(event) {
+  keyboardWillShow = (event) => {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -58,8 +55,7 @@ export default class UsuarioRecuperarPassword extends React.Component {
     }).start();
   }
 
-  @autobind
-  keyboardWillHide(event) {
+  keyboardWillHide = (event) => {
     this.teclado = false;
 
     Animated.timing(this.keyboardHeight, {
@@ -68,8 +64,7 @@ export default class UsuarioRecuperarPassword extends React.Component {
     }).start();
   }
 
-  @autobind
-  validarCampos() {
+  validarCampos = () => {
     let tieneUsername = this.state.username != undefined && this.state.username != "";
     // let tieneEmail = this.state.email != undefined && this.state.email != "";
 
@@ -84,18 +79,7 @@ export default class UsuarioRecuperarPassword extends React.Component {
     });
   }
 
-  // @autobind
-  // onUsernameChange(val) {
-  //   this.setState({ username: val }, this.validarCampos);
-  // }
-
-  // @autobind
-  // onEmailChange(val) {
-  //   this.setState({ email: val }, this.validarCampos);
-  // }
-
-  @autobind
-  recuperarCuenta() {
+  recuperarCuenta = () => {
     if (this.state.username == undefined || this.state.username == "") {
       Alert.alert("", "Ingrese el CUIL o Nombre de Usuario", [
         {
@@ -133,80 +117,74 @@ export default class UsuarioRecuperarPassword extends React.Component {
 
     Keyboard.dismiss();
 
-    Animated.timing(this.animCargando, { toValue: 1, duration: 300 }).start(
-      function() {
-        this.setState(
-          {
-            cargando: true
-          },
-          function() {
-            Rules_Usuario.recuperarCuenta(this.state.username, this.state.email)
-              .then(
-                function(data) {
-                  Animated.timing(this.animCargando, {
-                    toValue: 0,
-                    duration: 300
-                  }).start();
-                  Alert.alert(
-                    "",
-                    texto_RecuperacionIniciada,
-                    [
-                      {
-                        text: "Aceptar",
-                        onPress: () => {
-                          App.goBack();
-                        }
-                      }
-                    ],{cancelable:false}
-                  );
-                }.bind(this)
-              )
-              .catch(
-                function(error) {
-                  Animated.timing(this.animCargando, {
-                    toValue: 0,
-                    duration: 300
-                  }).start();
-                  this.setState({ cargando: false }, () => {
-                    Alert.alert("", error);
-                  });
-                }.bind(this)
-              );
-          }
-        );
-      }.bind(this)
-    );
+    Animated.timing(this.animCargando, {
+      toValue: 1,
+      duration: 300
+    }).start(() => {
+      this.setState({
+        cargando: true
+      }, () => {
+        Rules_Usuario.recuperarCuenta(this.state.username, this.state.email)
+          .then((data) => {
+
+            Alert.alert(
+              "",
+              texto_RecuperacionIniciada,
+              [
+                {
+                  text: "Aceptar",
+                  onPress: () => {
+                    App.goBack();
+                  }
+                }
+              ], { cancelable: false }
+            );
+          })
+          .catch((error) => {
+            Animated.timing(this.animCargando, {
+              toValue: 0,
+              duration: 300
+            }).start();
+            this.setState({ cargando: false }, () => {
+              Alert.alert("", error);
+            });
+          });
+      }
+      );
+    });
   }
 
-  @autobind
-  cerrar() {
+  cerrar = () => {
     if (this.state.cargando == true) return;
     App.goBack();
   }
 
-  @autobind
-  onInputUsername(ref) {
+  onInputUsername = (ref) => {
     this.inputUsername = ref;
   }
 
-  @autobind
-  focusInputEmail() {
+  focusInputEmail = () => {
     if (this.inputEmail == undefined) return;
     this.inputEmail._root.focus();
   }
 
-  @autobind
-  onInputUsernameError(error) {
+  onInputUsernameError = (error) => {
     this.setState({ usernameError: error }, this.validarCampos);
   }
 
-  @autobind
-  onInputUsernameChange(val) {
+  onInputUsernameChange = (val) => {
     this.setState({ username: val });
   }
 
   render() {
     const initData = global.initData;
+
+    const botones = [];
+    botones.push({
+      disabled: this.state.cargando == true || this.state.username == undefined || this.state.username == "",
+      texto: 'Recuperar cuenta',
+      onPress: this.recuperarCuenta
+    });
 
     return (
       <View style={styles.contenedor}>
@@ -220,84 +198,64 @@ export default class UsuarioRecuperarPassword extends React.Component {
         <View style={[styles.contenedor_Contenido, { backgroundColor: initData.backgroundColor }]}>
           <ScrollView keyboardShouldPersistTaps="always">
             <View style={styles.scrollViewContent}>
-              <Card style={styles.card}>
-                <CardContent>
-                  {/* Username */}
-                  <MiInputTextValidar
-                    onRef={this.onInputUsername}
-                    placeholder={texto_HintUsername}
-                    autoCapitalize="words"
-                    returnKeyType="done"
-                    autoCorrect={false}
-                    onSubmitEditing={this.focusInputEmail}
-                    keyboardType="default"
-                    validaciones={{
-                      requerido: true,
-                      minLength: 2,
-                      maxLength: 70
-                    }}
-                    onChange={this.onInputUsernameChange}
-                    onError={this.onInputUsernameError}
-                  />
 
-                  {/* Cargando */}
-                  <Animated.View
-                    pointerEvents={this.state.cargando ? "auto" : "none"}
-                    style={[
-                      styles.contenedor_Cargando,
-                      {
-                        opacity: this.animCargando
-                      }
-                    ]}
-                  >
-                    <Spinner color={initData.colorExito} />
-                  </Animated.View>
-                </CardContent>
-              </Card>
 
-              {/* Boton Validar datos */}
-              <Animated.View
-                pointerEvents={this.state.cargando ? "none" : "auto"}
-                style={[
-                  { marginTop: 16 },
-                  {
-                    opacity: this.animCargando.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, 0]
-                    })
-                  }
-                ]}
-              >
-                <Button
-                  rounded
+              <View style={{ height: 32 }} />
+
+              <MiCardDetalle backgroundColor={initData.colorNaranja}>
+                <View style={{ display: 'flex', flexDirection: 'row' }}>
+                  <Icon name="information-outline" style={{
+                    fontSize: 28,
+                    marginRight: 8,
+                    color: initData.colorNaranjaTexto
+                  }} />
+                  <Text style={{ color: initData.colorNaranjaTexto, fontWeight: 'bold', flex: 1 }}>Ingrese su nombre de usuario o CUIL para que le enviemos un e-mail a su casilla de correo con las instrucciones para reiniciar su contraseña</Text>
+                </View>
+
+              </MiCardDetalle>
+
+              <View style={{ height: 32 }} />
+
+              <MiCardDetalle botones={botones}>
+
+                {/* Username */}
+                <MiInputTextValidar
+                  onRef={this.onInputUsername}
+                  placeholder={texto_HintUsername}
+                  autoCapitalize="words"
+                  returnKeyType="done"
+                  autoCorrect={false}
+                  onSubmitEditing={this.focusInputEmail}
+                  keyboardType="default"
+                  validaciones={{
+                    requerido: true,
+                    minLength: 2,
+                    maxLength: 70
+                  }}
+                  onChange={this.onInputUsernameChange}
+                  onError={this.onInputUsernameError}
+                />
+
+                {/* Cargando */}
+                <Animated.View
+                  pointerEvents={this.state.cargando ? "auto" : "none"}
                   style={[
-                    styles.botonRecuperar,
+                    styles.contenedor_Cargando,
                     {
-                      backgroundColor: initData.colorExito,
-                      shadowColor: initData.colorExito
+                      opacity: this.animCargando
                     }
                   ]}
-                  onPress={this.recuperarCuenta}
                 >
-                  <Text>{texto_BotonRecuperar}</Text>
-                </Button>
-              </Animated.View>
+                  <Spinner color={initData.colorExito} />
+                </Animated.View>
+
+              </MiCardDetalle>
+
             </View>
           </ScrollView>
 
           {/* Sombra del toolbar */}
-          <LinearGradient
-            colors={["rgba(0,0,0,0.2)", "rgba(0,0,0,0)"]}
-            backgroundColor="transparent"
-            style={{
-              left: 0,
-              top: 0,
-              right: 0,
-              height: 16,
-              position: "absolute"
-            }}
-            pointerEvents="none"
-          />
+          <MiToolbarSombra />
         </View>
       </View>
     );

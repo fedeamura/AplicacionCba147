@@ -13,20 +13,15 @@ export default class RequerimientoNuevo_PasoConfirmacion extends React.PureCompo
   }
 
   static defaultProps = {
-    ...React.Component.defaultProps,
-    onReady: () => { }
+    ...React.Component.defaultProps
   };
-
-  informarReady = () => {
-    this.props.onReady();
-  }
 
   render() {
     const initData = global.initData;
 
     return (
       <View>
-        <View style={{ padding: 16 }}>
+        <View style={{ padding: 0 }}>
           {this.props.servicio != undefined && (
             <MiItemDetalle titulo={texto_Servicio} subtitulo={toTitleCase(this.props.servicio)} />
           )}
@@ -49,18 +44,6 @@ export default class RequerimientoNuevo_PasoConfirmacion extends React.PureCompo
             </View>
           )}
         </View>
-
-        <View style={{ height: 1, width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }} />
-
-        <MiBoton
-          padding={16}
-          derecha
-          verde
-          small
-          sombra
-          onPress={this.informarReady}
-          rounded
-          texto={texto_BotonRegistrar} />
       </View>
     );
   }

@@ -239,27 +239,98 @@ export default class RequerimientoDetalle extends React.Component {
     let mostrarBotonCancelar = false;
 
     if (this.state.datos != undefined) {
-      numero = this.state.datos.numero + "/" + this.state.datos.año;
-      servicioNombre = toTitleCase(this.state.datos.servicioNombre);
-      motivoNombre = toTitleCase(this.state.datos.motivoNombre);
-      descripcion = this.state.datos.descripcion;
+      if (this.state.datos.numero != undefined && this.state.datos.año != undefined) {
+        numero = this.state.datos.numero + "/" + this.state.datos.año;
+      } else {
+        numero = '';
+      }
+
+      if (this.state.datos.servicioNombre != undefined) {
+        servicioNombre = toTitleCase(this.state.datos.servicioNombre).trim();
+      } else {
+        servicioNombre = 'Sin datos';
+      }
+
+      if (this.state.datos.motivoNombre != undefined) {
+        motivoNombre = toTitleCase(this.state.datos.motivoNombre).trim();
+      } else {
+        motivoNombre = 'Sin datos';
+      }
+
+      if (this.state.datos.descripcion != undefined) {
+        descripcion = this.state.datos.descripcion.trim();
+      } else {
+        descripcion = 'Sin datos';
+      }
+
       // fechaAlta = this.state.datos.fechaAlta;
 
-      estadoColor = "#" + (this.state.datos.estadoPublicoColor || this.state.datos.estadoColor);
-      estadoNombre = toTitleCase(this.state.datos.estadoPublicoNombre || this.state.datos.estadoNombre);
+      let valorEstadoColor = this.state.datos.estadoPublicoColor || this.state.datos.estadoColor;
+      if (valorEstadoColor != undefined) {
+        estadoColor = "#" + (this.state.datos.estadoPublicoColor || this.state.datos.estadoColor);
+      } else {
+        estadoColor = 'Sin datos';
+      }
+
+      let valorEstadoNombre = this.state.datos.estadoPublicoNombre || this.state.datos.estadoNombre;
+      if (valorEstadoNombre != undefined) {
+        estadoNombre = toTitleCase(this.state.datos.estadoPublicoNombre || this.state.datos.estadoNombre).trim();
+      } else {
+        estadoNombre = 'Sin nombre';
+      }
+
       estadoFecha = stringDateToString(this.state.datos.estadoFecha);
-      estadoObservaciones = this.state.datos.estadoObservaciones;
 
-      domicilioDireccion = toTitleCase(this.state.datos.domicilioDireccion);
-      domicilioObservaciones = this.state.datos.domicilioObservaciones;
-      domicilioCpc =
-        "Nº " + this.state.datos.domicilioCpcNumero + " · " + toTitleCase(this.state.datos.domicilioCpcNombre);
-      domicilioBarrio = toTitleCase(this.state.datos.domicilioBarrioNombre);
+      if (this.state.datos.estadoObservaciones != undefined) {
+        estadoObservaciones = this.state.datos.estadoObservaciones;
+      } else {
+        estadoObservaciones = 'Sin datos';
+      }
 
-      infoOrganicaSecretaria = toTitleCase(this.state.datos.informacionOrganicaSecretariaNombre);
-      infoOrganicaDireccion = toTitleCase(this.state.datos.informacionOrganicaDireccionNombre);
-      infoOrganicaArea = toTitleCase(this.state.datos.informacionOrganicaAreaNombre);
-      infoOrganicaDomilicio = this.state.datos.informacionOrganicaDomicilio;
+      if (this.state.datos.domicilioDireccion != undefined) {
+        domicilioDireccion = toTitleCase(this.state.datos.domicilioDireccion).trim();
+      } else {
+        domicilioDireccion = 'Sin datos';
+      }
+
+      if (this.state.datos.domicilioObservaciones != undefined) {
+        domicilioObservaciones = this.state.datos.domicilioObservaciones;
+      } else {
+        domicilioDireccion = 'Sin datos';
+      }
+
+      if (this.state.datos.domicilioCpcNombre != undefined && this.state.datos.domicilioCpcNumero != undefined) {
+        domicilioCpc = "Nº " + this.state.datos.domicilioCpcNumero + " · " + toTitleCase(this.state.datos.domicilioCpcNombre);
+      } else {
+        domicilioCpc = "Sin datos";
+      }
+
+      if (this.state.datos.domicilioBarrioNombre != undefined) {
+        domicilioBarrio = toTitleCase(this.state.datos.domicilioBarrioNombre);
+      } else {
+        domicilioBarrio = 'Sin datos';
+      }
+
+      if (this.state.datos.informacionOrganicaSecretariaNombre != undefined) {
+        infoOrganicaSecretaria = toTitleCase(this.state.datos.informacionOrganicaSecretariaNombre);
+      } else {
+        infoOrganicaSecretaria = 'Sin datos';
+      }
+      if (this.state.datos.informacionOrganicaDireccionNombre != undefined) {
+        infoOrganicaDireccion = toTitleCase(this.state.datos.informacionOrganicaDireccionNombre);
+      } else {
+        infoOrganicaDireccion = 'Sin datos';
+      }
+      if (this.state.datos.informacionOrganicaAreaNombre != undefined) {
+        infoOrganicaArea = toTitleCase(this.state.datos.informacionOrganicaAreaNombre);
+      } else {
+        infoOrganicaArea = 'Sin datos';
+      }
+      if (this.state.datos.informacionOrganicaDomicilio != undefined) {
+        infoOrganicaDomilicio = this.state.datos.informacionOrganicaDomicilio;
+      } else {
+        infoOrganicaDomilicio = 'Sin datos';
+      }
 
       mostrarBotonCancelar = this.state.datos.estadoKeyValue == 1;
     }

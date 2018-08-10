@@ -544,20 +544,15 @@ export default class NuevoUsuario_FormDatosExtra extends React.Component {
 
         {/* Boton Registrar */}
         <View style={{ marginTop: 32 }}>
-        <MiBoton />
-          {/* <Button
+          <MiBoton
             rounded
-            style={[
-              styles.botonRegistrar,
-              {
-                backgroundColor: initData.colorExito,
-                shadowColor: initData.colorExito
-              }
-            ]}
+            centro
+            verde
             onPress={this.registrar}
-          >
-            <Text>{texto_BotonRegistrar}</Text>
-          </Button> */}
+            sombra
+            texto={texto_BotonRegistrar}
+          />
+
         </View>
       </View>
     );

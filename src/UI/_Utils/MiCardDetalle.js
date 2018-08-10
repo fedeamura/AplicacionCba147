@@ -23,8 +23,6 @@ export default class MiCardDetalle extends React.PureComponent {
   };
 
   render() {
-    const initData = global.initData;
-
     const padding = this.props.padding ? 16 : 0;
     const tieneBotones = this.props.botones.length != 0;
 
@@ -79,11 +77,12 @@ export default class MiCardDetalle extends React.PureComponent {
                         rounded
                         small
                         verde
+                        disabled={data.disabled || false}
                         onPress={data.onPress}
                         sombra
                         texto={data.texto || 'Sin datos'}
                       />
-                     
+
                     </View>
                   );
                 })}

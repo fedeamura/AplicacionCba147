@@ -68,7 +68,12 @@ export default class MiDialogo extends React.Component {
 
     const botones = this.props.botones.map((boton, index) => {
       let habilitado = boton.enabled == undefined || boton.enabled == true;
-      return <MiDialogoBoton key={index} onPress={boton.onPress} habilitado={habilitado} texto={boton.texto || "Boton"} />;
+      return <MiDialogoBoton
+        key={index}
+        onPress={boton.onPress}
+        habilitado={habilitado}
+        color={boton.color || 'black'}
+        texto={boton.texto || "Boton"} />;
     });
 
     return (
@@ -98,8 +103,10 @@ class MiDialogoBoton extends React.PureComponent {
   }
 
   render() {
+    const color = this.props.color || 'black';
+
     return (
-      <ButtonPaper style={{ opacity: this.props.habilitado ? 1 : 0.5 }} onPress={this.onPress}>
+      <ButtonPaper style={{ opacity: this.props.habilitado ? 1 : 0.5 }} color={color} onPress={this.onPress}>
         {this.props.texto || "Boton"}
       </ButtonPaper>
     );

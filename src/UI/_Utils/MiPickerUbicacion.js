@@ -20,6 +20,8 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import App from "@UI/App";
 import MiListado from "@Utils/MiListado";
 import MiDialogo from "@Utils/MiDialogo";
+import MiBoton from "@Utils/MiBoton";
+
 import { toTitleCase } from "@Utils/Helpers";
 
 var { RNLocation: Location } = require("NativeModules");
@@ -247,7 +249,11 @@ export default class MiPickerUbicacion extends React.Component {
 
   mostrarDialogoObservaciones = () => {
     if (this.state.data == undefined) return;
-    this.setState({ dialogoObservacionesVisible: true });
+    this.setState({ dialogoObservacionesVisible: true }, () => {
+      if (this.inputObservaciones != undefined) {
+        this.inputObservaciones._root.focus();
+      }
+    });
   }
 
   ocultarDialogoObservaciones = () => {
@@ -421,7 +427,7 @@ export default class MiPickerUbicacion extends React.Component {
     let direccion = "";
     if (this.state.data != undefined && this.state.data.direccion != undefined && this.state.data.direccion != "") {
       direccion =
-        (this.state.data.sugerido == true ? "Aproximadamente en " : "") + toTitleCase(this.state.data.direccion.trim());
+        (this.state.data.sugerido == true ? "Aprox. en " : "") + toTitleCase(this.state.data.direccion.trim());
     }
 
     let descripcion = "";
@@ -519,26 +525,37 @@ export default class MiPickerUbicacion extends React.Component {
               justifyContent: "flex-end"
             }}
           >
-            <Button
-              small
+
+            <MiBoton
               rounded
-              style={{ backgroundColor: "rgba(150,150,150,1)", marginRight: 4 }}
+              gris
               onPress={this.onBtnCancelarUbicacionClick}
-            >
-              <Text style={{ color: "white" }}>{texto_BotonCancelar}</Text>
-            </Button>
-            <Button
+              texto={texto_BotonCancelar}
               small
+            />
+
+            <View style={{ width: 8 }} />
+            <MiBoton
               rounded
-              style={{ marginLeft: 4, backgroundColor: initData.colorExito }}
+              verde
+              sombra
               onPress={this.onBtnSeleccionarClick}
-            >
-              <Text style={{ color: "white" }}>{texto_BotonConfirmar}</Text>
-            </Button>
+              texto={texto_BotonConfirmar}
+              small
+            />
+
           </View>
         </Card>
       </Animated.View>
     );
+  }
+
+  onInputObservacionesRef = (ref) => {
+    this.inputObservaciones = ref;
+  }
+
+  ocultarTeclado = () => {
+    Keyboard.dismiss();
   }
 
   renderDialogoObservaciones() {
@@ -564,8 +581,11 @@ export default class MiPickerUbicacion extends React.Component {
         visible={this.state.dialogoObservacionesVisible}
       >
         <Textarea
+          ref={this.onInputObservacionesRef}
           placeholder={texto_HintObservaciones}
+          onSubmitEditing={this.ocultarTeclado}
           value={val}
+          placeholderTextColor="rgba(150,150,150,1)"
           rowSpan={5}
           onChangeText={this.onObservacionesChange}
         />
@@ -593,7 +613,7 @@ export default class MiPickerUbicacion extends React.Component {
     );
   }
 
-  renderSugerenciaItem(item) {
+  renderSugerenciaItem = (item) => {
     return <MiPickerUbicacionItem onPress={this.onSugerenciaClick} data={item.item} />;
   }
 
@@ -637,6 +657,7 @@ class MiPickerUbicacionItem extends React.PureComponent {
   }
 
   onPress = () => {
+    if (this.props == undefined) return;
     this.props.onPress(this.props.data);
   }
 

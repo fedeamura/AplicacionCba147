@@ -2,7 +2,6 @@ import React from "react";
 import { View, TouchableOpacity } from 'react-native';
 import { Button, Text } from 'native-base';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { showImagePicker } from "react-native-image-picker";
 
 export default class MiBoton extends React.PureComponent {
 
@@ -15,11 +14,17 @@ export default class MiBoton extends React.PureComponent {
     style: {},
     iconoStyle: {},
     textoStyle: {},
-    onPress: () => { }
+    onPress: () => { },
+    disabled: false
   };
 
   constructor(props) {
     super(props);
+  }
+
+  onPress = () => {
+    if (this.props.disabled == true) return;
+    this.props.onPress();
   }
 
   render() {
@@ -45,6 +50,7 @@ export default class MiBoton extends React.PureComponent {
       color = this.props.color;
       colorTexto = this.props.colorTexto || 'black';
     }
+    let iconoDerecha = 'iconoDerecha' in this.props && this.props.iconoDerecha != false;
 
     let bordered = 'bordered' in this.props && this.props.bordered != false;
     let transparent = 'transparent' in this.props && this.props.transparent != false;
@@ -90,12 +96,12 @@ export default class MiBoton extends React.PureComponent {
     }
 
     let styleContent = {};
-    // if (full == true) {
-    //   styleContent.width = '100%';
-    // } else {
-      styleContent.justifyContent = 'flex-start';
-      styleContent.flexDirection = 'row';
-    // }
+    styleContent.justifyContent = 'flex-start';
+    styleContent.flexDirection = 'row';
+
+    if (this.props.disabled == true) {
+      styleContent.opacity = 0.3;
+    }
 
     if (centro == true) {
       styleContent.alignSelf = 'center';
@@ -113,12 +119,12 @@ export default class MiBoton extends React.PureComponent {
       miStyle.shadowRadius = 5;
       miStyle.shadowOffset = { width: 0, height: 4 };
     }
-    
+
     styleContent.padding = padding;
 
     return (
       <View style={[styleContent]}>
-        <TouchableOpacity onPress={this.props.onPress}>
+        <TouchableOpacity onPress={this.onPress}>
           <View pointerEvents="none">
             <Button
               bordered={bordered}
@@ -127,10 +133,14 @@ export default class MiBoton extends React.PureComponent {
               small={small}
               style={[miStyle, this.props.style]}
             >
-              {this.props.icono != undefined && (
+              {this.props.icono != undefined && iconoDerecha == false && (
                 <Icon name={this.props.icono} style={[miIconoStyle, this.props.iconoStyle]} />
               )}
               <Text style={[miTextoStyle, this.props.textoStyle]}>{this.props.texto}</Text>
+              {this.props.icono != undefined && iconoDerecha == true && (
+                <Icon name={this.props.icono} style={[miIconoStyle, this.props.iconoStyle]} />
+              )}
+
             </Button>
           </View>
         </TouchableOpacity>

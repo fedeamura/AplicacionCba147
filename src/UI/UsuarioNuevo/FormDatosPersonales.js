@@ -355,8 +355,9 @@ export default class NuevoUsuario_FormDatosPersonales extends React.Component {
 
     const botones = [];
     botones.push({
+      disabled: this.state.cargando == true,
       texto: texto_BotonValidar,
-      onPress: this.state.cargando ? undefined : this.validarDatos
+      onPress: this.validarDatos
     });
 
     return (

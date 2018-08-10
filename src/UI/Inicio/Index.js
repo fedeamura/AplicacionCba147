@@ -268,6 +268,6 @@ const texto_Menu_Ajustes = "Ajustes";
 //Sin validar
 const texto_UsuarioNoValidado = "Usuario no validado";
 const texto_UsuarioNoValidadoDetalle =
-  "A partir de ahora para utilizar #CBA147 su información debe estar validada formalmente a traves del Registro Nacional de las Personas.";
+  "A partir de ahora para utilizar #CBA147 su información debe estar validada formalmente a través del Registro Nacional de las Personas.";
 const texto_Boton_ValidarUsuario = "Validar usuario";
 const texto_Boton_VolverConsultarUsuarioValidado = "Actualizar";

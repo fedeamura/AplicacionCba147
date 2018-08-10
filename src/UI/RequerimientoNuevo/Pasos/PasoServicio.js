@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Alert } from "react-native";
-import { Text } from "native-base";
+import { View, Alert, TouchableOpacity, Keyboard } from "react-native";
+import { Text, Textarea } from "native-base";
 import _ from "lodash";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 //Mis componentes
 import App from "@UI/App";
@@ -27,6 +28,7 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
       servicioNombre: undefined,
       motivoNombre: undefined,
       motivoId: undefined,
+      descripcion: undefined,
       mostrarServicio: true,
       mostrarMotivo: false,
       mostrarResultado: false,
@@ -285,10 +287,17 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
   informar = () => {
     if (this.props.onMotivo == undefined) return;
+
+    let descripcion = this.state.descripcion;
+    if (descripcion != undefined) {
+      descripcion = descripcion.trim();
+    }
+
     this.props.onMotivo({
       servicioNombre: this.state.servicioNombre,
       motivoNombre: this.state.motivoNombre,
-      motivoId: this.state.motivoId
+      motivoId: this.state.motivoId,
+      descripcion: descripcion
     });
   }
 
@@ -297,7 +306,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     this.props.onReady({
       servicioNombre: this.state.servicioNombre,
       motivoNombre: this.state.motivoNombre,
-      motivoId: this.state.motivoId
+      motivoId: this.state.motivoId,
+      descripcion: this.state.descripcion
     });
   }
 
@@ -310,11 +320,27 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     this.seleccionarServicio(servicio);
   }
 
+  onDescripcionChange = (val) => {
+    this.setState({ descripcion: val }, () => {
+      this.informar();
+    });
+  }
+
+  onBotonSiguientePress = () => {
+    if (this.state.descripcion == undefined || this.state.descripcion.length < 20) {
+      Alert.alert('', 'Ingrese una descripción de al menos 20 caracteres');
+      return;
+    }
+
+    this.informarReady();
+  }
+
+
   render() {
     if (this.state.servicios == undefined) return null;
 
     return (
-      <View style={{ minHeight: 250, opacity: this.state.height == 0 ? 0 : 1 }}>
+      <View style={{ minHeight: 100, opacity: this.state.height == 0 ? 0 : 1 }}>
         {this.renderViewServiciosPrincipales()}
         {this.renderViewSeleccionarMotivo()}
         {this.renderViewMotivoSeleccionado()}
@@ -323,9 +349,9 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
   }
 
   renderViewServiciosPrincipales() {
-    const wCirculo = (this.state.width || 0) / 2;
+    const wCirculo = ((this.state.width || 0) * 0.8) / 2;
     const iconoFontSize = 24;
-    const textoFontSize = 16;
+    const textoFontSize = 14;
     const cardColorFondo = "rgba(230,230,230,1)";
     const iconoColor = "white";
 
@@ -363,9 +389,11 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
     return (
       <MiView visible={this.state.mostrarServicio}>
-        <View style={{ padding: 16 }} onLayout={this.onLayout}>
+        <View style={{ padding: 16, paddingTop: 0 }} onLayout={this.onLayout}>
           {/* Buscar */}
           {this.renderBotonBuscar()}
+
+          <View style={{ height: 16 }} />
 
           <View
             style={{
@@ -383,8 +411,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
           {/* Boton ver todas  */}
           <MiBoton
             centro
-            bordered
             verde
+            sombra
             rounded
             small
             onPress={this.verTodosLosServicios}
@@ -395,16 +423,31 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
   }
 
   renderBotonBuscar() {
+    let w = 48;
+    const initData = global.initData;
     return (
+      // <TouchableOpacity>
+      //   <View style={{
+      //     display: 'flex',
+      //     justifyContent: 'center',
+      //     alignItems: 'center',
+      //     alignSelf: 'flex-end',
+      //     padding: 8, borderRadius: w, minWidth: w, minHeight: w, maxWidth: w, maxHeight: w
+      //   }}>
+      //     <Icon name="magnify" style={{ fontSize: 20, color: color }} />
+
+      //   </View>
+      // </TouchableOpacity>
+
       <MiBoton
         padding={16}
+        transparent
         texto={texto_BotonBuscar}
         icono="magnify"
-        bordered
+        iconoDerecha
         small
-        rounded
         onPress={this.buscar}
-        centro />
+        derecha />
     );
   }
 
@@ -453,8 +496,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
           {/* Boton ver todos los motivos */}
           <MiBoton
             rounded
-            bordered
             small
+            sombra
             centro
             verde
             onPress={this.verTodosLosMotivos}
@@ -465,14 +508,20 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
     );
   }
 
+  ocultarTeclado = () => {
+    Keyboard.dismiss();
+  }
+
   renderViewMotivoSeleccionado() {
+
+    const initData = global.initData;
 
     const nombreServicio = toTitleCase(this.state.servicioNombre || "Sin datos").trim();
     const nombreMotivo = toTitleCase(this.state.motivoNombre || "Sin datos").trim();
 
     return (
       <MiView padding={false} visible={this.state.mostrarResultado}>
-        <View style={{ display: "flex", flexDirection: "column", minHeight: 250 }}>
+        <View style={{ display: "flex", flexDirection: "column", minHeight: 350 }}>
           <View style={{ padding: 16, flex: 1 }}>
             <View style={{ display: "flex", flexDirection: "row", width: "100%" }}>
               <View style={{ flex: 1 }}>
@@ -486,12 +535,26 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 
             <MiBoton
               link
+              small
               onPress={this.cancelarMotivo}
               texto={texto_BotonCancelarSeleccion}
               rojo />
 
 
+
           </View>
+
+          <Text style={{ fontWeight: 'bold', marginLeft: 16 }}>Descripción</Text>
+          <View style={{ height: 8 }} />
+          <Textarea
+            onChangeText={this.onDescripcionChange}
+            style={{ marginLeft: 4 }}
+            value={this.state.descripcion}
+            rowSpan={3}
+            onSubmitEditing={this.ocultarTeclado}
+            placeholderTextColor="rgba(150,150,150,1)"
+            placeholder={texto_Hint}
+          />
 
           <View style={{ height: 16 }} />
           <View style={{ height: 1, width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }} />
@@ -502,7 +565,9 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
             sombra
             small
             rounded
-            onPress={this.informarReady}
+            color={this.state.descripcion == undefined || this.state.descripcion.length < 20 ? 'rgba(130,130,130,1)' : initData.colorVerde}
+            colorTexto='white'
+            onPress={this.onBotonSiguientePress}
             texto={texto_botonSiguiente}
             padding={16}
             derecha />
@@ -532,8 +597,8 @@ export default class RequerimientoNuevo_PasoServicio extends React.Component {
 }
 
 const colorCancelar = "#E53935";
-const texto_BotonTodosLosServicios = "Ver todos los servicios";
-const texto_BotonBuscar = "Buscar motivo";
+const texto_BotonTodosLosServicios = "Ver más servicios";
+const texto_BotonBuscar = "Buscar por motivo";
 const texto_BotonCancelarServicio = "Cancelar servicio";
 const texto_SeleccioneMotivo = "Ahora seleccione un motivo:";
 const texto_ServicioSeleccionado = "Servicio seleccionado";
@@ -541,3 +606,5 @@ const texto_BotonTodosLosMotivos = "Seleccionar motivo";
 const texto_MotivoSeleccionado = "Motivo seleccionado";
 const texto_BotonCancelarSeleccion = "Cancelar selección";
 const texto_botonSiguiente = "Siguiente";
+
+const texto_Hint = "Indique de la forma más detallada posible toda la información asociada al requerimiento...";

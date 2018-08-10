@@ -98,8 +98,8 @@ export default class Introduccion extends React.Component {
                   marginTop: 32,
                   borderRadius: 400,
                   overflow: "hidden",
-                  height: 150,
-                  width: 150,
+                  height: 120,
+                  width: 120,
                   alignSelf: "center"
                 }}
               >
@@ -113,7 +113,7 @@ export default class Introduccion extends React.Component {
             )}
 
 
-            <Text style={{ fontSize: 32, backgroundColor: 'transparent', marginTop: 16, marginBottom: 16, color: paso.colorTexto, alignSelf: "center" }}>{paso.titulo}</Text>
+            <Text style={{ fontSize: 28, backgroundColor: 'transparent', marginTop: 16, marginBottom: 16, color: paso.colorTexto, alignSelf: "center" }}>{paso.titulo}</Text>
             {textos.map((texto, index) => {
 
               let bold = texto.indexOf('bold_') != -1;
@@ -122,7 +122,7 @@ export default class Introduccion extends React.Component {
               }
 
               return <Text key={index} style={{
-                fontSize: 20,
+                fontSize: 16,
                 color: paso.colorTexto,
                 backgroundColor: 'transparent',
                 alignSelf: "center",

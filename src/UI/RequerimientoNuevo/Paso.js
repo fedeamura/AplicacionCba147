@@ -53,7 +53,7 @@ export default class RequerimientoNuevo_Paso extends React.PureComponent {
           completado={this.props.completado}
           cargando={this.props.cargando}
           resaltado={this.props.expandido}
-          numero={this.props.numero + "º"}
+          numero={this.props.numero}
           texto={this.props.titulo}
           colorFondoCirculo="white"
           colorFondoCirculoCompletado="green"

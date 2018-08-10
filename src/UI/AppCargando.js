@@ -1,10 +1,18 @@
 import React from "react";
-import { StatusBar, Animated } from "react-native";
+import { StatusBar, Animated, Text } from "react-native";
 import WebImage from "react-native-web-image";
 
-export default class AppCargando extends React.PureComponent {
+//Rules
+import Rules_Ajustes from "@Rules/Rules_Ajustes";
+
+export default class AppCargando extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      versionApp: ''
+    };
+
     this.anim = new Animated.Value(props.visible == true ? 1 : 0);
   }
 
@@ -12,6 +20,12 @@ export default class AppCargando extends React.PureComponent {
     ...React.Component.defaultProps,
     visible: false
   };
+
+  componentDidMount() {
+    Rules_Ajustes.getVersionApp().then((version) => {
+      this.setState({ versionApp: version });
+    });
+  }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.visible == this.props.visible) return;
@@ -44,6 +58,8 @@ export default class AppCargando extends React.PureComponent {
           style={{ width: "100%", height: "100%", margin: 72 }}
           source={require("@Resources/logo_muni.png")}
         />
+
+        <Text style={{ position: 'absolute', bottom: 16, alignSelf: 'center' }}>Versión {this.state.versionApp}</Text>
       </Animated.View>
     );
   }

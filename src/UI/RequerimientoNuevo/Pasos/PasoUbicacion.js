@@ -86,9 +86,9 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
         <View style={{ padding: 16 }}>
 
           <MiBoton
-            bordered
             padding={16}
             verde
+            sombra
             centro
             rounded
             small
@@ -111,9 +111,14 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
     url = url.replace("{lat}", ("" + this.state.ubicacion.latitud).replace(",", "."));
     url = url.replace("{lng}", ("" + this.state.ubicacion.longitud).replace(",", "."));
 
-    let textoDireccion =
-      (this.state.ubicacion.sugerido == true ? "Aproximadamente en " : "") + this.state.ubicacion.direccion;
-    let textoObservaciones = this.state.ubicacion.observaciones;
+    let textoDireccion = 'Sin datos';
+    if (this.state.ubicacion.direccion != undefined) {
+      textoDireccion = (this.state.ubicacion.sugerido == true ? "Aproximadamente en " : "") + this.state.ubicacion.direccion.trim();
+    }
+    let textoObservaciones = 'Sin datos';
+    if (this.state.ubicacion.observaciones != undefined) {
+      textoObservaciones = this.state.ubicacion.observaciones.trim();
+    }
     let textoCpc;
     if (this.state.ubicacion.cpc != undefined) {
       textoCpc = "Nº " + this.state.ubicacion.cpc.numero + " - " + toTitleCase(this.state.ubicacion.barrio.nombre);
@@ -146,11 +151,10 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
                 <View style={{ height: 8 }} />
                 <MiItemDetalle titulo={texto_Observaciones} subtitulo={textoObservaciones} />
                 <View style={{ height: 8 }} />
-                <MiItemDetalle titulo={texto_Cpc} subtitulo={textoCpc} />
-                <View style={{ height: 8 }} />
                 <MiItemDetalle titulo={texto_Barrio} subtitulo={textoBarrio} />
-
                 <View style={{ height: 8 }} />
+                <MiItemDetalle titulo={texto_Cpc} subtitulo={textoCpc} />
+
                 <View style={{ height: 8 }} />
 
                 <MiBoton
@@ -185,7 +189,7 @@ export default class RequerimientoNuevo_PasoUbicacion extends React.Component {
   }
 }
 
-const texto_BotonSeleccionar = "Seleccionar ubicacion";
+const texto_BotonSeleccionar = "Seleccionar ubicación";
 const texto_Direccion = "Dirección";
 const texto_Observaciones = "Observaciones del domicilio";
 const texto_Barrio = "Barrio";

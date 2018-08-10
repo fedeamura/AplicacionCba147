@@ -3,7 +3,6 @@ package com.cordoba;
 import android.content.Intent;
 
 import com.facebook.react.ReactActivity;
-import com.syarul.rnlocation.RNLocation;
 
 public class MainActivity extends ReactActivity {
 

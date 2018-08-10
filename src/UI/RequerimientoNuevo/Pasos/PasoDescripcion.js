@@ -84,5 +84,5 @@ export default class RequerimientoNuevo_PasoDescripcion extends React.Component 
 
 const texto_Hint = "Indique de la forma más detallada posible toda la información asociada al requerimiento...";
 const texto_BotonSiguiente = "Siguiente";
-const largoMinimo = 50;
+const largoMinimo = 20;
 const texto_CompleteLosDatos = "Ingrese una descripción de al menos " + largoMinimo + " caracteres";

@@ -351,12 +351,11 @@ export default class UsuarioEditarDatosContacto extends React.Component {
     }
 
     let botones = [];
-    if (this.state.cargando == false) {
-      botones.push({
-        texto: 'Guardar cambios',
-        onPress: this.guardarCambios
-      })
-    }
+    botones.push({
+      disabled: this.state.cargando == true,
+      texto: 'Guardar cambios',
+      onPress: this.guardarCambios
+    })
 
     return <View>
       <MiCardDetalle botones={botones}>

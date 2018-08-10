@@ -4,7 +4,6 @@ import { Text } from "native-base";
 import { Card, CardContent } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import LinearGradient from "react-native-linear-gradient";
-import autobind from "autobind-decorator";
 
 //Mis componentes
 import App from "Cordoba/src/UI/App";
@@ -13,7 +12,7 @@ import MiToolbar from "@Utils/MiToolbar";
 import FormDatosPersonales from "./FormDatosPersonales";
 import FormDatosExtra from "./FormDatosExtra";
 import Resultado from "./Resultado";
-import { dateToString, stringDateToString, toTitleCase } from "@Utils/Helpers";
+import { stringDateToString, toTitleCase } from "@Utils/Helpers";
 
 //Rules
 import Rules_Usuario from "Cordoba/src/Rules/Rules_Usuario";
@@ -43,20 +42,17 @@ export default class Login extends React.Component {
     this.animDatosExtra = new Animated.Value(0);
   }
 
-  @autobind
   componentWillMount() {
     this.keyboardWillShowSub = Keyboard.addListener("keyboardWillShow", this.keyboardWillShow);
     this.keyboardWillHideSub = Keyboard.addListener("keyboardWillHide", this.keyboardWillHide);
   }
 
-  @autobind
   componentWillUnmount() {
     this.keyboardWillShowSub.remove();
     this.keyboardWillHideSub.remove();
   }
 
-  @autobind
-  keyboardWillShow(event) {
+  keyboardWillShow = (event) => {
     this.teclado = true;
 
     Animated.timing(this.keyboardHeight, {
@@ -65,8 +61,7 @@ export default class Login extends React.Component {
     }).start();
   }
 
-  @autobind
-  keyboardWillHide(event) {
+  keyboardWillHide = (event) => {
     this.teclado = false;
 
     Animated.timing(this.keyboardHeight, {
@@ -75,8 +70,7 @@ export default class Login extends React.Component {
     }).start();
   }
 
-  @autobind
-  registrar(data) {
+  registrar = (data) => {
     Keyboard.dismiss();
 
     //Armo el comando
@@ -94,37 +88,29 @@ export default class Login extends React.Component {
     };
 
     //Muestro el panel y empiezo a animar el cargando
-    this.setState(
-      {
-        datosExtra: data,
-        mostrarPanelResultado: true,
-        registrando: true
-      },
-      function() {
-        //Mando a registrar
-        Rules_Usuario.crearUsuario(comando)
-          .then(
-            function() {
-              this.setState({
-                registrando: false
-              });
-            }.bind(this)
-          )
-          .catch(
-            function(error) {
-              Alert.alert("", error);
-              this.setState({
-                mostrarPanelResultado: false,
-                registrando: false
-              });
-            }.bind(this)
-          );
-      }.bind(this)
-    );
+    this.setState({
+      datosExtra: data,
+      mostrarPanelResultado: true,
+      registrando: true
+    }, () => {
+      //Mando a registrar
+      Rules_Usuario.crearUsuario(comando)
+        .then(() => {
+          this.setState({
+            registrando: false
+          });
+        })
+        .catch((error) => {
+          Alert.alert("", error);
+          this.setState({
+            mostrarPanelResultado: false,
+            registrando: false
+          });
+        });
+    });
   }
 
-  @autobind
-  cerrar() {
+  cerrar = () => {
     Keyboard.dismiss();
 
     if (this.state.registrando == true) return;
@@ -139,21 +125,18 @@ export default class Login extends React.Component {
     }
 
     if (preguntarCerrar == true) {
-      Alert.alert(
-        "",
-        texto_DialogoCancelarFormulario,
+      Alert.alert("", texto_DialogoCancelarFormulario,
         [
           {
             text: texto_DialogoCancelarFormulario_No
           },
           {
             text: texto_DialogoCancelarFormulario_Si,
-            onPress: function() {
+            onPress: function () {
               App.goBack();
             }.bind(this)
           }
-        ],
-        { cancelable: true }
+        ], { cancelable: true }
       );
       return;
     }
@@ -161,42 +144,35 @@ export default class Login extends React.Component {
     App.goBack();
   }
 
-  @autobind
-  onButtonResultadoClick() {
+  onButtonResultadoClick = () => {
     App.goBack();
   }
 
-  @autobind
-  onFormularioDatosPersonalesAlgoInsertado(algoInsertado) {
+  onFormularioDatosPersonalesAlgoInsertado = (algoInsertado) => {
     this.setState({ algoInsertadoEnDatosPersonales: algoInsertado });
   }
 
-  @autobind
-  onDatosPersonalesReady(datos) {
+  onDatosPersonalesReady = (datos) => {
     Animated.timing(this.animDatosPersonales, {
       toValue: 0,
       duration: 500
-    }).start(
-      function() {
-        this.setState(
-          { datosPersonales: datos },
-          function() {
-            if (this.scrollView != undefined) {
-              this.scrollView.scrollTo(0);
-            }
+    }).start(() => {
+      this.setState({
+        datosPersonales: datos
+      }, () => {
+        if (this.scrollView != undefined) {
+          this.scrollView.scrollTo(0);
+        }
 
-            Animated.timing(this.animDatosExtra, {
-              toValue: 1,
-              duration: 500
-            }).start();
-          }.bind(this)
-        );
-      }.bind(this)
-    );
+        Animated.timing(this.animDatosExtra, {
+          toValue: 1,
+          duration: 500
+        }).start();
+      });
+    });
   }
 
-  @autobind
-  onScrollViewRef(ref) {
+  onScrollViewRef = (ref) => {
     this.scrollView = ref;
   }
 
@@ -391,8 +367,7 @@ const styles = StyleSheet.create({
   }
 });
 
-const texto_InfoDatosValidados =
-  "Su datos personales fueron validados correctamente. A continuacion encontrará otros formularios con mas información necesaria para completar su perfil.";
+const texto_InfoDatosValidados = "Su datos personales fueron validados correctamente. A continuacion encontrará otros formularios con mas información necesaria para completar su perfil.";
 
 const texto_Titulo = "Nuevo Usuario";
 const texto_DialogoCancelarFormulario = "¿Desea cancelar el registro de nuevo usuario?";

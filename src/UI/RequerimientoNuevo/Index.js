@@ -10,14 +10,18 @@ import MiStatusBar from "@Utils/MiStatusBar";
 import MiToolbar from "@Utils/MiToolbar";
 import MiToolbarSombra from '@Utils/MiToolbarSombra';
 import Paso from "./Paso";
-import PasoServicio from "@RequerimientoNuevoPasos/PasoServicio";
-import PasoDescripcion from "@RequerimientoNuevoPasos/PasoDescripcion";
-import PasoUbicacion from "@RequerimientoNuevoPasos/PasoUbicacion";
-import PasoFoto from "@RequerimientoNuevoPasos/PasoFoto";
-import PasoConfirmacion from "@RequerimientoNuevoPasos/PasoConfirmacion";
-import Resultado from "./Resultado";
 import { toTitleCase } from "@Utils/Helpers";
+import MiBoton from "@Utils/MiBoton";
+import MiDialogo from "@Utils/MiDialogo"
 
+import PasoServicio from "@RequerimientoNuevoPasos/PasoServicio";
+import PasoUbicacion from "@RequerimientoNuevoPasos/PasoUbicacion";
+import PasoConfirmacion from "@RequerimientoNuevoPasos/PasoConfirmacion";
+
+import PasoFoto from "@RequerimientoNuevoPasos/PasoFoto";
+import Resultado from "./Resultado";
+
+//Mis rules
 import Rules_Servicio from "@Rules/Rules_Servicio";
 import Rules_Requerimiento from "@Rules/Rules_Requerimiento";
 
@@ -47,8 +51,9 @@ export default class RequerimientoNuevo extends React.Component {
       registrando: false,
       numero: undefined,
       paso1Cargando: false,
-      paso4Cargando: false,
-      dialogoConfirmarSalidaVisible: false
+      paso3Cargando: false,
+      dialogoConfirmarSalidaVisible: false,
+      dialogoConfirmacionVisible: false
     };
 
     this.keyboardHeight = new Animated.Value(0);
@@ -222,7 +227,7 @@ export default class RequerimientoNuevo extends React.Component {
     }
 
     let conMotivo = this.state.motivoId != undefined;
-    let conDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim() != "" && this.state.descripcion.length >= 50;
+    let conDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim() != "" && this.state.descripcion.length >= 20;
     let conUbicacion = this.state.ubicacion != undefined;
 
     let cumple = false;
@@ -288,28 +293,21 @@ export default class RequerimientoNuevo extends React.Component {
     this.setState({ paso1Cargando: cargando });
   }
 
-  onPaso4Cargando = (cargando) => {
-    this.setState({ paso4Cargando: cargando });
+  onPaso3Cargando = (cargando) => {
+    this.setState({ paso3Cargando: cargando });
   }
 
   onMotivo = (data) => {
     this.setState({
       servicioNombre: data.servicioNombre,
       motivoNombre: data.motivoNombre,
-      motivoId: data.motivoId
+      motivoId: data.motivoId,
+      descripcion: data.descripcion
     });
   }
 
-  onPaso1Ready = () => {
+  onMotivoReady = () => {
     this.mostrarPaso(2);
-  }
-
-  onDescripcion = (descripcion) => {
-    this.setState({ descripcion: descripcion });
-  }
-
-  onPaso2Ready = () => {
-    this.mostrarPaso(3);
   }
 
   onUbicacion = (ubicacion) => {
@@ -318,8 +316,8 @@ export default class RequerimientoNuevo extends React.Component {
     });
   }
 
-  onPaso3Ready = () => {
-    this.mostrarPaso(4);
+  onUbicacionReady = () => {
+    this.mostrarPaso(3);
   }
 
   onFoto = (foto) => {
@@ -328,20 +326,22 @@ export default class RequerimientoNuevo extends React.Component {
     });
   }
 
-  onPaso4Ready = () => {
-    this.mostrarPaso(5);
+  onFotoReady = () => {
+    // this.mostrarPaso(4);
+  }
+
+  mostrarDialogoConfimacion = () => {
+    this.setState({ dialogoConfirmacionVisible: true });
+  }
+
+  ocultarDialogoConfirmacion = () => {
+    this.setState({ dialogoConfirmacionVisible: false });
   }
 
   render() {
     const initData = global.initData;
 
-    let textoUbicacion = undefined;
-    if (this.state.ubicacion != undefined) {
-      textoUbicacion = this.state.ubicacion.direccion;
-      if (this.state.ubicacion.sugerido == true) {
-        textoUbicacion = "Aproximadamente en " + toTitleCase(textoUbicacion);
-      }
-    }
+
     return (
       <View style={style.contenedor}>
         <MiStatusBar />
@@ -363,70 +363,55 @@ export default class RequerimientoNuevo extends React.Component {
                     titulo={texto_Titulo_Servicio}
                     onPress={this.onPasoClick}
                     expandido={this.state.pasoActual == 1 ? true : false}
-                    completado={this.state.motivoId != undefined}
+                    completado={this.state.motivoId != undefined && this.state.descripcion != undefined && this.state.descripcion.length >= 20}
                   >
                     <PasoServicio
                       servicios={this.state.servicios}
                       onCargando={this.onPaso1Cargando}
                       onMotivo={this.onMotivo}
-                      onReady={this.onPaso1Ready}
+                      onReady={this.onMotivoReady}
                     />
                   </Paso>
 
-                  {/* Paso 2 */}
+                  {/* Paso 2 - Ubicacion */}
                   <Paso
                     numero={2}
-                    titulo={texto_Titulo_Descripcion}
-                    onPress={this.onPasoClick}
-                    expandido={this.state.pasoActual == 2}
-                    completado={
-                      this.state.descripcion != undefined &&
-                      this.state.descripcion.trim() != "" &&
-                      this.state.descripcion.length >= 50
-                    }
-                  >
-                    <PasoDescripcion onDescripcion={this.onDescripcion} onReady={this.onPaso2Ready} />
-                  </Paso>
-
-                  {/* Paso 3 */}
-                  <Paso
-                    numero={3}
                     titulo={texto_Titulo_Ubicacion}
                     onPress={this.onPasoClick}
-                    expandido={this.state.pasoActual == 3}
+                    expandido={this.state.pasoActual == 2}
                     completado={this.state.ubicacion != undefined}
                   >
-                    <PasoUbicacion onUbicacion={this.onUbicacion} onReady={this.onPaso3Ready} />
+                    <PasoUbicacion onUbicacion={this.onUbicacion} onReady={this.onUbicacionReady} />
                   </Paso>
 
-                  {/* Paso 4 - Foto */}
+                  {/* Paso 3 - Foto */}
                   <Paso
-                    numero={4}
-                    cargando={this.state.paso4Cargando}
+                    numero={3}
+                    cargando={this.state.paso3Cargando}
                     titulo={texto_Titulo_Foto}
                     onPress={this.onPasoClick}
-                    expandido={this.state.pasoActual == 4}
+                    expandido={this.state.pasoActual == 3}
                     completado={this.state.foto != undefined}
                   >
-                    <PasoFoto onFoto={this.onFoto} onCargando={this.onPaso4Cargando} onReady={this.onPaso4Ready} />
+                    <PasoFoto onFoto={this.onFoto} onCargando={this.onPaso3Cargando} onReady={this.onFotoReady} />
                   </Paso>
 
-                  {/* Paso 5 */}
-                  <Paso
-                    numero={5}
-                    titulo={texto_Titulo_Confirmacion}
-                    onPress={this.onPasoClick}
-                    expandido={this.state.pasoActual == 5}
-                    completado={false}
-                  >
-                    <PasoConfirmacion
-                      servicio={this.state.servicioNombre}
-                      motivo={this.state.motivoNombre}
-                      descripcion={this.state.descripcion}
-                      ubicacion={textoUbicacion}
-                      onReady={this.registrar}
-                    />
-                  </Paso>
+                  {/* Boton registrar */}
+                  {this.state.motivoId != undefined && this.state.descripcion != undefined && this.state.descripcion.length >= 20 && this.state.ubicacion != undefined && (
+
+                    <View>
+                      <View style={{ height: 32 }} />
+                      <MiBoton
+                        centro
+                        verde
+                        onPress={this.mostrarDialogoConfimacion}
+                        sombra
+                        rounded
+                        texto="Finalizar" />
+                    </View>
+
+                  )}
+
                 </View>
               </ScrollView>
             )}
@@ -448,9 +433,54 @@ export default class RequerimientoNuevo extends React.Component {
           onPressVolver={this.onBtnVolverClick}
         />
 
+        {this.renderDialogoConfirmacion()}
         {this.renderDialogoConfirmarSalida()}
       </View>
     );
+  }
+
+  onDialogoConfirmarBotonConfimarPress = () => {
+    this.ocultarDialogoConfirmacion();
+    this.registrar();
+  }
+
+  renderDialogoConfirmacion() {
+    const initData = global.initData;
+
+    let textoUbicacion = undefined;
+    if (this.state.ubicacion != undefined) {
+      textoUbicacion = this.state.ubicacion.direccion;
+      if (this.state.ubicacion.sugerido == true) {
+        textoUbicacion = "Aproximadamente en " + toTitleCase(textoUbicacion);
+      }
+    }
+
+
+    return <MiDialogo
+      titulo="Confirmar nuevo requerimiento"
+      onDismiss={this.ocultarDialogoConfirmacion}
+      visible={this.state.dialogoConfirmacionVisible == true}
+      botones={[
+        {
+          texto: 'Cancelar',
+          onPress: this.ocultarDialogoConfirmacion
+        },
+        {
+          texto: 'Registrar',
+          color: initData.colorVerde,
+          onPress: this.onDialogoConfirmarBotonConfimarPress
+        }
+      ]}
+    >
+
+      <PasoConfirmacion
+        servicio={this.state.servicioNombre}
+        motivo={this.state.motivoNombre}
+        descripcion={this.state.descripcion}
+        ubicacion={textoUbicacion}
+      />
+
+    </MiDialogo>
   }
 
   ocultarDialogoConfirmarSalida = () => {
@@ -500,6 +530,6 @@ const texto_Titulo = "Nuevo requerimiento";
 const texto_Titulo_Servicio = "Motivo del requerimiento";
 const texto_Titulo_Descripcion = "Descripción";
 const texto_Titulo_Ubicacion = "Ubicación";
-const texto_Titulo_Foto = "Foto";
+const texto_Titulo_Foto = "Imagen (Opcional)";
 const texto_Titulo_Confirmacion = "Confirmación";
 const texto_DialogoCancelarFormulario = "¿Esta seguro que desea cancelar la creación del requerimiento?";

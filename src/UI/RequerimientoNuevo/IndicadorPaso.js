@@ -45,7 +45,7 @@ export default class RequerimientoNuevo extends React.PureComponent {
   render() {
     const initData = global.initData;
 
-    let colorCirculo = "white";
+    let colorCirculo = "transparent";
     let colorCirculoCompletado = initData.colorExito;
 
     return (
@@ -83,13 +83,13 @@ export default class RequerimientoNuevo extends React.PureComponent {
                     inputRange: [0, 1],
                     outputRange: [
                       this.props.colorTextoCirculo || colorCirculoCompletado,
-                      this.props.colorTextoCirculoCompletado || "white"
+                      this.props.colorTextoCirculoCompletado || "transparent"
                     ]
                   }),
                   fontSize: this.props.fontSizeCirculo || 24
                 }}
               >
-                {this.props.numero || "1º"}
+                {this.props.numero || "1"}
               </Animated.Text>
             </Animated.View>
 
@@ -97,7 +97,7 @@ export default class RequerimientoNuevo extends React.PureComponent {
             <Text
               style={{
                 flex: 1,
-                fontSize: 20,
+                fontSize: 18,
                 marginLeft: 16
               }}
             >

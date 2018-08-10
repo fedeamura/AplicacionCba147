@@ -10,6 +10,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
 import com.facebook.react.ReactApplication;
+import com.apsl.versionnumber.RNVersionNumberPackage;
 import org.vovkasm.WebImage.WebImagePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage;
@@ -48,6 +49,7 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
             return Arrays.asList(
                     new MainReactPackage(),
+            new RNVersionNumberPackage(),
                     new WebImagePackage(),
                     new VectorIconsPackage(),
                     new SnackbarPackage(),

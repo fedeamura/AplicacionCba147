@@ -70,6 +70,7 @@ export default class PaginaAjustes extends React.Component {
     }, () => {
       Rules_Usuario.cerrarSesion()
         .then(() => {
+          Rules_Ajustes.setAjustesParaDesarrolladorVisible(false);
           App.replace("Login");
         })
         .catch(error => {

@@ -76,7 +76,9 @@ const metodos = {
             return;
           }
 
+          Rules_Ajustes.setVersionApp(data.return.version);
           resolve(data.return);
+
         })
         .catch(() => {
           reject("Error procesando la solicitud");

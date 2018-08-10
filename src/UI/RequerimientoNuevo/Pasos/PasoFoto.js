@@ -177,12 +177,12 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
 
     return (
       <View>
-        <View style={{ minHeight: 100 }}>
+        <View style={{ minHeight: 70 }}>
           {this.renderViewSeleccionar()}
           {this.renderViewSeleccionado()}
         </View>
 
-        <View style={{ height: 1, width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }} />
+        {/* <View style={{ height: 1, width: "100%", backgroundColor: "rgba(0,0,0,0.1)" }} />
 
         <MiBoton
           padding={16}
@@ -193,7 +193,7 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
           sombra
           small
           texto="Siguiente"
-        />
+        /> */}
 
       </View >
     );
@@ -209,7 +209,7 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
           bordered
           small
           onPress={this.agregarFoto}
-          texto="Agregar foto"
+          texto="Agregar imagen"
           centro
           padding={16} />
       </MiView>
@@ -225,13 +225,19 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
             <TouchableOpacity onPress={this.abrirImagen}>
               <Image
                 resizeMode="cover"
-                style={{ width: 156, height: 156, alignSelf: "center", borderRadius: 16, overflow: "hidden" }}
+                style={{
+                  width: 156,
+                  height: 156,
+                  alignSelf: "center",
+                  borderRadius: 16,
+                  overflow: "hidden"
+                }}
                 source={{ uri: this.state.foto }}
               />
             </TouchableOpacity>
           </View>
 
-          <View style={{ height: 16 }} />
+          <View style={{ height: 8 }} />
 
           <MiBoton
             small
@@ -239,7 +245,7 @@ export default class RequerimientoNuevo_PasoFoto extends React.Component {
             centro
             onPress={this.cancelarFoto}
             rojo
-            texto="Cancelar foto"
+            texto="Cancelar imagen"
           />
           {/* <Button small transparent style={{ alignSelf: "center" }} onPress={this.cancelarFoto}>
             <Text style={{ color: initData.colorError, textDecorationLine: "underline" }}>Cancelar foto</Text>

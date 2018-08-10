@@ -326,4 +326,4 @@ const styles = StyleSheet.create({
 const texto_Error_Consultado = "Oops... Algo salió mal al consultar sus requerimientos";
 const texto_Boton_Reintentar = "Reintentar";
 const texto_Empty = "No posee ningún requerimiento para mostrar...";
-const texto_Boton_Empty = "Aregar requerimiento";
+const texto_Boton_Empty = "Agregar requerimiento";
