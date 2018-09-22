@@ -1,0 +1,271 @@
+2018-09-22 16:54:24 +0000  Initial pipeline context: <IDEDistributionProcessingPipelineContext: 0x7ffebc1b2e80; archive(resolved)='<IDEArchive: 0x7ffed9a5b060>', distributionTask(resolved)='1', distributionMethod(resolved)='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team(resolved)='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	Chain (11, self inclusive):
+	<IDEDistributionProcessingPipelineContext: 0x7ffebc1b2e80; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionProcessingPipelineContext: 0x7ffeda78eff0; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffed2b995c0; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffed7a81b30; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffeda385db0; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffeea844f80; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffeda5e34d0; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffed5925180; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffed011aee0; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffed3df3230; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='<IDEDistributionMethodiOSAppStoreDistribution: 0x7ffecc1d17d0>', team='<IDEProvisioningBasicTeam: 0x7ffecc20b900; teamID='RLTC67T9M9', teamName='Municipalidad de Cordoba'>'>
+	<IDEDistributionContext: 0x7ffecc72dfc0; archive = '<IDEArchive: 0x7ffed9a5b060>', distributionMethod='(null)', team='(null)'>
+</IDEDistributionProcessingPipelineContext: 0x7ffebc1b2e80>
+2018-09-22 16:54:24 +0000  Processing step: IDEDistributionCreateDestRootStep
+2018-09-22 16:54:24 +0000  Processing step: IDEDistributionCopyItemStep
+2018-09-22 16:54:24 +0000  Running /usr/bin/ditto '-V' '/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/Products/Applications/Cordoba.app' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/Payload/Cordoba.app'
+2018-09-22 16:54:24 +0000  >>> Copying /Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/Products/Applications/Cordoba.app 
+2018-09-22 16:54:24 +0000  
+2018-09-22 16:54:24 +0000  copying file ./_CodeSignature/CodeResources ... 
+2018-09-22 16:54:24 +0000  12257 bytes for ./_CodeSignature/CodeResources
+2018-09-22 16:54:24 +0000  copying file ./Octicons.ttf ... 
+2018-09-22 16:54:24 +0000  43920 bytes for ./Octicons.ttf
+2018-09-22 16:54:24 +0000  copying file ./Feather.ttf ... 
+2018-09-22 16:54:24 +0000  55288 bytes for ./Feather.ttf
+copying file ./Roboto_medium.ttf ... 
+2018-09-22 16:54:24 +0000  137308 bytes for ./Roboto_medium.ttf
+copying file ./AppIcon20x20@2x.png ... 
+2018-09-22 16:54:24 +0000  4158 bytes for ./AppIcon20x20@2x.png
+copying file ./Entypo.ttf ... 
+2018-09-22 16:54:24 +0000  65584 bytes for ./Entypo.ttf
+copying file ./AppIcon20x20@3x.png ... 
+2018-09-22 16:54:24 +0000  6056 bytes for ./AppIcon20x20@3x.png
+copying file ./MaterialCommunityIcons.ttf ... 
+2018-09-22 16:54:24 +0000  322456 bytes for ./MaterialCommunityIcons.ttf
+copying file ./AppIcon29x29@2x.png ... 
+2018-09-22 16:54:24 +0000  5896 bytes for ./AppIcon29x29@2x.png
+copying file ./Foundation.ttf ... 
+2018-09-22 16:54:24 +0000  56976 bytes for ./Foundation.ttf
+2018-09-22 16:54:24 +0000  copying file ./Ionicons.ttf ... 
+2018-09-22 16:54:24 +0000  143936 bytes for ./Ionicons.ttf
+2018-09-22 16:54:24 +0000  copying file ./GoogleService-Info.plist ... 
+2018-09-22 16:54:24 +0000  902 bytes for ./GoogleService-Info.plist
+2018-09-22 16:54:24 +0000  copying file ./Base.lproj/LaunchScreen.nib ... 
+2018-09-22 16:54:24 +0000  842 bytes for ./Base.lproj/LaunchScreen.nib
+2018-09-22 16:54:24 +0000  copying file ./FontAwesome.ttf ... 
+2018-09-22 16:54:24 +0000  165548 bytes for ./FontAwesome.ttf
+copying file ./Zocial.ttf ... 
+2018-09-22 16:54:24 +0000  25552 bytes for ./Zocial.ttf
+copying file ./Roboto.ttf ... 
+2018-09-22 16:54:24 +0000  145348 bytes for ./Roboto.ttf
+copying file ./Assets.car ... 
+2018-09-22 16:54:24 +0000  32088 bytes for ./Assets.car
+2018-09-22 16:54:24 +0000  copying file ./main.jsbundle.meta ... 
+2018-09-22 16:54:24 +0000  21 bytes for ./main.jsbundle.meta
+2018-09-22 16:54:24 +0000  copying file ./EvilIcons.ttf ... 
+2018-09-22 16:54:24 +0000  13128 bytes for ./EvilIcons.ttf
+2018-09-22 16:54:24 +0000  copying file ./main.jsbundle ... 
+2018-09-22 16:54:24 +0000  2496424 bytes for ./main.jsbundle
+2018-09-22 16:54:24 +0000  copying file ./LaunchImage-700-568h@2x.png ... 
+2018-09-22 16:54:24 +0000  14942 bytes for ./LaunchImage-700-568h@2x.png
+copying file ./Cordoba ... 
+2018-09-22 16:54:25 +0000  126085744 bytes for ./Cordoba
+2018-09-22 16:54:25 +0000  copying file ./gRPCCertificates.bundle/roots.pem ... 
+2018-09-22 16:54:25 +0000  271610 bytes for ./gRPCCertificates.bundle/roots.pem
+2018-09-22 16:54:25 +0000  copying file ./gRPCCertificates.bundle/Info.plist ... 
+2018-09-22 16:54:25 +0000  731 bytes for ./gRPCCertificates.bundle/Info.plist
+2018-09-22 16:54:25 +0000  copying file ./Frameworks/Lottie.framework/_CodeSignature/CodeResources ... 
+2018-09-22 16:54:25 +0000  2202 bytes for ./Frameworks/Lottie.framework/_CodeSignature/CodeResources
+2018-09-22 16:54:25 +0000  copying file ./Frameworks/Lottie.framework/Lottie ... 
+2018-09-22 16:54:25 +0000  4320944 bytes for ./Frameworks/Lottie.framework/Lottie
+copying file ./Frameworks/Lottie.framework/Info.plist ... 
+2018-09-22 16:54:25 +0000  697 bytes for ./Frameworks/Lottie.framework/Info.plist
+2018-09-22 16:54:25 +0000  copying file ./SimpleLineIcons.ttf ... 
+2018-09-22 16:54:25 +0000  54056 bytes for ./SimpleLineIcons.ttf
+2018-09-22 16:54:25 +0000  copying file ./embedded.mobileprovision ... 
+2018-09-22 16:54:25 +0000  7708 bytes for ./embedded.mobileprovision
+2018-09-22 16:54:25 +0000  copying file ./assets/node_modules/react-navigation/src/views/assets/back-icon@3x.png ... 
+2018-09-22 16:54:25 +0000  1848 bytes for ./assets/node_modules/react-navigation/src/views/assets/back-icon@3x.png
+copying file ./assets/node_modules/react-navigation/src/views/assets/back-icon@2x.png ... 
+2018-09-22 16:54:25 +0000  966 bytes for ./assets/node_modules/react-navigation/src/views/assets/back-icon@2x.png
+2018-09-22 16:54:25 +0000  copying file ./assets/node_modules/react-navigation/src/views/assets/back-icon.png ... 
+2018-09-22 16:54:25 +0000  491 bytes for ./assets/node_modules/react-navigation/src/views/assets/back-icon.png
+2018-09-22 16:54:25 +0000  copying file ./assets/node_modules/react-navigation/src/views/assets/back-icon-mask.png ... 
+2018-09-22 16:54:25 +0000  1887 bytes for ./assets/node_modules/react-navigation/src/views/assets/back-icon-mask.png
+2018-09-22 16:54:25 +0000  copying file ./Info.plist ... 
+2018-09-22 16:54:25 +0000  2557 bytes for ./Info.plist
+copying file ./PkgInfo ... 
+2018-09-22 16:54:25 +0000  8 bytes for ./PkgInfo
+copying file ./MaterialIcons.ttf ... 
+2018-09-22 16:54:25 +0000  128180 bytes for ./MaterialIcons.ttf
+2018-09-22 16:54:25 +0000  2018-09-22 16:54:25 +0000  
+
+2018-09-22 16:54:25 +0000  /usr/bin/ditto exited with 0
+2018-09-22 16:54:25 +0000  
+2018-09-22 16:54:25 +0000  
+2018-09-22 16:54:25 +0000  Processing step: IDEDistributionEmbedProfileStep
+2018-09-22 16:54:25 +0000  Skipping profile for item: <IDEDistributionItem: 0x7ffee8cf3180 'com.airbnb.Lottie' '<DVTFilePath:0x7ffed5831fc0:'/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/Products/Applications/Cordoba.app/Frameworks/Lottie.framework'>'>
+2018-09-22 16:54:25 +0000  Processing step: IDEDistributionItemRemovalStep
+2018-09-22 16:54:25 +0000  Processing step: IDEDistributionAppThinningPlistStep
+2018-09-22 16:54:25 +0000  Skipping step: IDEDistributionAppThinningPlistStep because it said so
+2018-09-22 16:54:25 +0000  Processing step: IDEDistributionCompileBitcodeStep
+2018-09-22 16:54:25 +0000  Skipping step: IDEDistributionCompileBitcodeStep because it said so
+2018-09-22 16:54:25 +0000  Processing step: IDEDistributionCodeSlimmingStep
+2018-09-22 16:54:26 +0000  Processing step: IDEDistributionCopyBCSymbolMapsStep
+2018-09-22 16:54:26 +0000  Running /usr/bin/ditto '-V' '/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/BCSymbolMaps/1FC0647D-26D6-3222-A737-2F4AA1D29358.bcsymbolmap' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/BCSymbolMaps/1FC0647D-26D6-3222-A737-2F4AA1D29358.bcsymbolmap'
+2018-09-22 16:54:26 +0000  >>> Copying /Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/BCSymbolMaps/1FC0647D-26D6-3222-A737-2F4AA1D29358.bcsymbolmap 
+2018-09-22 16:54:26 +0000  copying file ./1FC0647D-26D6-3222-A737-2F4AA1D29358.bcsymbolmap ... 
+2018-09-22 16:54:26 +0000  73625 bytes for ./1FC0647D-26D6-3222-A737-2F4AA1D29358.bcsymbolmap
+2018-09-22 16:54:26 +0000  2018-09-22 16:54:26 +0000  
+
+2018-09-22 16:54:26 +0000  /usr/bin/ditto exited with 0
+2018-09-22 16:54:26 +0000  2018-09-22 16:54:26 +0000  
+
+2018-09-22 16:54:26 +0000  Running /usr/bin/ditto '-V' '/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/BCSymbolMaps/1F8E4C6D-D36F-3EAB-BD9C-C3FAD8570996.bcsymbolmap' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/BCSymbolMaps/1F8E4C6D-D36F-3EAB-BD9C-C3FAD8570996.bcsymbolmap'
+2018-09-22 16:54:26 +0000  >>> Copying /Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/BCSymbolMaps/1F8E4C6D-D36F-3EAB-BD9C-C3FAD8570996.bcsymbolmap 
+2018-09-22 16:54:26 +0000  copying file ./1F8E4C6D-D36F-3EAB-BD9C-C3FAD8570996.bcsymbolmap ... 
+2018-09-22 16:54:26 +0000  70599 bytes for ./1F8E4C6D-D36F-3EAB-BD9C-C3FAD8570996.bcsymbolmap
+2018-09-22 16:54:26 +0000  2018-09-22 16:54:26 +0000  
+
+2018-09-22 16:54:26 +0000  /usr/bin/ditto exited with 0
+2018-09-22 16:54:26 +0000  
+2018-09-22 16:54:26 +0000  
+2018-09-22 16:54:26 +0000  Running /usr/bin/ditto '-V' '/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/BCSymbolMaps/98FED75F-BD89-3E9C-8892-18A4A04DEDB9.bcsymbolmap' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/BCSymbolMaps/98FED75F-BD89-3E9C-8892-18A4A04DEDB9.bcsymbolmap'
+2018-09-22 16:54:26 +0000  >>> Copying /Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/BCSymbolMaps/98FED75F-BD89-3E9C-8892-18A4A04DEDB9.bcsymbolmap 
+2018-09-22 16:54:26 +0000  copying file ./98FED75F-BD89-3E9C-8892-18A4A04DEDB9.bcsymbolmap ... 
+2018-09-22 16:54:26 +0000  2839138 bytes for ./98FED75F-BD89-3E9C-8892-18A4A04DEDB9.bcsymbolmap
+2018-09-22 16:54:26 +0000  2018-09-22 16:54:26 +0000  /usr/bin/ditto exited with 0
+
+2018-09-22 16:54:26 +0000  
+2018-09-22 16:54:26 +0000  Running /usr/bin/ditto '-V' '/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/BCSymbolMaps/1613758E-F6D6-3AEB-9409-5DEC6A891E29.bcsymbolmap' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/BCSymbolMaps/1613758E-F6D6-3AEB-9409-5DEC6A891E29.bcsymbolmap'
+2018-09-22 16:54:26 +0000  >>> Copying /Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/BCSymbolMaps/1613758E-F6D6-3AEB-9409-5DEC6A891E29.bcsymbolmap 
+2018-09-22 16:54:26 +0000  copying file ./1613758E-F6D6-3AEB-9409-5DEC6A891E29.bcsymbolmap ... 
+2018-09-22 16:54:26 +0000  2854645 bytes for ./1613758E-F6D6-3AEB-9409-5DEC6A891E29.bcsymbolmap
+2018-09-22 16:54:26 +0000  2018-09-22 16:54:26 +0000  
+
+2018-09-22 16:54:26 +0000  /usr/bin/ditto exited with 0
+2018-09-22 16:54:26 +0000  
+2018-09-22 16:54:26 +0000  
+2018-09-22 16:54:26 +0000  Processing step: IDEDistributionSymbolsStep
+2018-09-22 16:54:26 +0000  Excluding symbols for Lottie.framework
+2018-09-22 16:54:26 +0000  Excluding symbols for Cordoba.app
+2018-09-22 16:54:26 +0000  Processing step: IDEDistributionCopyAppleProvidedContentStep
+2018-09-22 16:54:26 +0000  Processing step: IDEDistributionAppThinningStep
+2018-09-22 16:54:26 +0000  Skipping step: IDEDistributionAppThinningStep because it said so
+2018-09-22 16:54:26 +0000  Processing step: IDEDistributionODRStep
+2018-09-22 16:54:26 +0000  Processing step: IDEDistributionStripXattrsStep
+2018-09-22 16:54:26 +0000  Skipping stripping extended attributes of item: <IDEDistributionItem: 0x7ffee8cf3180 'com.airbnb.Lottie' '<DVTFilePath:0x7ffed5831fc0:'/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/Products/Applications/Cordoba.app/Frameworks/Lottie.framework'>'>
+2018-09-22 16:54:26 +0000  Running /usr/bin/xattr '-crs' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/Payload/Cordoba.app'
+2018-09-22 16:54:27 +0000  2018-09-22 16:54:27 +0000  
+
+2018-09-22 16:54:27 +0000  /usr/bin/xattr exited with 0
+2018-09-22 16:54:27 +0000  2018-09-22 16:54:27 +0000  
+
+2018-09-22 16:54:27 +0000  Processing step: IDEDistributionCodesignStep
+2018-09-22 16:54:27 +0000  Entitlements for <IDEDistributionItem: 0x7ffee8cf3180 'com.airbnb.Lottie' '<DVTFilePath:0x7ffed5831fc0:'/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/Products/Applications/Cordoba.app/Frameworks/Lottie.framework'>'>: {
+}
+2018-09-22 16:54:27 +0000  Writing entitlements for <IDEDistributionItem: 0x7ffee8cf3180 'com.airbnb.Lottie' '<DVTFilePath:0x7ffed5831fc0:'/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/Products/Applications/Cordoba.app/Frameworks/Lottie.framework'>'> to: /var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/entitlements5MQvax
+2018-09-22 16:54:27 +0000  Running /usr/bin/codesign '-vvv' '--force' '--sign' '3EC66C581F9E0DBE81910386D4C1D4704402B114' '--preserve-metadata=identifier,flags' '--entitlements' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/entitlements5MQvax' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/Payload/Cordoba.app/Frameworks/Lottie.framework'
+2018-09-22 16:54:27 +0000  /var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/Payload/Cordoba.app/Frameworks/Lottie.framework: signed bundle with Mach-O universal (armv7 arm64) [com.airbnb.Lottie]
+2018-09-22 16:54:27 +0000  
+2018-09-22 16:54:27 +0000  
+2018-09-22 16:54:27 +0000  /usr/bin/codesign exited with 02018-09-22 16:54:27 +0000  
+
+2018-09-22 16:54:27 +0000  
+2018-09-22 16:54:27 +0000  Entitlements for <IDEDistributionItem: 0x7ffee9adc040 'com.cordoba' '<DVTFilePath:0x7ffed9ebf920:'/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/Products/Applications/Cordoba.app'>'>: {
+    "application-identifier" = "RLTC67T9M9.com.cordoba";
+    "aps-environment" = production;
+    "beta-reports-active" = 1;
+    "com.apple.developer.team-identifier" = RLTC67T9M9;
+    "get-task-allow" = 0;
+}
+2018-09-22 16:54:27 +0000  Writing entitlements for <IDEDistributionItem: 0x7ffee9adc040 'com.cordoba' '<DVTFilePath:0x7ffed9ebf920:'/Users/federicoamura/Library/Developer/Xcode/Archives/2018-09-22/Cordoba 22-9-18 13.53.xcarchive/Products/Applications/Cordoba.app'>'> to: /var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/entitlementssq4Q7d
+2018-09-22 16:54:27 +0000  Running /usr/bin/codesign '-vvv' '--force' '--sign' '3EC66C581F9E0DBE81910386D4C1D4704402B114' '--preserve-metadata=identifier,flags' '--entitlements' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/entitlementssq4Q7d' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/Payload/Cordoba.app'
+2018-09-22 16:54:29 +0000  /var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root/Payload/Cordoba.app: signed app bundle with Mach-O universal (armv7 arm64) [com.cordoba]
+2018-09-22 16:54:29 +0000  
+2018-09-22 16:54:29 +0000  
+2018-09-22 16:54:29 +0000  /usr/bin/codesign exited with 02018-09-22 16:54:29 +0000  
+
+2018-09-22 16:54:29 +0000  
+2018-09-22 16:54:29 +0000  Processing step: IDEDistributionStreamingZipItemStep
+2018-09-22 16:54:29 +0000  Skipping step: IDEDistributionStreamingZipItemStep because it said so
+2018-09-22 16:54:29 +0000  Skipping step: IDEDistributionStreamingZipItemStep because it said so
+2018-09-22 16:54:29 +0000  Processing step: IDEDistributionCreateIPAStep
+2018-09-22 16:54:29 +0000  Running /usr/bin/ditto '-V' '-c' '-k' '--norsrc' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root' '/var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Packages/Cordoba.ipa'
+2018-09-22 16:54:29 +0000  >>> Copying /var/folders/0g/_nzbv0pd1tddm4mq3q1r1n040000gn/T/XcodeDistPipeline.KnJ/Root 
+2018-09-22 16:54:29 +0000  copying file ./BCSymbolMaps/98FED75F-BD89-3E9C-8892-18A4A04DEDB9.bcsymbolmap ... 
+2018-09-22 16:54:29 +0000  2839138 bytes for ./BCSymbolMaps/98FED75F-BD89-3E9C-8892-18A4A04DEDB9.bcsymbolmap
+copying file ./BCSymbolMaps/1613758E-F6D6-3AEB-9409-5DEC6A891E29.bcsymbolmap ... 
+2018-09-22 16:54:29 +0000  2854645 bytes for ./BCSymbolMaps/1613758E-F6D6-3AEB-9409-5DEC6A891E29.bcsymbolmap
+copying file ./BCSymbolMaps/1FC0647D-26D6-3222-A737-2F4AA1D29358.bcsymbolmap ... 
+2018-09-22 16:54:29 +0000  73625 bytes for ./BCSymbolMaps/1FC0647D-26D6-3222-A737-2F4AA1D29358.bcsymbolmap
+copying file ./BCSymbolMaps/1F8E4C6D-D36F-3EAB-BD9C-C3FAD8570996.bcsymbolmap ... 
+2018-09-22 16:54:29 +0000  70599 bytes for ./BCSymbolMaps/1F8E4C6D-D36F-3EAB-BD9C-C3FAD8570996.bcsymbolmap
+2018-09-22 16:54:29 +0000  copying file ./Payload/Cordoba.app/_CodeSignature/CodeResources ... 
+2018-09-22 16:54:29 +0000  12257 bytes for ./Payload/Cordoba.app/_CodeSignature/CodeResources
+2018-09-22 16:54:29 +0000  copying file ./Payload/Cordoba.app/Octicons.ttf ... 
+2018-09-22 16:54:29 +0000  43920 bytes for ./Payload/Cordoba.app/Octicons.ttf
+2018-09-22 16:54:29 +0000  copying file ./Payload/Cordoba.app/Feather.ttf ... 
+2018-09-22 16:54:29 +0000  55288 bytes for ./Payload/Cordoba.app/Feather.ttf
+2018-09-22 16:54:29 +0000  copying file ./Payload/Cordoba.app/Roboto_medium.ttf ... 
+2018-09-22 16:54:29 +0000  137308 bytes for ./Payload/Cordoba.app/Roboto_medium.ttf
+copying file ./Payload/Cordoba.app/AppIcon20x20@2x.png ... 
+2018-09-22 16:54:29 +0000  4158 bytes for ./Payload/Cordoba.app/AppIcon20x20@2x.png
+2018-09-22 16:54:29 +0000  copying file ./Payload/Cordoba.app/Entypo.ttf ... 
+2018-09-22 16:54:29 +0000  65584 bytes for ./Payload/Cordoba.app/Entypo.ttf
+copying file ./Payload/Cordoba.app/AppIcon20x20@3x.png ... 
+2018-09-22 16:54:29 +0000  6056 bytes for ./Payload/Cordoba.app/AppIcon20x20@3x.png
+2018-09-22 16:54:29 +0000  copying file ./Payload/Cordoba.app/MaterialCommunityIcons.ttf ... 
+2018-09-22 16:54:29 +0000  322456 bytes for ./Payload/Cordoba.app/MaterialCommunityIcons.ttf
+copying file ./Payload/Cordoba.app/AppIcon29x29@2x.png ... 
+2018-09-22 16:54:29 +0000  5896 bytes for ./Payload/Cordoba.app/AppIcon29x29@2x.png
+copying file ./Payload/Cordoba.app/Foundation.ttf ... 
+2018-09-22 16:54:29 +0000  56976 bytes for ./Payload/Cordoba.app/Foundation.ttf
+2018-09-22 16:54:29 +0000  copying file ./Payload/Cordoba.app/Ionicons.ttf ... 
+2018-09-22 16:54:29 +0000  143936 bytes for ./Payload/Cordoba.app/Ionicons.ttf
+copying file ./Payload/Cordoba.app/GoogleService-Info.plist ... 
+2018-09-22 16:54:29 +0000  902 bytes for ./Payload/Cordoba.app/GoogleService-Info.plist
+copying file ./Payload/Cordoba.app/Base.lproj/LaunchScreen.nib ... 
+2018-09-22 16:54:29 +0000  842 bytes for ./Payload/Cordoba.app/Base.lproj/LaunchScreen.nib
+copying file ./Payload/Cordoba.app/FontAwesome.ttf ... 
+2018-09-22 16:54:29 +0000  165548 bytes for ./Payload/Cordoba.app/FontAwesome.ttf
+copying file ./Payload/Cordoba.app/Zocial.ttf ... 
+2018-09-22 16:54:29 +0000  25552 bytes for ./Payload/Cordoba.app/Zocial.ttf
+copying file ./Payload/Cordoba.app/Roboto.ttf ... 
+2018-09-22 16:54:29 +0000  145348 bytes for ./Payload/Cordoba.app/Roboto.ttf
+copying file ./Payload/Cordoba.app/Assets.car ... 
+2018-09-22 16:54:29 +0000  32088 bytes for ./Payload/Cordoba.app/Assets.car
+copying file ./Payload/Cordoba.app/main.jsbundle.meta ... 
+2018-09-22 16:54:29 +0000  21 bytes for ./Payload/Cordoba.app/main.jsbundle.meta
+copying file ./Payload/Cordoba.app/EvilIcons.ttf ... 
+2018-09-22 16:54:29 +0000  13128 bytes for ./Payload/Cordoba.app/EvilIcons.ttf
+copying file ./Payload/Cordoba.app/main.jsbundle ... 
+2018-09-22 16:54:29 +0000  2496424 bytes for ./Payload/Cordoba.app/main.jsbundle
+copying file ./Payload/Cordoba.app/LaunchImage-700-568h@2x.png ... 
+2018-09-22 16:54:29 +0000  14942 bytes for ./Payload/Cordoba.app/LaunchImage-700-568h@2x.png
+copying file ./Payload/Cordoba.app/Cordoba ... 
+2018-09-22 16:54:33 +0000  109200192 bytes for ./Payload/Cordoba.app/Cordoba
+2018-09-22 16:54:33 +0000  copying file ./Payload/Cordoba.app/gRPCCertificates.bundle/roots.pem ... 
+2018-09-22 16:54:33 +0000  271610 bytes for ./Payload/Cordoba.app/gRPCCertificates.bundle/roots.pem
+copying file ./Payload/Cordoba.app/gRPCCertificates.bundle/Info.plist ... 
+2018-09-22 16:54:33 +0000  731 bytes for ./Payload/Cordoba.app/gRPCCertificates.bundle/Info.plist
+2018-09-22 16:54:33 +0000  copying file ./Payload/Cordoba.app/Frameworks/Lottie.framework/_CodeSignature/CodeResources ... 
+2018-09-22 16:54:33 +0000  2202 bytes for ./Payload/Cordoba.app/Frameworks/Lottie.framework/_CodeSignature/CodeResources
+2018-09-22 16:54:33 +0000  copying file ./Payload/Cordoba.app/Frameworks/Lottie.framework/Lottie ... 
+2018-09-22 16:54:33 +0000  3614912 bytes for ./Payload/Cordoba.app/Frameworks/Lottie.framework/Lottie
+copying file ./Payload/Cordoba.app/Frameworks/Lottie.framework/Info.plist ... 
+2018-09-22 16:54:33 +0000  697 bytes for ./Payload/Cordoba.app/Frameworks/Lottie.framework/Info.plist
+copying file ./Payload/Cordoba.app/SimpleLineIcons.ttf ... 
+2018-09-22 16:54:33 +0000  54056 bytes for ./Payload/Cordoba.app/SimpleLineIcons.ttf
+copying file ./Payload/Cordoba.app/embedded.mobileprovision ... 
+2018-09-22 16:54:33 +0000  7591 bytes for ./Payload/Cordoba.app/embedded.mobileprovision
+2018-09-22 16:54:33 +0000  copying file ./Payload/Cordoba.app/assets/node_modules/react-navigation/src/views/assets/back-icon@3x.png ... 
+2018-09-22 16:54:33 +0000  1848 bytes for ./Payload/Cordoba.app/assets/node_modules/react-navigation/src/views/assets/back-icon@3x.png
+copying file ./Payload/Cordoba.app/assets/node_modules/react-navigation/src/views/assets/back-icon@2x.png ... 
+2018-09-22 16:54:33 +0000  966 bytes for ./Payload/Cordoba.app/assets/node_modules/react-navigation/src/views/assets/back-icon@2x.png
+2018-09-22 16:54:33 +0000  copying file ./Payload/Cordoba.app/assets/node_modules/react-navigation/src/views/assets/back-icon.png ... 
+491 bytes for ./Payload/Cordoba.app/assets/node_modules/react-navigation/src/views/assets/back-icon.png
+copying file ./Payload/Cordoba.app/assets/node_modules/react-navigation/src/views/assets/back-icon-mask.png ... 
+2018-09-22 16:54:33 +0000  1887 bytes for ./Payload/Cordoba.app/assets/node_modules/react-navigation/src/views/assets/back-icon-mask.png
+2018-09-22 16:54:33 +0000  copying file ./Payload/Cordoba.app/Info.plist ... 
+2018-09-22 16:54:33 +0000  2557 bytes for ./Payload/Cordoba.app/Info.plist
+copying file ./Payload/Cordoba.app/PkgInfo ... 
+2018-09-22 16:54:33 +0000  8 bytes for ./Payload/Cordoba.app/PkgInfo
+copying file ./Payload/Cordoba.app/MaterialIcons.ttf ... 
+2018-09-22 16:54:33 +0000  128180 bytes for ./Payload/Cordoba.app/MaterialIcons.ttf
+2018-09-22 16:54:33 +0000  2018-09-22 16:54:33 +0000  2018-09-22 16:54:33 +0000  /usr/bin/ditto exited with 0
+
+
+2018-09-22 16:54:33 +0000  Processing step: IDEDistributionCreateManifestStep
+2018-09-22 16:54:33 +0000  Skipping step: IDEDistributionCreateManifestStep because it said so

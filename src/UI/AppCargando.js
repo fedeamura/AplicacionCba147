@@ -56,7 +56,7 @@ export default class AppCargando extends React.Component {
         <WebImage
           resizeMode="contain"
           style={{ width: "100%", height: "100%", margin: 72 }}
-          source={require("@Resources/logo_muni.png")}
+          source={{uri:urlLogo}}
         />
 
         <Text style={{ position: 'absolute', bottom: 16, alignSelf: 'center' }}>Versión {this.state.versionApp}</Text>
@@ -64,3 +64,4 @@ export default class AppCargando extends React.Component {
     );
   }
 }
+const urlLogo = 'https://i.imgur.com/dIclr5hm.png';

@@ -4,7 +4,6 @@ import {
 } from "react-native";
 import { Toolbar, ToolbarBackAction, ToolbarContent } from "react-native-paper";
 
-
 export default class MiToolbar extends React.PureComponent {
 
   constructor(props) {

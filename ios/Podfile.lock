@@ -112,6 +112,8 @@ PODS:
   - Protobuf (3.6.0)
   - React (0.51.1):
     - React/Core (= 0.51.1)
+  - react-native-maps (0.20.1):
+    - React
   - react-native-version-number (0.3.4):
     - React
   - React/Core (0.51.1):
@@ -160,6 +162,7 @@ DEPENDENCIES:
   - Firebase/Messaging
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - GLog (from `../node_modules/react-native/third-party-podspecs/GLog.podspec`)
+  - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-version-number (from `../node_modules/react-native-version-number`)
   - React/Core (from `../node_modules/react-native`)
   - React/CxxBridge (from `../node_modules/react-native`)
@@ -205,6 +208,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/GLog.podspec"
   React:
     :path: "../node_modules/react-native"
+  react-native-maps:
+    :path: "../node_modules/react-native-maps"
   react-native-version-number:
     :path: "../node_modules/react-native-version-number"
   yoga:
@@ -234,9 +239,10 @@ SPEC CHECKSUMS:
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 0fc0ad8bec688b2a3017a139953e01374fedbd5f
   React: 541ba768b9855e10cdc76f55427a5cd0653ca806
+  react-native-maps: 066c2afcc89e18726377bcc685315f989ca22449
   react-native-version-number: 36c0d8eb57a275a6239a860f8dbab3d18299b0e0
   yoga: 17521bbb0dd54a47c0b3ac43253e78cdac7488e0
 
-PODFILE CHECKSUM: 0b662a06a7aa48f13d660026eb47bd4104bbc75d
+PODFILE CHECKSUM: 4356fac0edb9ef0024404e50ca0ea298e1e12313
 
 COCOAPODS: 1.5.3

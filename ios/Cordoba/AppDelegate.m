@@ -10,6 +10,7 @@
 #import "AppDelegate.h"
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+#import <React/RCTLog.h>
 
 //Codepush
 #import <CodePush/CodePush.h>
@@ -26,22 +27,25 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    
+  RCTSetLogThreshold(RCTLogLevelInfo);
+
   NSURL *jsCodeLocation;
 
   [FIRApp configure];
   [RNFirebaseNotifications configure];
 
+  //jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  
   //Si es modo DEBUG
-    #ifdef DEBUG
-        jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-    #else
-        jsCodeLocation = [CodePush bundleURL];
-    #endif
+  //#ifdef DEBUG
+    //jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+    //#else
+    //jsCodeLocation = [CodePush bundleURL];
+    //#endif
   
   //Si es modo RELEASE
-  //jsCodeLocation = [CodePush bundleURL];
-
+  jsCodeLocation = [CodePush bundleURL];
+  
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"Cordoba"
                                                initialProperties:nil

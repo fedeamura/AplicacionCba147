@@ -227,7 +227,7 @@ export default class RequerimientoNuevo extends React.Component {
     }
 
     let conMotivo = this.state.motivoId != undefined;
-    let conDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim() != "" && this.state.descripcion.length >= 20;
+    let conDescripcion = this.state.descripcion != undefined && this.state.descripcion.trim().length >= 20;
     let conUbicacion = this.state.ubicacion != undefined;
 
     let cumple = false;
@@ -239,20 +239,10 @@ export default class RequerimientoNuevo extends React.Component {
         break;
       case 2:
         {
-          cumple = conMotivo;
-        }
-        break;
-      case 3:
-        {
           cumple = conMotivo && conDescripcion;
         }
         break;
-      case 4:
-        {
-          cumple = conMotivo && conDescripcion && conUbicacion;
-        }
-        break;
-      case 5:
+      case 3:
         {
           cumple = conMotivo && conDescripcion && conUbicacion;
         }
@@ -330,6 +320,16 @@ export default class RequerimientoNuevo extends React.Component {
     // this.mostrarPaso(4);
   }
 
+  onBotonRegistrarPress = () => {
+    const puedeRegistrar = this.state.motivoId != undefined && this.state.descripcion != undefined && this.state.descripcion.length >= 20 && this.state.ubicacion != undefined;
+    if (puedeRegistrar == false) {
+      Alert.alert('', 'Debe completar los pasos indicados para registrar el requerimiento');
+      return;
+    }
+
+    this.mostrarDialogoConfimacion();
+  }
+
   mostrarDialogoConfimacion = () => {
     this.setState({ dialogoConfirmacionVisible: true });
   }
@@ -340,7 +340,7 @@ export default class RequerimientoNuevo extends React.Component {
 
   render() {
     const initData = global.initData;
-
+    const puedeRegistrar = this.state.motivoId != undefined && this.state.descripcion != undefined && this.state.descripcion.length >= 20 && this.state.ubicacion != undefined;
 
     return (
       <View style={style.contenedor}>
@@ -397,20 +397,18 @@ export default class RequerimientoNuevo extends React.Component {
                   </Paso>
 
                   {/* Boton registrar */}
-                  {this.state.motivoId != undefined && this.state.descripcion != undefined && this.state.descripcion.length >= 20 && this.state.ubicacion != undefined && (
 
-                    <View>
-                      <View style={{ height: 32 }} />
-                      <MiBoton
-                        centro
-                        verde
-                        onPress={this.mostrarDialogoConfimacion}
-                        sombra
-                        rounded
-                        texto="Finalizar" />
-                    </View>
-
-                  )}
+                  <View>
+                    <View style={{ height: 32 }} />
+                    <MiBoton
+                      centro
+                      color={puedeRegistrar ? initData.colorVerde : 'rgba(130,130,130,1)'}
+                      colorTexto='white'
+                      onPress={this.onBotonRegistrarPress}
+                      sombra
+                      rounded
+                      texto="Finalizar" />
+                  </View>
 
                 </View>
               </ScrollView>

@@ -166,7 +166,7 @@ export default class App extends React.Component {
     }, () => {
       Rules_Init.actualizarApp()
         .then(() => {
-          //Busco la data inicial
+          // Busco la data inicial
           Rules_Init.getInitData()
             .then((initData) => {
               global.initData = initData;
@@ -207,9 +207,9 @@ export default class App extends React.Component {
 
     if (global.initData == undefined) return true;
     if (Platform.os == 'ios') {
-      return version>= global.initData.versionIOS;
+      return version >= global.initData.versionIOS;
     } else {
-      return version >=global.initData.versionAndroid;
+      return version >= global.initData.versionAndroid;
     }
   }
 
@@ -249,7 +249,7 @@ export default class App extends React.Component {
   onBotonTiendaPress = () => {
     try {
       let url;
-      if (Platform.os == 'ios') {
+      if (Platform.OS == 'ios') {
         url = 'https://itunes.apple.com/ar/app/cba147/id1349553071?mt=8';
       } else {
         url = 'https://play.google.com/store/apps/details?id=com.cordoba';

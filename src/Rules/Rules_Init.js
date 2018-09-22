@@ -8,6 +8,7 @@ const metodos = {
   actualizarApp: () => {
     return new Promise((callback, reject) => {
       //Valido si soy beta tester
+
       Rules_Ajustes.isBetaTester()
         .then(test => {
           //Keys iOS
@@ -22,6 +23,7 @@ const metodos = {
           const key = Platform.OS == "ios" ? (test ? key_ios_test : key_ios) : test ? key_android_test : key_android;
 
           //Mando a actualizar
+
           codePush.sync({
             deploymentKey: key,
             installMode: codePush.InstallMode.IMMEDIATE
