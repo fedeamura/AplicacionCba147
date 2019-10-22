@@ -1,6 +1,11 @@
 import DB from "Cordoba/src/DAO/DB";
 
 const metodos = {
+  setLogin: async token => {
+    global.token = token;
+    await DB.setItem("token", token);
+    return true;
+  },
   login: (user, pass) => {
     let url =
       "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/IniciarSesion?username={user}&password={pass}&keyVencimiento={key}";
@@ -35,41 +40,30 @@ const metodos = {
         });
     });
   },
+  isLogin: async () => {
+    try {
+      //Busco el token
+      let token = await DB.getItem("token");
+      if (token == undefined || token == null) return false;
 
-  isLogin: () => {
-    return new Promise((resolve, reject) => {
-      DB.getItem("token")
-        .then(response => {
-          if (response == undefined) {
-            global.token = undefined;
-            resolve(false);
-            return;
-          }
+      //Valido el token
+      let url =
+        "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ValidarToken?token={token}";
+      url = url.replace("{token}", token);
+      let response = await fetch(url, { method: "GET" });
+      let data = await response.json();
 
-          //Valido el token en vecino virtual
-          let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ValidarToken?token={token}";
-          url = url.replace("{token}", response);
-          fetch(url, { method: "GET" })
-            .then(response => response.json())
-            .then(data => {
-              if (data.ok != true || data.return == false) {
-                global.token = undefined;
-                resolve(false);
-                return;
-              }
+      if (data.ok != true || data.return == false) {
+        global.token = undefined;
+        return false;
+      }
 
-              global.token = response;
-              resolve(true);
-            })
-            .catch(error => {
-              resolve(false);
-            });
-        })
-        .catch(error => {
-          global.token = undefined;
-          resolve(false);
-        });
-    });
+      global.token = token;
+      return true;
+    } catch (ex) {
+      global.token = undefined;
+      return false;
+    }
   },
 
   cerrarSesion: () => {
@@ -116,7 +110,8 @@ const metodos = {
         return;
       }
 
-      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario?token={token}";
+      let url =
+        "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario?token={token}";
       url = url.replace("{token}", global.token);
 
       fetch(url, {
@@ -144,7 +139,8 @@ const metodos = {
         return;
       }
 
-      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/EsValidadoRenaper?token={token}";
+      let url =
+        "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/EsValidadoRenaper?token={token}";
       url = url.replace("{token}", global.token);
 
       fetch(url, {
@@ -162,9 +158,10 @@ const metodos = {
     });
   },
 
-  validarDatos: (comando) => {
+  validarDatos: comando => {
     return new Promise((resolve, reject) => {
-      let url = "https://servicios2.cordoba.gov.ar/WSVecinoVirtual_Bridge/v1/Usuario/ValidarRenaper";
+      let url =
+        "https://servicios2.cordoba.gov.ar/WSVecinoVirtual_Bridge/v1/Usuario/ValidarRenaper";
       fetch(url, {
         method: "PUT",
         body: JSON.stringify(comando),
@@ -188,14 +185,15 @@ const metodos = {
     });
   },
 
-  actualizarDatosPersonales: (comando) => {
+  actualizarDatosPersonales: comando => {
     return new Promise((resolve, reject) => {
       if (global.token == undefined) {
         reject("Debe iniciar sesion");
         return;
       }
 
-      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ActualizarDatosPersonales?token={token}";
+      let url =
+        "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ActualizarDatosPersonales?token={token}";
       url = url.replace("{token}", global.token);
 
       fetch(url, {
@@ -221,14 +219,15 @@ const metodos = {
     });
   },
 
-  actualizarDatosContacto: (comando) => {
+  actualizarDatosContacto: comando => {
     return new Promise((resolve, reject) => {
       if (global.token == undefined) {
         reject("Debe iniciar sesion");
         return;
       }
 
-      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ActualizarDatosContacto?token={token}";
+      let url =
+        "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ActualizarDatosContacto?token={token}";
       url = url.replace("{token}", global.token);
 
       fetch(url, {
@@ -254,7 +253,7 @@ const metodos = {
     });
   },
 
-  crearUsuario: (comando) => {
+  crearUsuario: comando => {
     return new Promise((resolve, reject) => {
       let url =
         "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario?passwordDefault=false&urlRetorno=cba147app://abrir";
@@ -282,7 +281,7 @@ const metodos = {
     });
   },
 
-  recuperarCuenta: (username) => {
+  recuperarCuenta: username => {
     return new Promise((resolve, reject) => {
       let url =
         "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/RecuperarCuenta?username={user}&urlRetorno={urlRetorno}";
@@ -305,7 +304,7 @@ const metodos = {
     });
   },
 
-  cambiarUsername: (username) => {
+  cambiarUsername: username => {
     return new Promise((resolve, reject) => {
       if (global.token == undefined) {
         reject("Debe iniciar sesion");
@@ -366,14 +365,15 @@ const metodos = {
     });
   },
 
-  cambiarFoto: (foto) => {
+  cambiarFoto: foto => {
     return new Promise((resolve, reject) => {
       if (global.token == undefined) {
         reject("Debe iniciar sesion");
         return;
       }
 
-      let url = "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ActualizarFotoPersonal?token={token}";
+      let url =
+        "https://servicios2.cordoba.gov.ar/WSCBA147_Bridge/v1/Usuario/ActualizarFotoPersonal?token={token}";
       url = url.replace("{token}", global.token);
 
       fetch(url, {
@@ -426,12 +426,14 @@ const metodos = {
 
   solicitarEmailActivacion: (username, password) => {
     return new Promise((resolve, reject) => {
-      let url = "https://servicios2.cordoba.gov.ar/WSVecinoVirtual_Bridge/v1/Usuario/ActivacionCuenta/Iniciar";
+      let url =
+        "https://servicios2.cordoba.gov.ar/WSVecinoVirtual_Bridge/v1/Usuario/ActivacionCuenta/Iniciar";
 
       let comando = {
         username: username,
         password: password,
-        urlServidor: "https://servicios2.cordoba.gov.ar/vecinovirtualutils_internet/ProcesarActivarUsuario",
+        urlServidor:
+          "https://servicios2.cordoba.gov.ar/vecinovirtualutils_internet/ProcesarActivarUsuario",
         urlRetorno: "cba147app://abrir"
       };
 
